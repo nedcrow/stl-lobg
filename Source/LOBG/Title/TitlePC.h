@@ -14,11 +14,17 @@ class LOBG_API ATitlePC : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	virtual void BeginPlay()override;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 	TSubclassOf<class UTitleWidgetBase> TitleWidgetClass;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "UI")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 	class UTitleWidgetBase* TitleWidgetObject;
 
-	virtual void BeginPlay()override;
+	UFUNCTION()
+	void StartServer();
+
+	UFUNCTION()
+	void ConnectServer(FString ServerAddress);
 };

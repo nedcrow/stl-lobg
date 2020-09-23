@@ -13,5 +13,31 @@ UCLASS()
 class LOBG_API UTitleWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	class UEditableTextBox* ServerIDText;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	class UEditableTextBox* UserIDText;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	class UEditableTextBox* UserPasswardText;
+
+
+	//Lobby에 입장
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UButton* ConnectServerButton;
+
+	UFUNCTION()
+		void ConnectServer();
+
+
+	//서버 생성
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UButton* CreateServerButton;
+
+	UFUNCTION()
+		void StartServer();
 };
