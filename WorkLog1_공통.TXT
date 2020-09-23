@@ -12,4 +12,6 @@ Title Framework 만듬
 Lobby로가는 서버 시스템 생성
 
 황하림
-test
+  Set Lobby framework
+  Set Lobby UI
+  Load battle level

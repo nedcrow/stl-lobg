@@ -13,5 +13,14 @@ UCLASS()
 class LOBG_API UChattingWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UEditableTextBox* ChatInput;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UScrollBox* ChatScrollBox;
+	UFUNCTION()
+		void ProcessTextCommited(const FText& Text, ETextCommit::Type Method);
+		void AddMessage(FText Message);
 };

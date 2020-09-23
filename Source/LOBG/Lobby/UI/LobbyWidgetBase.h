@@ -13,5 +13,22 @@ UCLASS()
 class LOBG_API ULobbyWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void NativeConstruct() override;
+
+	// About start button
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UButton* StartGameButton;
+	UFUNCTION()
+		void OnStartGameButton();
+		void HideStartGameButton();
+
+	// About connect count
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UTextBlock* ConnectCount;
+		void SetConnectCount(int Value);
+
+	// About chatting
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UChattingWidgetBase* ChattingWidget;
 };
