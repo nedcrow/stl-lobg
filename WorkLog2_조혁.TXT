@@ -1,4 +1,3 @@
 0923
-Title GameMode cpp, Blueprint 만듬
-
-Test
+Title Framework 만듬
+Lobby로가는 서버 시스템 생성
