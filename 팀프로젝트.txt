@@ -3,6 +3,7 @@
 특징 : 3명이다, 척추가있다.
 장르 : MOBG Multiplayer Online Battle Ground
 게임명 : LOBG 롭지(리그 오브 배틀 그라운드)
+컨셉 PPT 열람주소: https://docs.google.com/presentation/d/1lyxrwJ_0fM_prBs7PTk1ZKQpTMQlG0qDf4TJtDL_Q5c/edit?usp=sharing
 
 fps 수업때 확장 -> 기능 추가
 시스템 컨텐츠
