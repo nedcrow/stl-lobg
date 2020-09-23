@@ -13,5 +13,12 @@ UCLASS()
 class LOBG_API ATitlePC : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	TSubclassOf<class UTitleWidgetBase> TitleWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "UI")
+	class UTitleWidgetBase* TitleWidgetObject;
+
+	virtual void BeginPlay()override;
 };
