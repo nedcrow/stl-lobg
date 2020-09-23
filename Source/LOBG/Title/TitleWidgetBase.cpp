@@ -2,4 +2,45 @@
 
 
 #include "TitleWidgetBase.h"
+#include "Components/Button.h"
+#include "Components/EditableTextBox.h"
+#include "TitlePC.h"
+#include "../LOBGGameInstance.h"
 
+void UTitleWidgetBase::NativeConstruct()
+{
+	ConnectServerButton = Cast<UButton>(GetWidgetFromName(TEXT("ConnectServerButton")));
+	CreateServerButton = Cast<UButton>(GetWidgetFromName(TEXT("CreateServerButton")));
+	ServerIDText = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("ServerIDText")));
+	UserIDText = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("IDBox")));
+	UserPasswardText = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("PasswordBox")));
+
+	if (ConnectServerButton)
+	{
+		ConnectServerButton->OnClicked.AddDynamic(this, &UTitleWidgetBase::ConnectServer);
+	}
+
+	if (CreateServerButton)
+	{
+		CreateServerButton->OnClicked.AddDynamic(this, &UTitleWidgetBase::StartServer);
+	}
+}
+
+void UTitleWidgetBase::ConnectServer()
+{
+	ATitlePC* PC = GetOwningPlayer<ATitlePC>();
+	if (PC)
+	{
+		FString ServerAddress = ServerIDText->GetText().ToString();
+		PC->ConnectServer(ServerAddress);
+	}
+}
+
+void UTitleWidgetBase::StartServer()
+{
+	ATitlePC* PC = GetOwningPlayer<ATitlePC>();
+	if (PC)
+	{
+		PC->StartServer();
+	}
+}

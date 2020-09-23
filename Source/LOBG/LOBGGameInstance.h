@@ -14,4 +14,10 @@ class LOBG_API ULOBGGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	FString UserID;
+
+	FString GetUserID();
+	void SetUserID(FString NewUserID);
 };
