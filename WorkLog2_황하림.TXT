@@ -6,5 +6,6 @@
 0924
  Fix lobby UI(Connect count)
  Set animIstance & montage BP
- Set offset BP
- Set Input key
+ Set AimOffffset BP
+ Set BlendSpace
+ Add FSM in animIstance
