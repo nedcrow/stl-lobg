@@ -6,13 +6,12 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "BattleCharacter.h"
 #include "../Weapon/BulletDamageType.h"
 
 // Sets default values
 ABullet::ABullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
@@ -21,7 +20,7 @@ ABullet::ABullet()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 
-	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
+	//Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 }
 
@@ -29,7 +28,7 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBeginOverlap);
 }
 
@@ -37,18 +36,31 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	StaticMesh->AddRelativeLocation(outhitDir);
 }
 
-void ABullet::ApplyDamageProcess(FHitResult OutHit, AController* Controller)
+void ABullet::ApplyDamageProcess()
 {
-	UGameplayStatics::ApplyPointDamage(OutHit.GetActor(), 1.0f, -OutHit.ImpactNormal, OutHit, Controller, this, UBulletDamageType::StaticClass());
+	UE_LOG(LogClass, Warning, TEXT("ApplyDamage"));
+
+	UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 1.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+
 }
 
-void ABullet::OnBeginOverlap(UPrimitiveComponent * OverlappedComponent, 
-	AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, 
+void ABullet::SetDamageInfo(FHitResult OutHit, AController* Controller, FVector Direct)
+{
+	PlayerOutHit = OutHit;
+	PlayerController = Controller;
+	outhitDir = Direct;
+}
+
+void ABullet::OnBeginOverlap(UPrimitiveComponent * OverlappedComponent,
+	AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult & SweepResult)
 {
-
+	if (OtherActor->ActorHasTag(TEXT("Player")))
+	{
+		ApplyDamageProcess();
+	}
 }
 

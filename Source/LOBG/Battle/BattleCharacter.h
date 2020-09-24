@@ -70,6 +70,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		class USceneComponent* Muzzle;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
 
 	//애니메이션에서 쓸 상태변수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
