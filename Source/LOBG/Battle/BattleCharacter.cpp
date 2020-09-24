@@ -177,18 +177,23 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
 		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
 
-	
-	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
-	if (Result && OutHit.GetActor() != nullptr)
+	if (Result && OutHit.GetActor() == nullptr)
 	{
-		bool ResultMuzzle = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), Muzzle->GetComponentLocation(), EndLine,
-			ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, MuzzleOutHit, true, FLinearColor::Green);
-
+		ABattlePC* PC = GetController<ABattlePC>();
+		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentLocation(), PC->GetControlRotation());
+		Bullet->SetDamageInfo(OutHit, GetController());
+	}
+	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
+	else if (Result && OutHit.GetActor() != nullptr)
+	{
 		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
-		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentTransform());
-		//Bullet->ApplyDamageProcess(OutHit, GetController());
-		Bullet->SetDamageInfo(OutHit, GetController(), MuzzleOutHit.ImpactNormal);
-		
+
+		//Muzzle에서 트레이스 Point까지의 회전값
+		FRotator BulletRoation = (OutHit.ImpactPoint - Muzzle->GetComponentLocation()).Rotation();
+
+		//Muzzle위치에서 조준점까지의 회전값을 가지고 총알 스폰
+		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentLocation(), BulletRoation);
+		Bullet->SetDamageInfo(OutHit, GetController());
 	}
 }
 

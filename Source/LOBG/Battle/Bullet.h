@@ -30,15 +30,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class USphereComponent* Sphere;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//	class UProjectileMovementComponent* Movement;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UProjectileMovementComponent* Movement;
 
 	void ApplyDamageProcess();
-	void SetDamageInfo(FHitResult OutHit, AController* Controller, FVector Direct);
+	void SetDamageInfo(FHitResult OutHit, AController* Controller);
 
 	FHitResult PlayerOutHit;
 	AController* PlayerController;
-	FVector outhitDir;
 
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 

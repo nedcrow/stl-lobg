@@ -13,7 +13,7 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 		// Move animation
 		Direction = CalculateDirection(Pawn->GetCharacterMovement()->Velocity, Pawn->GetActorRotation());
 		Speed = Pawn->GetCharacterMovement()->Velocity.Size();
-		bIsSprint = Pawn->bIsSprint;
+		//bIsSprint = Pawn->bIsSprint;
 		
 		//bIsFire = Pawn->bIsFire;
 		bIsCrouched = Pawn->bIsCrouched;
