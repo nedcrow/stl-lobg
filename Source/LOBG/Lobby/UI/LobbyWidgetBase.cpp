@@ -20,6 +20,10 @@ void ULobbyWidgetBase::NativeConstruct()
 	if (StartGameButton) {
 		StartGameButton->OnClicked.AddDynamic(this, &ULobbyWidgetBase::OnStartGameButton);
 	}
+
+	if (ConnectCount) {
+		ConnectCount->SetText(FText::FromString("1"));
+	}
 }
 
 void ULobbyWidgetBase::OnStartGameButton()
