@@ -6,10 +6,15 @@
 0924
  Fix lobby UI(Connect count)
  Set animIstance & montage BP
- Set AimOffffset BP
+ Set AimOffset BP
  Set BlendSpace
  Add FSM in animIstance
+ Add animation functions in BattleCharacter & CharacterInstance
 
+ Set 'BlendSpace' assets
+ Add FSM (in BP_CharacterAnimInstance)
+ Add animation functions (in BattleCharacter, CharacterAnimInstance)
+ Set animation montage (in BP_BattleCharacter)
   세부 - BattleCharacter
 	* bIsCrouch 주석 지움
 	* Montage 프로퍼티 추가
