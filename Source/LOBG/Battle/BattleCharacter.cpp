@@ -40,6 +40,7 @@ ABattleCharacter::ABattleCharacter()
 	Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
 	Muzzle->SetupAttachment(RootComponent);
 
+	Tags.Add(TEXT("Player"));
 }
 
 // Called when the game starts or when spawned
@@ -143,9 +144,6 @@ void ABattleCharacter::OnFire()
 	ABattlePC* PC = GetController<ABattlePC>();
 	if (PC)
 	{
-		//라인 트레이스 인자를 채우기 위한 요소들
-		FVector CameraLocation;
-		FRotator CameraRotator;
 		int32 ScreenSizeX;
 		int32 ScreenSizeY;
 		FVector CrosshairWorldLocation;
@@ -158,6 +156,8 @@ void ABattleCharacter::OnFire()
 		PC->DeprojectScreenPositionToWorld(ScreenSizeX / 2, ScreenSizeY / 2, CrosshairWorldLocation, CrosshairWorldDirection);
 
 		//카메라의 위치와 회전값 구하기
+		FVector CameraLocation;
+		FRotator CameraRotator;
 		PC->GetPlayerViewPoint(CameraLocation, CameraRotator);
 
 		//라인트레이스 인자들
@@ -172,16 +172,34 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 {
 	TArray<AActor*> IgnoreObj;
 	FHitResult OutHit;
+	FHitResult MuzzleOutHit;
 
 	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
 		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
 
+	
 	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
 	if (Result && OutHit.GetActor() != nullptr)
 	{
+		bool ResultMuzzle = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), Muzzle->GetComponentLocation(), OutHit.GetActor()->GetActorLocation(),
+			ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, MuzzleOutHit, true, FLinearColor::Green);
+
 		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
 		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentTransform());
-		Bullet->ApplyDamageProcess(OutHit, GetController());
+		//Bullet->ApplyDamageProcess(OutHit, GetController());
+		Bullet->SetDamageInfo(OutHit, GetController(), MuzzleOutHit.ImpactNormal);
 		
 	}
+}
+
+float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	UE_LOG(LogClass, Warning, TEXT("TakeDamage"));
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		UE_LOG(LogClass, Warning, TEXT("Dead"));
+		Destroy();
+	}
+	return 0.0f;
 }
