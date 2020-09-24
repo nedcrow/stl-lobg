@@ -1,5 +1,11 @@
 0923
   Set Lobby framework
-  Set Lobby UI
+  Set Lobby UI - Offline test
   Load battle level
-  타이틀, 로비 UI 부분 2명 이상 접속 시 튕김 확인
+
+0924
+ Fix lobby UI(Connect count)
+ Set animIstance & montage BP
+ Set AimOffffset BP
+ Set BlendSpace
+ Add FSM in animIstance
