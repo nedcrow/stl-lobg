@@ -203,3 +203,23 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	}
 	return 0.0f;
 }
+
+void ABattleCharacter::StartIronsight()
+{
+}
+
+void ABattleCharacter::StopIronsight()
+{
+}
+
+void ABattleCharacter::C2S_SetIronsight_Implementation(bool State)
+{
+}
+
+void ABattleCharacter::StartCrouch()
+{
+}
+
+void ABattleCharacter::C2S_SetReload_Implementation(bool newState)
+{
+}

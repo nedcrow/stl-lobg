@@ -9,3 +9,11 @@
  Set AimOffffset BP
  Set BlendSpace
  Add FSM in animIstance
+
+  세부 - BattleCharacter
+	* bIsCrouch 주석 지움
+	* Montage 프로퍼티 추가
+	* Ironsight, Crouch 함수
+	* Lean 함수
+	* bIsSprint 삭제
+	
