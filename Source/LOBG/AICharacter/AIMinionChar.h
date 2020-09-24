@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "AIMinionChar.generated.h"
 
+UENUM(BlueprintType)
+enum class EMinioonState : uint8
+{
+	Normal UMETA(DisplayName = "Normal"),
+	Chase UMETA(DisplayName = "Chase"),
+	Battle UMETA(DisplayName = "Battle"),
+	Dead UMETA(DisplayName = "Dead")
+};
+
 UCLASS()
 class LOBG_API AAIMinionChar : public ACharacter
 {
@@ -25,5 +34,17 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	float WalkSpeed = 300.f;
 
+	// AI
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+		class UBehaviorTree* BTMinion;
+
+	// State
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+		EMinioonState CurrentState;
+
+	UFUNCTION(BlueprintCallable)
+		void SetState(EMinioonState NewState);
 };
