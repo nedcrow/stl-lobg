@@ -72,7 +72,7 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
-
+	int b=0;
 	//애니메이션에서 쓸 상태변수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsSprint : 1;
