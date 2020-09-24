@@ -34,6 +34,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// For RPC
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Move
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -73,43 +76,69 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	// Ironsight
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsIronsight : 1;
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetIronsight(bool State);
+		void Server_SetIronsight_Implementation(bool State);
 
 	void StartIronsight();
 	void StopIronsight();
 
-	UFUNCTION(Server, Reliable)
-		void C2S_SetIronsight(bool State);
-		void C2S_SetIronsight_Implementation(bool State);
-
 	// Crouch
 	void StartCrouch();
 
+	// Lean
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		uint8 bIsLeanLeft : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		uint8 bIsLeanRight : 1;
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetLeanLeft(bool State);
+		void Server_SetLeanLeft_Implementation(bool State);
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetLeanRight(bool State);
+		void Server_SetLeanRight_Implementation(bool State);
+
+	void StartLeanLeft();
+	void StopLeanLeft();
+	void StartLeanRight();
+	void StopLeanRight();
+
+	// Animations that FSMless
+#pragma region FSMless Animations
+	// Death
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* DeathMontage;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_StartDeath(int Index);
+		void NetMulticast_StartDeath_Implementation(int Index);
+
 	// Reload
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Data")
+		class UAnimMontage* ReloadMontage;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsReload : 1;
 
 	UFUNCTION(Server, Reliable)
-		void C2S_SetReload(bool newState);
-		void C2S_SetReload_Implementation(bool newState);
+		void Server_SetReload(bool NewState);
+		void Server_SetReload_Implementation(bool NewState);
 
-	// Lean
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
-		uint8 bIsLeanLeft : 1;
+		void StartReload();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
-		uint8 bIsLeanRight : 1;
-
-	//애니메이션에서 쓸 상태변수
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
-		class UAnimMontage* DeadMontage;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
-		class UAnimMontage* ReloadMontage;
-
+	// Hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* HitActionMontage;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_StartHitMontage(int Number);
+		void NetMulticast_StartHitMontage_Implementation(int Number);
+#pragma endregion
 
 };

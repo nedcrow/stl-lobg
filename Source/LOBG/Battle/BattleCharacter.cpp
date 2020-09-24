@@ -7,10 +7,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Components/SceneComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "BattlePC.h"
+#include "CharacterAnimInstance.h"
 #include "../Weapon/BulletBase.h"
+
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -72,6 +75,24 @@ void ABattleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Pressed, this, &ABattleCharacter::DoSprint);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Released, this, &ABattleCharacter::UndoSprint);
+
+	PlayerInputComponent->BindAction(TEXT("Ironsight"), IE_Pressed, this, &ABattleCharacter::StartIronsight);
+	PlayerInputComponent->BindAction(TEXT("Ironsight"), IE_Released, this, &ABattleCharacter::StopIronsight);
+
+	PlayerInputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &ABattleCharacter::StartCrouch);
+
+	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &ABattleCharacter::StartReload);
+
+	PlayerInputComponent->BindAction(TEXT("LeanLeft"), IE_Pressed, this, &ABattleCharacter::StartLeanLeft);
+	PlayerInputComponent->BindAction(TEXT("LeanLeft"), IE_Released, this, &ABattleCharacter::StopLeanLeft);
+	PlayerInputComponent->BindAction(TEXT("LeanRight"), IE_Pressed, this, &ABattleCharacter::StartLeanRight);
+	PlayerInputComponent->BindAction(TEXT("LeanRight"), IE_Released, this, &ABattleCharacter::StopLeanRight);
+}
+
+void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABattleCharacter, bIsIronsight);
 }
 
 // Move
@@ -204,26 +225,112 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	{
 		UE_LOG(LogClass, Warning, TEXT("Dead"));
 		Destroy();
+
+		// 피격 시 HitAnimation
+		// NetMulticast_StartHitMontage(FMath::RandRange(1, 4))
+
+		// 죽으면
+		// NetMulticast_StartDeath(FMath::RandRange(1, 3));
 	}
+
+	
 	return 0.0f;
+}
+
+void ABattleCharacter::Server_SetIronsight_Implementation(bool State)
+{
+	bIsIronsight = State;
 }
 
 void ABattleCharacter::StartIronsight()
 {
+	bIsIronsight = true;
+	Server_SetIronsight(true);
 }
 
 void ABattleCharacter::StopIronsight()
 {
-}
-
-void ABattleCharacter::C2S_SetIronsight_Implementation(bool State)
-{
+	bIsIronsight = false;
+	Server_SetIronsight(false);
 }
 
 void ABattleCharacter::StartCrouch()
 {
+	if (CanCrouch())
+	{
+		Crouch();
+	}
+	else
+	{
+		UnCrouch();
+	}
 }
 
-void ABattleCharacter::C2S_SetReload_Implementation(bool newState)
+void ABattleCharacter::Server_SetLeanLeft_Implementation(bool State)
 {
+	bIsLeanLeft = State;
+}
+
+void ABattleCharacter::Server_SetLeanRight_Implementation(bool State)
+{
+	bIsLeanRight = State;
+}
+
+void ABattleCharacter::StartLeanLeft()
+{
+	bIsLeanLeft = false;
+	Server_SetLeanLeft(false);
+}
+
+void ABattleCharacter::StopLeanLeft()
+{
+	bIsLeanRight = false;
+	Server_SetLeanRight(false);
+}
+
+void ABattleCharacter::StartLeanRight()
+{
+	bIsLeanLeft = true;
+	Server_SetLeanLeft(true);
+}
+
+void ABattleCharacter::StopLeanRight()
+{
+	bIsLeanRight = true;
+	Server_SetLeanRight(true);
+}
+
+void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
+{
+	if (DeathMontage) {
+		FString DeathSectionName = FString::Printf(TEXT("Death_%d"), Index);
+		PlayAnimMontage(DeathMontage, 1.f, FName(DeathSectionName));
+	}
+
+	DisableInput(Cast<APlayerController>(GetController()));
+}
+
+void ABattleCharacter::Server_SetReload_Implementation(bool NewState)
+{
+	bIsReload = NewState;
+}
+
+void ABattleCharacter::StartReload()
+{
+	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	bIsReload = true;
+	Server_SetReload(true);
+	if (ReloadMontage && bIsReload) {
+		if (!AnimInstance->Montage_IsPlaying(ReloadMontage)) {
+			PlayAnimMontage(ReloadMontage);
+		}
+	}
+}
+
+void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
+{
+	if (HitActionMontage) {
+		FString HitSectionName = FString::Printf(TEXT("Hit_%d"), Number);
+		PlayAnimMontage(HitActionMontage, 1.f, FName(HitSectionName));
+	}
 }
