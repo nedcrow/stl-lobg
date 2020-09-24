@@ -13,9 +13,12 @@ Title Framework 만듬
 Lobby로가는 서버 시스템 생성
 
 황하림
-  Set Lobby framework
-  Set Lobby UI
-  Load battle level
+ Fix lobby UI(Connect count)
+ Set animIstance & montage BP
+ Set AimOffffset BP
+ Set BlendSpace
+ Add FSM in animIstance
+ Fix BattleCharacter
 
 
 0924
