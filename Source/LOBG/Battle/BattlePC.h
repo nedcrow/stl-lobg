@@ -13,5 +13,9 @@ UCLASS()
 class LOBG_API ABattlePC : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void SetupInputComponent()override;
+
+	//마우스 왼쪽 버튼으로 실행되는 발사함수
+	void ClickFire();
 };

@@ -51,4 +51,30 @@ public:
 		void Server_SetMaxWalkSpeed(float NewSpeed);
 	void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);
 
+	//BattlePC에서 입력받아 호출되는 총알 발사 함수
+	void OnFire();
+
+	//충돌할 오브젝트 타입 에디터에서 설정
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+
+
+	//애니메이션에서 쓸 상태변수
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsSprint : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsCrouch : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsIronsight : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsLeanLeft : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsLeanRight : 1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsReload : 1;
 };
