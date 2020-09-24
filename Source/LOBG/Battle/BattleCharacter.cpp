@@ -8,7 +8,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/SceneComponent.h"
 #include "BattlePC.h"
+#include "Bullet.h"
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -34,6 +36,9 @@ ABattleCharacter::ABattleCharacter()
 	// Movement
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
+	Muzzle->SetupAttachment(RootComponent);
 
 }
 
@@ -157,21 +162,26 @@ void ABattleCharacter::OnFire()
 
 		//라인트레이스 인자들
 		FVector StartVector = CameraLocation;
-		FVector EndVector = StartVector + (CrosshairWorldDirection * 10000.f);
-		//TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-		TArray<AActor*> IgnoreObj;
-		FHitResult OutHit;
-
-		bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartVector, EndVector,
-			ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
-
-		//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
-		if (Result && OutHit.GetActor() != nullptr)
-		{
-			UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
-		}
+		FVector EndVector = StartVector + (CrosshairWorldDirection * 99999.f);
+		
+		Server_ProcessFire(StartVector, EndVector);
 	}
+}
 
+void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine)
+{
+	TArray<AActor*> IgnoreObj;
+	FHitResult OutHit;
 
-	
+	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
+		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
+
+	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
+	if (Result && OutHit.GetActor() != nullptr)
+	{
+		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
+		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentTransform());
+		Bullet->ApplyDamageProcess(OutHit, GetController());
+		
+	}
 }

@@ -51,20 +51,32 @@ public:
 		void Server_SetMaxWalkSpeed(float NewSpeed);
 	void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);
 
+
+
 	//BattlePC에서 입력받아 호출되는 총알 발사 함수
 	void OnFire();
+
+	UFUNCTION(Server, Reliable)
+		void Server_ProcessFire(FVector StartLine, FVector EndLine);
+	void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
 
 	//충돌할 오브젝트 타입 에디터에서 설정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+		TSubclassOf<class ABullet> BulletClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+		class USceneComponent* Muzzle;
 
 
 	//애니메이션에서 쓸 상태변수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsSprint : 1;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
-		uint8 bIsCrouch : 1;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	//	uint8 bIsCrouch : 1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsIronsight : 1;
