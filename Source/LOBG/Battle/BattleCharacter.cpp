@@ -10,7 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/SceneComponent.h"
 #include "BattlePC.h"
-#include "Bullet.h"
+#include "../Weapon/BulletBase.h"
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -172,19 +172,11 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 {
 	TArray<AActor*> IgnoreObj;
 	FHitResult OutHit;
-	FHitResult MuzzleOutHit;
 
 	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
-		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
+		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true, FLinearColor::Red, FLinearColor::Green, 1000.0f);
 
-	if (Result && OutHit.GetActor() == nullptr)
-	{
-		ABattlePC* PC = GetController<ABattlePC>();
-		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentLocation(), PC->GetControlRotation());
-		Bullet->SetDamageInfo(OutHit, GetController());
-	}
-	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
-	else if (Result && OutHit.GetActor() != nullptr)
+	if (Result && OutHit.GetActor() != nullptr)
 	{
 		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
 
@@ -192,7 +184,14 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		FRotator BulletRoation = (OutHit.ImpactPoint - Muzzle->GetComponentLocation()).Rotation();
 
 		//Muzzle위치에서 조준점까지의 회전값을 가지고 총알 스폰
-		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletClass, Muzzle->GetComponentLocation(), BulletRoation);
+		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), BulletRoation);
+		Bullet->SetDamageInfo(OutHit, GetController());
+	}
+	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
+	else if (OutHit.GetActor() == nullptr)
+	{
+		UE_LOG(LogClass, Warning, TEXT("nullptr인 상황"));
+		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), (EndLine - Muzzle->GetComponentLocation()).Rotation());
 		Bullet->SetDamageInfo(OutHit, GetController());
 	}
 }

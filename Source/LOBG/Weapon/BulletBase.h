@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Bullet.generated.h"
+#include "BulletBase.generated.h"
 
 UCLASS()
-class LOBG_API ABullet : public AActor
+class LOBG_API ABulletBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABullet();
+	ABulletBase();
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,11 +40,11 @@ public:
 	AController* PlayerController;
 
 	UFUNCTION()
-		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
-			AActor* OtherActor, 
-			UPrimitiveComponent* OtherComp, 
-			int32 OtherBodyIndex, 
-			bool bFromSweep, 
-			const FHitResult & SweepResult);
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult);
 
 };

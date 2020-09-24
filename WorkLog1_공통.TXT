@@ -37,3 +37,4 @@ BattlePlayer의 crosshair HUD띄우기
 
 컨트롤러에서 키입력을 받아 BattleCharacter에서 라인트레이스
 총알이 조준한 방향으로 날아가는 기능 작성중
+BulletBase라는 클래스와 블프로 Weapon폴더에 다시 만듬

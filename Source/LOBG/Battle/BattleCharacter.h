@@ -65,7 +65,7 @@ public:
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-		TSubclassOf<class ABullet> BulletClass;
+		TSubclassOf<class ABulletBase> BulletClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		class USceneComponent* Muzzle;
