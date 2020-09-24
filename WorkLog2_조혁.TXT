@@ -1,3 +1,9 @@
 0923
 Title Framework 만듬
 Lobby로가는 서버 시스템 생성
+
+0924
+Title에서 UserID를 입력해서 서버에 들어가면 GameInstance에 아이디를 저장하는 기능추가 SaveUserID()
+BattlePlayer의 crosshair HUD띄우기
+
+컨트롤러에서 키입력을 받아 BattleCharacter에서 라인트레이스

@@ -40,4 +40,6 @@ public:
 
 	UFUNCTION()
 		void StartServer();
+
+	void SaveUserID();
 };

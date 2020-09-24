@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BattleCharacter.h"
@@ -7,6 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "BattlePC.h"
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -129,4 +131,47 @@ void ABattleCharacter::UndoSprint()
 void ABattleCharacter::Server_SetMaxWalkSpeed_Implementation(float NewSpeed)
 {
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+}
+
+void ABattleCharacter::OnFire()
+{
+	ABattlePC* PC = GetController<ABattlePC>();
+	if (PC)
+	{
+		//라인 트레이스 인자를 채우기 위한 요소들
+		FVector CameraLocation;
+		FRotator CameraRotator;
+		int32 ScreenSizeX;
+		int32 ScreenSizeY;
+		FVector CrosshairWorldLocation;
+		FVector CrosshairWorldDirection;
+
+		//화면 사이즈를 구해서
+		PC->GetViewportSize(ScreenSizeX, ScreenSizeY);
+		//화면 중앙의 2D좌표를 3D좌표로 구한다. 화면 중앙이라고 하면 crosshair가 있는 위치
+		//위치와 방향을 구했다.
+		PC->DeprojectScreenPositionToWorld(ScreenSizeX / 2, ScreenSizeY / 2, CrosshairWorldLocation, CrosshairWorldDirection);
+
+		//카메라의 위치와 회전값 구하기
+		PC->GetPlayerViewPoint(CameraLocation, CameraRotator);
+
+		//라인트레이스 인자들
+		FVector StartVector = CameraLocation;
+		FVector EndVector = StartVector + (CrosshairWorldDirection * 10000.f);
+		//TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		TArray<AActor*> IgnoreObj;
+		FHitResult OutHit;
+
+		bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartVector, EndVector,
+			ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true);
+
+		//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
+		if (Result && OutHit.GetActor() != nullptr)
+		{
+			UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
+		}
+	}
+
+
+	
 }

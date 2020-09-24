@@ -31,6 +31,7 @@ void UTitleWidgetBase::ConnectServer()
 	ATitlePC* PC = GetOwningPlayer<ATitlePC>();
 	if (PC)
 	{
+		SaveUserID();
 		FString ServerAddress = ServerIDText->GetText().ToString();
 		PC->ConnectServer(ServerAddress);
 	}
@@ -41,6 +42,17 @@ void UTitleWidgetBase::StartServer()
 	ATitlePC* PC = GetOwningPlayer<ATitlePC>();
 	if (PC)
 	{
+		SaveUserID();
 		PC->StartServer();
+	}
+}
+
+void UTitleWidgetBase::SaveUserID()
+{
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		FString UserID = UserIDText->GetText().ToString();
+		GI->SetUserID(UserID);
 	}
 }
