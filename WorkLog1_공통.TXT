@@ -18,7 +18,6 @@ Lobby로가는 서버 시스템 생성
   Load battle level
 
 
-
 0924
 오늘 할 것
 오정원 : 적 AI만들기

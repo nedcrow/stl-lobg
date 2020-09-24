@@ -36,7 +36,7 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	StaticMesh->AddRelativeLocation(outhitDir);
+	StaticMesh->AddRelativeLocation(-outhitDir);
 }
 
 void ABullet::ApplyDamageProcess()
@@ -52,6 +52,7 @@ void ABullet::SetDamageInfo(FHitResult OutHit, AController* Controller, FVector 
 	PlayerOutHit = OutHit;
 	PlayerController = Controller;
 	outhitDir = Direct;
+	UE_LOG(LogClass, Warning, TEXT("%f, %f, %f"), outhitDir.X, outhitDir.Y, outhitDir.Z);
 }
 
 void ABullet::OnBeginOverlap(UPrimitiveComponent * OverlappedComponent,

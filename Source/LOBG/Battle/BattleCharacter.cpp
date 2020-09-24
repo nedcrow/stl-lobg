@@ -181,7 +181,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
 	if (Result && OutHit.GetActor() != nullptr)
 	{
-		bool ResultMuzzle = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), Muzzle->GetComponentLocation(), OutHit.GetActor()->GetActorLocation(),
+		bool ResultMuzzle = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), Muzzle->GetComponentLocation(), EndLine,
 			ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, MuzzleOutHit, true, FLinearColor::Green);
 
 		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
