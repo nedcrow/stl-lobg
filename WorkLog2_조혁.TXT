@@ -7,3 +7,4 @@ Title에서 UserID를 입력해서 서버에 들어가면 GameInstance에 아이
 BattlePlayer의 crosshair HUD띄우기
 
 컨트롤러에서 키입력을 받아 BattleCharacter에서 라인트레이스
+총알이 조준한 방향으로 날아가는 기능 작성중
