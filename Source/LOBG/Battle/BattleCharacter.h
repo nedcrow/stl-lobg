@@ -71,8 +71,17 @@ public:
 		class USceneComponent* Muzzle;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+<<<<<<< .mine
 	
+=======
+
+>>>>>>> .theirs
 	//애니메이션에서 쓸 상태변수
+<<<<<<< .mine
+
+=======
+	//애니메이션에서 쓸 상태변수
+>>>>>>> .theirs
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsSprint : 1;
 
