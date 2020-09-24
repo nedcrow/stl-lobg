@@ -36,7 +36,7 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	StaticMesh->AddRelativeLocation(-outhitDir);
+	StaticMesh->AddRelativeLocation(outhitDir);
 }
 
 void ABullet::ApplyDamageProcess()
