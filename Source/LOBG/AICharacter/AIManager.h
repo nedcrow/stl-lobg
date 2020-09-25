@@ -39,6 +39,9 @@ public:
 	void AddMinion(AAIMinionChar* AddMinion);
 	void RemoveMinion(AAIMinionChar* RemoveMinion);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnData")
+		TSubclassOf<class AAIMinionChar> MinionCharClass;	
+
 	void SpawnMinions(int MinionQuantity);
 
 };

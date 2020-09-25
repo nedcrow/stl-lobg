@@ -22,6 +22,10 @@ AAIMinionChar::AAIMinionChar()
 
 	// Movement
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	// ETC
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 }
 
 // Called when the game starts or when spawned

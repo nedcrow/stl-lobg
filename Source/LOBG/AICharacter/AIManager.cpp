@@ -24,7 +24,7 @@ void AAIManager::BeginPlay()
 
 
 	// 테스트
-	SpawnMinions(3);
+	SpawnMinions(1);
 	
 }
 
@@ -62,7 +62,7 @@ void AAIManager::SeachCoursePoints()
 					CoursePoints.Insert(CurrentElement, ArrayIndex);
 				}
 
-				OutActors.RemoveAt(j);		// 배열에서 추가한 원소를 제거.
+				OutActors.RemoveAt(j--);		// 배열에서 추가한 원소를 제거.
 			}
 		}
 	}
@@ -99,16 +99,18 @@ void AAIManager::SpawnMinions(int MinionQuantity)
 	{
 		return;
 	}
-	UE_LOG(LogClass,Warning,TEXT("11111111111111111111111111111 %d"), CoursePoints.Num())
 
 	// 스폰 포인트 찾기
 	FVector SpawnLocation = CoursePoints[0]->GetActorLocation();
 
 	// 액터 스폰
-	for (int i = MinionQuantity; i < MinionQuantity; i++)
+	for (int i = 0; i < MinionQuantity; i++)
 	{
-		AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(SpawnLocation, FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f));
-		UE_LOG(LogClass, Warning, TEXT("222222222222222222222222222 %d"), CoursePoints.Num())
+		FActorSpawnParameters aaa;
+		aaa.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(MinionCharClass, FTransform(FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f), SpawnLocation));
+		//AAIMinionChar* NewMinion = GetWorld()->SpawnActorDeferred<AAIMinionChar>(MinionCharClass, FTransform(FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f), SpawnLocation), nullptr,nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+
 		// 스폰한 액터 저장
 		ActiveMinions.Add(NewMinion);
 	}
