@@ -16,3 +16,5 @@
   Fix 'lean' in Battle/BattleCharacter.cpp
   Add 'lean'&'montage' node in ABP_CharacterAimInstance.uasset
   Fix slot in 'DeathMontage'
+  Add Fairy Pawn, AIController (ing)
+  Add Fairy BT, BB (ing) 
