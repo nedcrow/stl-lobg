@@ -278,26 +278,26 @@ void ABattleCharacter::Server_SetLeanRight_Implementation(bool State)
 
 void ABattleCharacter::StartLeanLeft()
 {
-	bIsLeanLeft = false;
-	Server_SetLeanLeft(false);
-}
-
-void ABattleCharacter::StopLeanLeft()
-{
-	bIsLeanRight = false;
-	Server_SetLeanRight(false);
-}
-
-void ABattleCharacter::StartLeanRight()
-{
 	bIsLeanLeft = true;
 	Server_SetLeanLeft(true);
 }
 
-void ABattleCharacter::StopLeanRight()
+void ABattleCharacter::StopLeanLeft()
+{
+	bIsLeanLeft = false;
+	Server_SetLeanLeft(false);
+}
+
+void ABattleCharacter::StartLeanRight()
 {
 	bIsLeanRight = true;
 	Server_SetLeanRight(true);
+}
+
+void ABattleCharacter::StopLeanRight()
+{
+	bIsLeanRight = false;
+	Server_SetLeanRight(false);
 }
 
 void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
