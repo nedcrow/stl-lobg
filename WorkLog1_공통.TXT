@@ -1,40 +1,45 @@
 0923
 
 오정원
-깃허브 테스트 1
-Github 프로젝트 파일 받았다.
-Battle 레벨 게임프레임워크 시작. GM, GS, PC, PS, 캐릭터 클래스 생성.
-캐릭터 메시 및 기본 설정. 기본 이동 입력 바인드.
-점프. 달리기.
-애니메이션 스타터팩 추가.
+  깃허브 테스트 1
+  Github 프로젝트 파일 받았다.
+  Battle 레벨 게임프레임워크 시작. GM, GS, PC, PS, 캐릭터 클래스 생성.
+  캐릭터 메시 및 기본 설정. 기본 이동 입력 바인드.
+  점프. 달리기.
+  애니메이션 스타터팩 추가.
 
 조혁
-Title Framework 만듬
-Lobby로가는 서버 시스템 생성
+  Title Framework 만듬
+  Lobby로가는 서버 시스템 생성
 
 황하림
- Fix lobby UI(Connect count)
- Set animIstance & montage BP
- Set AimOffffset BP
- Set BlendSpace
- Add FSM in animIstance
- Fix BattleCharacter
+  Set Lobby framework
+  Set Lobby UI
 
+--
 
 0924
-오늘 할 것
-오정원 : 적 AI만들기
-황하림 : 로비 UI 마무리, 애니메이션 작업 시작
-조혁 : 타이틀 마무리, 조준선 띄우고 트레이싱
+  오늘 할 것
+  오정원 : 적 AI만들기
+  황하림 : 로비 UI 마무리, 애니메이션 작업 시작
+  조혁 : 타이틀 마무리, 조준선 띄우고 트레이싱
 
 오정원
-애니메이션 스타터팩 추가.
+  애니메이션 스타터팩 추가.
+  미니언 캐릭터 제작. AIC, BB, BT, 애님인스턴스, ABP 생성. 현재 오프라인 상태.
+  이미시브총알 제작.
 
 조혁
-0924
-Title에서 UserID를 입력해서 서버에 들어가면 GameInstance에 아이디를 저장하는 기능추가 SaveUserID()
-BattlePlayer의 crosshair HUD띄우기
+  Title에서 UserID를 입력해서 서버에 들어가면 GameInstance에 아이디를 저장하는 기능추가 SaveUserID()
+  BattlePlayer의 crosshair HUD띄우기
+  컨트롤러에서 키입력을 받아 BattleCharacter에서 라인트레이스
+  총알이 조준한 방향으로 날아가는 기능 작성중
+  BulletBase라는 클래스와 블프로 Weapon폴더에 다시 만듬
 
-컨트롤러에서 키입력을 받아 BattleCharacter에서 라인트레이스
-총알이 조준한 방향으로 날아가는 기능 작성중
-BulletBase라는 클래스와 블프로 Weapon폴더에 다시 만듬
+황하림
+  Fix lobby UI(Connect count)
+  Set animIstance & montage BP
+  Set AimOffffset BP
+  Set BlendSpace
+  Add FSM in animIstance
+  Fix BattleCharacter
