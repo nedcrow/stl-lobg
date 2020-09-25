@@ -30,6 +30,7 @@ AEmissiveBullet::AEmissiveBullet()
 	// StaticMesh
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(CollisionComp);
+	StaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
 	
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
@@ -38,6 +39,7 @@ AEmissiveBullet::AEmissiveBullet()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	// ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->ProjectileGravityScale = 0.f;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
