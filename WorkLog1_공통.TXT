@@ -54,3 +54,9 @@
 TakeDamage해서 죽는 애니메이션이 나오도록 연결
 CurrentHP가 0이 되서 죽으면 리스폰되는 기능 추가
 리스폰 기능을 게임모드로 옮기는 작업중
+
+오정원
+이미시브 총알 메시 생성, BP 설정 변경. BP 저장 폴더 위치 변경.
+AWaveCoursePoint 클래스 제작. EWaveCourse enum 정의.
+AI매니저 클래스에 AWaveCoursePoint 검색후 배열에 저장하는 정렬 함수 제작.
+액터 스폰 기본 제작.
