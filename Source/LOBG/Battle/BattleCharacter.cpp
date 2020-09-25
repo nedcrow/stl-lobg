@@ -11,8 +11,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "BattlePC.h"
+#include "BattleGM.h"
 #include "CharacterAnimInstance.h"
 #include "../Weapon/BulletBase.h"
+#include "../ReSpawn/ReSpawn.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -51,6 +54,8 @@ void ABattleCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CurrentHP = MaxHP;
+	CurrentState = EBattleCharacterState::Normal;
 }
 
 // Called every frame
@@ -93,6 +98,9 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABattleCharacter, bIsIronsight);
+	DOREPLIFETIME(ABattleCharacter, bIsFire);
+	DOREPLIFETIME(ABattleCharacter, CurrentHP);
+	DOREPLIFETIME(ABattleCharacter, MaxHP);
 }
 
 // Move
@@ -160,8 +168,21 @@ void ABattleCharacter::Server_SetMaxWalkSpeed_Implementation(float NewSpeed)
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
+void ABattleCharacter::StartFire()
+{
+	bIsFire = true;
+	OnFire();
+}
+
+void ABattleCharacter::StopFire()
+{
+	bIsFire = false;
+}
+
 void ABattleCharacter::OnFire()
 {
+	if (!bIsFire) return;
+
 	ABattlePC* PC = GetController<ABattlePC>();
 	if (PC)
 	{
@@ -187,6 +208,7 @@ void ABattleCharacter::OnFire()
 		
 		Server_ProcessFire(StartVector, EndVector);
 	}
+	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABattleCharacter::OnFire, 0.12f, false);
 }
 
 void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine)
@@ -206,34 +228,78 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 
 		//Muzzle위치에서 조준점까지의 회전값을 가지고 총알 스폰
 		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), BulletRoation);
-		Bullet->SetDamageInfo(OutHit, GetController());
+			
+		if (Bullet)
+		{
+			Bullet->SetDamageInfo(OutHit, GetController());
+		}
 	}
-	//라인트레이스가 돼도 OutHit에 할당이 안되면 실행되지 않게 합니다.
+	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
+	//하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.
 	else if (OutHit.GetActor() == nullptr)
 	{
 		UE_LOG(LogClass, Warning, TEXT("nullptr인 상황"));
 		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), (EndLine - Muzzle->GetComponentLocation()).Rotation());
-		Bullet->SetDamageInfo(OutHit, GetController());
+			
+		if (Bullet)
+		{
+			Bullet->SetDamageInfo(OutHit, GetController());
+
+		}
 	}
 }
 
 float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (CurrentHP <= 0) return 0.f;
+
 	UE_LOG(LogClass, Warning, TEXT("TakeDamage"));
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Dead"));
-		Destroy();
+		//Destroy();
 
 		// 피격 시 HitAnimation
 		// NetMulticast_StartHitMontage(FMath::RandRange(1, 4))
 
-		// 죽으면
-		// NetMulticast_StartDeath(FMath::RandRange(1, 3));
+		//네트워크상에서 CurrentHP동기화를 한번한 하기 위한 장치
+		float TempHP = CurrentHP;
+
+		FPointDamageEvent* PointDamageEvent = (FPointDamageEvent*)(&DamageEvent);
+		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)
+		{
+			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
+
+			TempHP = 0;
+		}
+		else
+		{
+			TempHP -= DamageAmount;
+		}
+
+		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
+
+		CurrentHP = TempHP;
+
+		//죽었을때
+		if (CurrentHP <= 0)
+		{
+			NetMulticast_StartDeath(FMath::RandRange(1, 3));
+			CurrentState = EBattleCharacterState::Dead;
+			FTimerHandle DeadTimer;
+			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::CallReSpawnToGM, 5.0f, false);
+		}
+	}
+	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+
+	}
+	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
+	{
+
 	}
 
-	
 	return 0.0f;
 }
 
@@ -278,26 +344,26 @@ void ABattleCharacter::Server_SetLeanRight_Implementation(bool State)
 
 void ABattleCharacter::StartLeanLeft()
 {
-	bIsLeanLeft = false;
-	Server_SetLeanLeft(false);
-}
-
-void ABattleCharacter::StopLeanLeft()
-{
-	bIsLeanRight = false;
-	Server_SetLeanRight(false);
-}
-
-void ABattleCharacter::StartLeanRight()
-{
 	bIsLeanLeft = true;
 	Server_SetLeanLeft(true);
 }
 
-void ABattleCharacter::StopLeanRight()
+void ABattleCharacter::StopLeanLeft()
+{
+	bIsLeanLeft = false;
+	Server_SetLeanLeft(false);
+}
+
+void ABattleCharacter::StartLeanRight()
 {
 	bIsLeanRight = true;
 	Server_SetLeanRight(true);
+}
+
+void ABattleCharacter::StopLeanRight()
+{
+	bIsLeanRight = false;
+	Server_SetLeanRight(false);
 }
 
 void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
@@ -332,5 +398,14 @@ void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 	if (HitActionMontage) {
 		FString HitSectionName = FString::Printf(TEXT("Hit_%d"), Number);
 		PlayAnimMontage(HitActionMontage, 1.f, FName(HitSectionName));
+	}
+}
+
+void ABattleCharacter::CallReSpawnToGM()
+{
+	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->CallReSpawn(this);
 	}
 }

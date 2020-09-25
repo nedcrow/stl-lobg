@@ -18,4 +18,5 @@ public:
 
 	//마우스 왼쪽 버튼으로 실행되는 발사함수
 	void ClickFire();
+	void ReleaseFire();
 };

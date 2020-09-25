@@ -17,14 +17,7 @@ public:
 	virtual void DrawHUD()override;
 	virtual void BeginPlay() override;
 
-	//CrossHair를 로드하는 함수 BeginPlay에서 실행
-	UFUNCTION()
-	void LoadHUDAsset();
-
-	//그릴 crosshair
-	class UTexture2D* CrossAsset;
-
-	//텍스트 담는곳
-	FSoftObjectPath T_CrossAsset;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UTexture2D* CrosshairAsset;
 
 };

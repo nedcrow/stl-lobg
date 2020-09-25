@@ -8,6 +8,7 @@ void ABattlePC::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ABattlePC::ClickFire);
+	InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ABattlePC::ReleaseFire);
 }
 
 void ABattlePC::ClickFire()
@@ -15,6 +16,15 @@ void ABattlePC::ClickFire()
 	ABattleCharacter* BattlePlayer = GetPawn<ABattleCharacter>();
 	if (BattlePlayer)
 	{
-		BattlePlayer->OnFire();
+		BattlePlayer->StartFire();
+	}
+}
+
+void ABattlePC::ReleaseFire()
+{
+	ABattleCharacter* BattlePlayer = GetPawn<ABattleCharacter>();
+	if (BattlePlayer)
+	{
+		BattlePlayer->StopFire();
 	}
 }
