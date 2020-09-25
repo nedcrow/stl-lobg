@@ -9,7 +9,11 @@ Battle 레벨 게임프레임워크 시작. GM, GS, PC, PS, 캐릭터 클래스 
 미니언 캐릭터 제작. AIC, BB, BT, 애님인스턴스, ABP 생성. 현재 오프라인 상태.
 이미시브총알 제작.
 
-
+0925
+이미시브 총알 메시 생성, BP 설정 변경. BP 저장 폴더 위치 변경.
+AWaveCoursePoint 클래스 제작. EWaveCourse enum 정의.
+AI매니저 클래스에 AWaveCoursePoint 검색후 배열에 저장하는 정렬 함수 제작.
+액터 스폰 기본 제작.
 
 
 
