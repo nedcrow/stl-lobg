@@ -21,6 +21,8 @@ ABulletBase::ABulletBase()
 	StaticMesh->SetupAttachment(RootComponent);
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
+
+	Tags.Add(TEXT("Bullet"));
 }
 
 // Called when the game starts or when spawned
@@ -41,8 +43,13 @@ void ABulletBase::ApplyDamageProcess()
 {
 	UE_LOG(LogClass, Warning, TEXT("ApplyDamage"));
 
-	UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 1.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+	UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 10.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
 
+	//사운드
+
+	//이펙트
+
+	Destroy();
 }
 
 void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller)
@@ -55,9 +62,19 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
+	//플레이어에 충돌하면
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
+		//데미지 전달
 		ApplyDamageProcess();
+	}
+
+	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
+	//스스로 사라지지 않도록 Bullet태그를 검사한다.
+	else if(!OtherActor->ActorHasTag(TEXT("Bullet")))
+	{
+		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
+		Destroy();
 	}
 }
 

@@ -36,6 +36,9 @@ public:
 	void ApplyDamageProcess();
 	void SetDamageInfo(FHitResult OutHit, AController* Controller);
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+		TSubclassOf<class UBulletDamageType> DamageType;
+
 	FHitResult PlayerOutHit;
 	AController* PlayerController;
 

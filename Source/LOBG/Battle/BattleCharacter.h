@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "BattleCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EBattleCharacterState : uint8
+{
+	Normal		= 0		UMETA(Display = "Normal"),
+	Battle		= 1		UMETA(Display = "Battle"),
+	Dead		= 2		UMETA(Display = "Dead"),
+};
+
+
 UCLASS()
 class LOBG_API ABattleCharacter : public ACharacter
 {
@@ -27,7 +36,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -52,20 +61,14 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetMaxWalkSpeed(float NewSpeed);
-		void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);
+	void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);
 
 
 
-	//BattlePC에서 입력받아 호출되는 총알 발사 함수
-	void OnFire();
-
-	UFUNCTION(Server, Reliable)
-		void Server_ProcessFire(FVector StartLine, FVector EndLine);
-		void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
-
+#pragma region FireAndTakeDamage
 	//충돌할 오브젝트 타입 에디터에서 설정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class ABulletBase> BulletClass;
@@ -73,7 +76,29 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		class USceneComponent* Muzzle;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	uint8 bIsFire : 1;
+
+	FTimerHandle BulletTimer;
+
+	void StartFire();
+	void StopFire();
+
+	//실질적인 총알 발사 함수
+	void OnFire();
+
+	UFUNCTION(Server, Reliable)
+		void Server_ProcessFire(FVector StartLine, FVector EndLine);
+	void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+#pragma endregion
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		float CurrentHP = 100.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		float MaxHP = 100.f;
 
 	// Ironsight
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
@@ -81,7 +106,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetIronsight(bool State);
-		void Server_SetIronsight_Implementation(bool State);
+	void Server_SetIronsight_Implementation(bool State);
 
 	void StartIronsight();
 	void StopIronsight();
@@ -98,11 +123,11 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetLeanLeft(bool State);
-		void Server_SetLeanLeft_Implementation(bool State);
+	void Server_SetLeanLeft_Implementation(bool State);
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetLeanRight(bool State);
-		void Server_SetLeanRight_Implementation(bool State);
+	void Server_SetLeanRight_Implementation(bool State);
 
 	void StartLeanLeft();
 	void StopLeanLeft();
@@ -117,7 +142,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_StartDeath(int Index);
-		void NetMulticast_StartDeath_Implementation(int Index);
+	void NetMulticast_StartDeath_Implementation(int Index);
 
 	// Reload
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Data")
@@ -128,9 +153,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetReload(bool NewState);
-		void Server_SetReload_Implementation(bool NewState);
+	void Server_SetReload_Implementation(bool NewState);
 
-		void StartReload();
+	void StartReload();
 
 	// Hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
@@ -138,7 +163,14 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_StartHitMontage(int Number);
-		void NetMulticast_StartHitMontage_Implementation(int Number);
+	void NetMulticast_StartHitMontage_Implementation(int Number);
 #pragma endregion
 
+#pragma region ReSpawn
+	//죽은 후 스폰
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "State")
+		EBattleCharacterState CurrentState;
+
+	void CallReSpawnToGM();
+#pragma endregion
 };
