@@ -4,21 +4,15 @@
   Load battle level
 
 0924
- Fix lobby UI(Connect count)
- Set animIstance & montage BP
- Set AimOffset BP
- Set BlendSpace
- Add FSM in animIstance
- Add animation functions in BattleCharacter & CharacterInstance
+  Fix lobby UI(Connect count)
+  Set animIstance & montage BP
+  Set AimOffset BP
+  Set 'BlendSpace' assets
+  Add FSM (in BP_CharacterAnimInstance)
+  Add animation functions (in BattleCharacter, CharacterAnimInstance)
+  Set animation montage (in BP_BattleCharacter)
 
- Set 'BlendSpace' assets
- Add FSM (in BP_CharacterAnimInstance)
- Add animation functions (in BattleCharacter, CharacterAnimInstance)
- Set animation montage (in BP_BattleCharacter)
-  세부 - BattleCharacter
-	* bIsCrouch 주석 지움
-	* Montage 프로퍼티 추가
-	* Ironsight, Crouch 함수
-	* Lean 함수
-	* bIsSprint 삭제
-	
+0925
+  Fix 'lean' in Battle/BattleCharacter.cpp
+  Add 'lean'&'montage' node in ABP_CharacterAimInstance.uasset
+  Fix slot in 'DeathMontage'
