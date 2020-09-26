@@ -101,6 +101,7 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, bIsFire);
 	DOREPLIFETIME(ABattleCharacter, CurrentHP);
 	DOREPLIFETIME(ABattleCharacter, MaxHP);
+	DOREPLIFETIME(ABattleCharacter, CurrentState);
 }
 
 // Move
@@ -288,7 +289,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			NetMulticast_StartDeath(FMath::RandRange(1, 3));
 			CurrentState = EBattleCharacterState::Dead;
 			FTimerHandle DeadTimer;
-			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::CallReSpawnToGM, 5.0f, false);
+			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
 		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
@@ -401,11 +402,48 @@ void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 	}
 }
 
-void ABattleCharacter::CallReSpawnToGM()
+void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 {
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
+		UE_LOG(LogClass, Warning, TEXT("CallReSpawnToGM"));
 		GM->CallReSpawn(this);
 	}
+}
+
+void ABattleCharacter::NetMulticast_ReSetting_Implementation(FVector Location)
+{
+	UE_LOG(LogClass, Warning, TEXT("InSetReSetting"));
+	SetActorLocation(Location);
+	CurrentHP = MaxHP;
+	CurrentState = EBattleCharacterState::Normal;
+	EnableInput(Cast<APlayerController>(GetController()));
+	StopAnimMontage(DeathMontage);
+	FString Name;
+	switch (CurrentState)
+	{
+	case EBattleCharacterState::Normal:
+	{
+		Name = TEXT("Normal");
+
+	}
+		break;
+	case EBattleCharacterState::Battle:
+	{
+		Name = TEXT("Battle");
+
+	}
+		break;
+	case EBattleCharacterState::Dead:
+	{
+		Name = TEXT("Dead");
+
+	}
+		break;
+	default:
+		break;
+	}
+	UE_LOG(LogClass, Warning, TEXT("CurrentHP : %f"), CurrentHP);
+	UE_LOG(LogClass, Warning, TEXT("CurrentHP : %s"), *Name);
 }

@@ -168,9 +168,15 @@ public:
 
 #pragma region ReSpawn
 	//Á×Àº ÈÄ ½ºÆù
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "State")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 		EBattleCharacterState CurrentState;
 
-	void CallReSpawnToGM();
+	UFUNCTION(Server, Reliable)
+	void Server_CallReSpawnToGM();
+	void Server_CallReSpawnToGM_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_ReSetting(FVector Location);
+		void NetMulticast_ReSetting_Implementation(FVector Location);
 #pragma endregion
 };
