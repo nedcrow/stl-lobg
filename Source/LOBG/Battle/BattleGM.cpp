@@ -5,24 +5,20 @@
 #include "BattleCharacter.h"
 #include "../ReSpawn/ReSpawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "BattlePC.h"
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 {
-	//아직 미완성임 건들지 말것
 	if (Pawn)
 	{
+		UE_LOG(LogClass, Warning, TEXT("InCallReSpawn"));
 		if (Pawn->CurrentState != EBattleCharacterState::Dead) return;
 
 		AReSpawn* ReSpawnObj = Cast<AReSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AReSpawn::StaticClass()));
 		FVector SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-		SetReSpawnPawnSetting(Pawn, SpawnLocation);
+		//Pawn->SetActorLocation(SpawnLocation);
+		//Pawn->CurrentHP = Pawn->MaxHP;
+		//Pawn->CurrentState = EBattleCharacterState::Normal;
+		Pawn->NetMulticast_ReSetting(SpawnLocation);
 	}
-}
-
-void ABattleGM::SetReSpawnPawnSetting_Implementation(ABattleCharacter* Pawn, FVector location)
-{
-	Pawn->SetActorLocation(location);
-	Pawn->CurrentHP = Pawn->MaxHP;
-	Pawn->CurrentState = EBattleCharacterState::Normal;
-	Pawn->EnableInput(Cast<APlayerController>(Pawn->GetController()));
 }
