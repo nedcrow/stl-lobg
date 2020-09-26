@@ -15,6 +15,11 @@ AWaveCoursePoint 클래스 제작. EWaveCourse enum 정의.
 AI매니저 클래스에 AWaveCoursePoint 검색후 배열에 저장하는 정렬 함수 제작.
 액터 스폰 기본 제작.
 
+0926
+AWaveCoursePoint 정렬 함수 수정. 정상 작동.
+
+
+
 
 
 목표 지점으로 이동 - 플레이어와 거리가 가까워지면 - 공격 - 멀어지면 목표 지점으로 이동
