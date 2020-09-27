@@ -16,6 +16,7 @@
 #include "../Weapon/BulletBase.h"
 #include "../ReSpawn/ReSpawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "BattlePS.h"
 
 
 // Sets default values
@@ -239,7 +240,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	//하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.
 	else if (OutHit.GetActor() == nullptr)
 	{
-		UE_LOG(LogClass, Warning, TEXT("nullptr인 상황"));
+		UE_LOG(LogClass, Warning, TEXT("맞은 액터가 없습니다"));
 		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), (EndLine - Muzzle->GetComponentLocation()).Rotation());
 			
 		if (Bullet)
@@ -255,10 +256,9 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP <= 0) return 0.f;
 
-	UE_LOG(LogClass, Warning, TEXT("TakeDamage"));
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
-		UE_LOG(LogClass, Warning, TEXT("Dead"));
+
 		//Destroy();
 
 		// 피격 시 HitAnimation
@@ -278,6 +278,12 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		{
 			TempHP -= DamageAmount;
 			UE_LOG(LogClass, Warning, TEXT("CurrentHP : %f"), CurrentHP);
+			ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+			if (PS)
+			{
+				UE_LOG(LogClass, Warning, TEXT("Money : %f, Exp : %f"), PS->Money, PS->Exp);
+
+			}
 		}
 
 		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
@@ -407,7 +413,6 @@ void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
-		UE_LOG(LogClass, Warning, TEXT("CallReSpawnToGM"));
 		GM->CallReSpawn(this);
 		Destroy();
 	}
@@ -418,4 +423,15 @@ void ABattleCharacter::DeathSetting()
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	DisableInput(Cast<APlayerController>(GetController()));
+}
+
+void ABattleCharacter::Server_SetBooty_Implementation(float Money, float Exp)
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->Money += Money;
+		PS->Exp += Exp;
+
+	}
 }

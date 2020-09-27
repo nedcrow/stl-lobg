@@ -14,4 +14,15 @@ class LOBG_API ABattlePS : public APlayerState
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+	int Level;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float Money;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float Exp;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

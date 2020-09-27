@@ -22,4 +22,5 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Player")
 		TSubclassOf<class ABattleCharacter> PlayerClass;
 
+	void LevelUp();
 };

@@ -6,6 +6,7 @@
 #include "../ReSpawn/ReSpawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "BattlePC.h"
+#include "BattlePS.h"
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 {
@@ -29,4 +30,9 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			//PlayerState에 저장된 정보 동기화???
 		}
 	}
+}
+
+void ABattleGM::LevelUp()
+{
+	
 }

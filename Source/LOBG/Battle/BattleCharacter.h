@@ -178,4 +178,8 @@ public:
 	//죽을 때의 설정들
 	void DeathSetting();
 #pragma endregion
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetBooty(float Money, float Exp);
+	void Server_SetBooty_Implementation(float Money, float Exp);
 };

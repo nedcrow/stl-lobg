@@ -39,11 +39,20 @@ void ABulletBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABulletBase::ApplyDamageProcess()
+void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 {
-	UE_LOG(LogClass, Warning, TEXT("ApplyDamage"));
+	switch (ApplyDamageType)
+	{
+	case EApplyDamageType::Player:
+		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 10.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+		break;
+	case EApplyDamageType::Minion:
+		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), 10.0f, PlayerController, this, UBulletDamageType::StaticClass());
+		break;
+	default:
+		break;
+	}
 
-	UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 10.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
 
 	//사운드
 
@@ -65,8 +74,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	//플레이어에 충돌하면
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
+		CurrentDamageType = EApplyDamageType::Player;
 		//데미지 전달
-		ApplyDamageProcess();
+		ApplyDamageProcess(CurrentDamageType);
+	}
+	else if (OtherActor->ActorHasTag(TEXT("Minion")))
+	{
+		CurrentDamageType = EApplyDamageType::Minion;
+		ApplyDamageProcess(CurrentDamageType);
 	}
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.

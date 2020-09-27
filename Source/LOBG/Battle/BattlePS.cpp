@@ -2,4 +2,12 @@
 
 
 #include "BattlePS.h"
+#include "Net/UnrealNetwork.h"
 
+void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABattlePS, Level);
+	DOREPLIFETIME(ABattlePS, Money);
+	DOREPLIFETIME(ABattlePS, Exp);
+}

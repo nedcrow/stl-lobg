@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "BulletBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EApplyDamageType : uint8
+{
+	Player = 0 UMETA(Display = "Player"),
+	Minion = 1 UMETA(Display = "Minion"),
+};
+
 UCLASS()
 class LOBG_API ABulletBase : public AActor
 {
@@ -33,7 +40,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UProjectileMovementComponent* Movement;
 
-	void ApplyDamageProcess();
+	EApplyDamageType CurrentDamageType;
+
+	void ApplyDamageProcess(EApplyDamageType ApplyDamageType);
 	void SetDamageInfo(FHitResult OutHit, AController* Controller);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
