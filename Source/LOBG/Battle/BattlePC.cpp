@@ -18,6 +18,7 @@ void ABattlePC::ClickFire()
 	{
 		BattlePlayer->StartFire();
 	}
+	
 }
 
 void ABattlePC::ReleaseFire()

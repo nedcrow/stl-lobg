@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EBattleCharacterState : uint8
 {
-	Normal		= 0		UMETA(Display = "Normal"),
-	Battle		= 1		UMETA(Display = "Battle"),
-	Dead		= 2		UMETA(Display = "Dead"),
+	Normal = 0		UMETA(Display = "Normal"),
+	Battle = 1		UMETA(Display = "Battle"),
+	Dead = 2		UMETA(Display = "Dead"),
 };
 
 
@@ -77,7 +77,7 @@ public:
 		class USceneComponent* Muzzle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
-	uint8 bIsFire : 1;
+		uint8 bIsFire : 1;
 
 	FTimerHandle BulletTimer;
 
@@ -167,16 +167,15 @@ public:
 #pragma endregion
 
 #pragma region ReSpawn
-	//죽은 후 스폰
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 		EBattleCharacterState CurrentState;
 
+	//게임모드에 리스폰 요청
 	UFUNCTION(Server, Reliable)
-	void Server_CallReSpawnToGM();
+		void Server_CallReSpawnToGM();
 	void Server_CallReSpawnToGM_Implementation();
 
-	UFUNCTION(NetMulticast, Reliable)
-		void NetMulticast_ReSetting(FVector Location);
-		void NetMulticast_ReSetting_Implementation(FVector Location);
+	//죽을 때의 설정들
+	void DeathSetting();
 #pragma endregion
 };

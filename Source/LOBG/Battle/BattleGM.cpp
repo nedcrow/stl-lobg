@@ -11,14 +11,22 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 {
 	if (Pawn)
 	{
-		UE_LOG(LogClass, Warning, TEXT("InCallReSpawn"));
 		if (Pawn->CurrentState != EBattleCharacterState::Dead) return;
+		
+		ABattlePC* PC = Cast<ABattlePC>(Pawn->GetController());
+		if (PC)
+		{
+			//리스폰 위치 가져오기
+			AReSpawn* ReSpawnObj = Cast<AReSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AReSpawn::StaticClass()));
+			FVector SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+			FRotator SpawnRotator = FRotator(0, 0, 0);
 
-		AReSpawn* ReSpawnObj = Cast<AReSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AReSpawn::StaticClass()));
-		FVector SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-		//Pawn->SetActorLocation(SpawnLocation);
-		//Pawn->CurrentHP = Pawn->MaxHP;
-		//Pawn->CurrentState = EBattleCharacterState::Normal;
-		Pawn->NetMulticast_ReSetting(SpawnLocation);
+			ABattleCharacter* BattlePlayer = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, SpawnLocation, SpawnRotator);
+
+			//플레이어컨트롤러에 연결
+			PC->Possess(BattlePlayer);
+
+			//PlayerState에 저장된 정보 동기화???
+		}
 	}
 }
