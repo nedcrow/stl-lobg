@@ -22,6 +22,16 @@ public:
 	// Sets default values for this pawn's properties
 	AFairyPawn();
 
+	// Base component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class USphereComponent* SphereCollision;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UStaticMeshComponent* Body;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class AMissileHub* MissileHub;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,13 +49,8 @@ public:
 	// Store
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+
 	// Base property
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class USphereComponent* SphereCollision;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UStaticMeshComponent* Mesh;
-
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere)
 	float MaxHP;
 

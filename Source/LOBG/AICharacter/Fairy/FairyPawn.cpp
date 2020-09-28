@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "MissileHub.h"
 #include "FairyAIController.h"
 
 // Sets default values
@@ -15,11 +16,13 @@ AFairyPawn::AFairyPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-	SphereCollision->SetSphereRadius(32.f);
+	SphereCollision->SetSphereRadius(64.f);
 	RootComponent = SphereCollision;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(RootComponent);
+	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
+	Body->SetupAttachment(RootComponent);
+
+	MissileHub = CreateDefaultSubobject<AMissileHub>(TEXT("MissileHub"));
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
@@ -45,7 +48,7 @@ void AFairyPawn::BeginPlay()
 void AFairyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	MissileHub->AddActorLocalRotation(FRotator(0, 0, 0));
 }
 
 // Called to bind functionality to input
