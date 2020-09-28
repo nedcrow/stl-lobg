@@ -47,48 +47,59 @@
 
 0925
 조혁
-총알이 목표한 지점에 도달하도록 수정
-하늘을 향해 발사해도 총알이 스폰되도록 수정
-연사가 가능하도록 수정
-총알이 플레이어나 다른 액터에 맞으면 없어지도록 수정
-TakeDamage해서 죽는 애니메이션이 나오도록 연결
-CurrentHP가 0이 되서 죽으면 리스폰되는 기능 추가
-리스폰 기능을 게임모드로 옮기는 작업중
+  총알이 목표한 지점에 도달하도록 수정
+  하늘을 향해 발사해도 총알이 스폰되도록 수정
+  연사가 가능하도록 수정
+  총알이 플레이어나 다른 액터에 맞으면 없어지도록 수정
+  TakeDamage해서 죽는 애니메이션이 나오도록 연결
+  CurrentHP가 0이 되서 죽으면 리스폰되는 기능 추가
+  리스폰 기능을 게임모드로 옮기는 작업중
 
 오정원
-이미시브 총알 메시 생성, BP 설정 변경. BP 저장 폴더 위치 변경.
-AWaveCoursePoint 클래스 제작. EWaveCourse enum 정의.
-AI매니저 클래스에 AWaveCoursePoint 검색후 배열에 저장하는 정렬 함수 제작.
-액터 스폰 기본 제작.
+  이미시브 총알 메시 생성, BP 설정 변경. BP 저장 폴더 위치 변경.
+  AWaveCoursePoint 클래스 제작. EWaveCourse enum 정의.
+  AI매니저 클래스에 AWaveCoursePoint 검색후 배열에 저장하는 정렬 함수 제작.
+  액터 스폰 기본 제작.
+
+황하림
+  Fix 'lean' in Battle/BattleCharacter.cpp
+  Add 'lean'&'montage' node in ABP_CharacterAimInstance.uasset
+  Fix slot in 'DeathMontage'
+  Add Fairy Pawn, AIController (ing)
+  Add Fairy BT, BB (ing) 
 
 
 0926
 오정원
-AWaveCoursePoint 정렬 함수 수정. 정상 작동.
+  AWaveCoursePoint 정렬 함수 수정. 정상 작동.
 
 조혁
-리스폰 기능을 게임모드에서 호출하는 걸로 수정
+  리스폰 기능을 게임모드에서 호출하는 걸로 수정
 
 0927
 조혁
-리스폰을 플레이어의 위치를 옮기는게 아닌 기존의 플레이어는 파괴하고 새 플레이어를 스폰시키는 방식으로 변경
-게임모드에서 리스폰 위치를 가져오고 플레이어를 스폰 시킨 후 컨트롤러를 가져와 플레이어로 할당
+  리스폰을 플레이어의 위치를 옮기는게 아닌 기존의 플레이어는 파괴하고 새 플레이어를 스폰시키는 방식으로 변경
+  게임모드에서 리스폰 위치를 가져오고 플레이어를 스폰 시킨 후 컨트롤러를 가져와 플레이어로 할당
 
-임시로 미니언 액터를 만들어 미니언이 체력이 0이하가 되면 막타를 친 캐릭터가 돈과 경험치를 가져가도록 기능 추가
-미니언이 준 돈과 경험치는 PlayerPS에 업데이트 되도록 BattleCharacter에 함수 추가
-Bullet클래스에서 충돌한 액터가 미니언인지 플레이어 인지 검사해서 다른 데미지를 전달하도록 추가
+  임시로 미니언 액터를 만들어 미니언이 체력이 0이하가 되면 막타를 친 캐릭터가 돈과 경험치를 가져가도록 기능 추가
+  미니언이 준 돈과 경험치는 PlayerPS에 업데이트 되도록 BattleCharacter에 함수 추가
+  Bullet클래스에서 충돌한 액터가 미니언인지 플레이어 인지 검사해서 다른 데미지를 전달하도록 추가
 
 
 
 0928
 오정원
-스폰 설정 함수와 스폰 반복 함수로 분리. 원형 반복 스폰 완성.
-GameplayTask 모듈 추가. 로케이션 변경 태스크 생성
+  스폰 설정 함수와 스폰 반복 함수로 분리. 원형 반복 스폰 완성.
+  GameplayTask 모듈 추가. 로케이션 변경 태스크 생성
 
 조혁
-PlayerState와 UI의 동기화
-리스폰 시 UI 초기화 : 체력은 꽉 차고 돈과 경험치는 그대로
-경험치의 백분율 작업중
+  PlayerState와 UI의 동기화
+  리스폰 시 UI 초기화 : 체력은 꽉 차고 돈과 경험치는 그대로
+  경험치의 백분율 작업중
 
+황하림
+  Add source about fairy & Fix fairy blueprint
+  Cleanup source about fairy
+  Fix&Test source about fairy
 
 

@@ -4,16 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MissileHub.generated.h"
+#include "MeshesRing.generated.h"
 
 UCLASS()
-class LOBG_API AMissileHub : public AActor
+class LOBG_API AMeshesRing : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMissileHub();
+	AMeshesRing();
+
+	class USceneComponent* MeshesRing;
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,9 +27,21 @@ public:
 
 	// Base property
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TArray<UStaticMeshComponent*> MissileMeshes;
+		TArray<UStaticMeshComponent*> Meshes;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UStaticMesh* MissileMesh;
+		class UStaticMesh* Mesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int LimmitCount;
+		int MeshCount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float Speed = 100.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float Radius = 32.f;
+
+	// About rotate
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		uint8 bIsRotatable : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		uint8 bIsLookBody : 1;
+
+	void RotateAround(float DeltaTime);
 };

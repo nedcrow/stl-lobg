@@ -6,7 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Perception/PawnSensingComponent.h"
-#include "MissileHub.h"
+#include "MeshesRing.h"
 #include "FairyAIController.h"
 
 // Sets default values
@@ -22,7 +22,7 @@ AFairyPawn::AFairyPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	MissileHub = CreateDefaultSubobject<AMissileHub>(TEXT("MissileHub"));
+	//MissileHub = CreateDefaultSubobject<AMeshesRing>(TEXT("MissileHub"));
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
@@ -42,13 +42,14 @@ void AFairyPawn::BeginPlay()
 	{
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
+
+	UE_LOG(LogClass, Warning, TEXT("Test_%d"), MeshCount);
 }
 
 // Called every frame
 void AFairyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	MissileHub->AddActorLocalRotation(FRotator(0, 0, 0));
 }
 
 // Called to bind functionality to input

@@ -18,3 +18,9 @@
   Fix slot in 'DeathMontage'
   Add Fairy Pawn, AIController (ing)
   Add Fairy BT, BB (ing) 
+
+0928
+  Add source about fairy & Fix fairy blueprint
+  Cleanup source about fairy
+  Fix&Test source about fairy 
+  (남은 테스트 컴포넌트로 BP 매개변수만 받고 액터에서 mesh 생성 배치 회전)

@@ -14,19 +14,20 @@ UMeshesRingComponent::UMeshesRingComponent()
 
 	Body = CreateDefaultSubobject<USceneComponent>(TEXT("Body"));
 
-	//float형이라서 360.f를 나눠야한다.
-	float unit = 360.f / LimmitCount;
+	float unit = 360.f / MeshCount;
 
-	for (int i = 0; i < LimmitCount; i++) {
-		//에러부분
-		//FString::Printf로 MissileName을 for문 마다 만들고 TempMesh 생성에 할당
-		FString MissileName = FString::Printf(TEXT("Missile_%d"), i);
-		UStaticMeshComponent* TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName(*MissileName));
+	// StaticMeshes creating & Transfom setting.
+	for (int i = 0; i < MeshCount; i++) {
+		FName MeshName = *FString::Printf(TEXT("Missile_%d"), i); // CreateDefaultSubobject 매개변수 고려하여 FString::Printf로
+		UStaticMeshComponent* TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(MeshName);
 		TempMesh->SetStaticMesh(Mesh);
 		TempMesh->SetupAttachment(Body);
 		TempMesh->SetRelativeLocation(FVector(Radius, 0, 0));
-		TempMesh->SetRelativeRotation(FRotator(0, unit*i, 0));
+		TempMesh->SetVisibility(true);
+		if (bIsRotatable) TempMesh->SetRelativeRotation(FRotator(0, unit*i, 0));
+		Body->AddRelativeRotation(FRotator(0, unit * i, 0));
 		Meshes.Add(TempMesh);
+		UE_LOG(LogClass,Warning,TEXT("Test_%d"),i);
 	}
 }
 
@@ -45,11 +46,13 @@ void UMeshesRingComponent::BeginPlay()
 void UMeshesRingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	FRotator TempRotation = FRotator(
-		bIsPitch ? DeltaTime * Speed : 0,
-		bIsYaw ? DeltaTime * Speed : 0,
-		bIsRoll ? DeltaTime * Speed : 0
-	);
+	if(bIsRotatable) RotateAround(DeltaTime);
+	
+}
+
+void UMeshesRingComponent::RotateAround(float DeltaTime)
+{
+	FRotator TempRotation = FRotator(0, DeltaTime * Speed, 0);
 	Body->AddRelativeRotation(TempRotation);
 }
 

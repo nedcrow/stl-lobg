@@ -30,7 +30,7 @@ public:
 	class UStaticMeshComponent* Body;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class AMissileHub* MissileHub;
+	class AMeshesRing* MissileHub;
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,5 +78,21 @@ public:
 	UFUNCTION()
 	void ProcessSeenPawn(APawn* Pawn);
 
+	// Base property
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		TArray<UStaticMeshComponent*> Meshes;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UStaticMesh* Mesh;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int MeshCount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float Speed = 100.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float Radius = 32.f;
 
+	// About rotate
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		uint8 bIsRotatable : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		uint8 bIsLookBody : 1;
 };

@@ -16,7 +16,6 @@ public:
 	// Sets default values for this component's properties
 	UMeshesRingComponent();
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class USceneComponent* Body;
 
 protected:
@@ -33,15 +32,17 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMesh* Mesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int LimmitCount;
+	int MeshCount;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Speed;
+	float Speed = 100.f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Radius;
+	float Radius = 32.f;
+
+	// About rotate
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	uint8 bIsPitch:1;
+	uint8 bIsRotatable : 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	uint8 bIsYaw : 1;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	uint8 bIsRoll : 1;
+	uint8 bIsLookBody : 1;
+
+	void RotateAround(float DeltaTime);
 };
