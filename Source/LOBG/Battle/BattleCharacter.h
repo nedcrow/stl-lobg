@@ -178,8 +178,7 @@ public:
 		void Server_CallReSpawnToGM();
 	void Server_CallReSpawnToGM_Implementation();
 
-	virtual void PossessedBy(AController* NewController) override;
-
+	//리스폰 시 UI 갱신
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_ReSpawnUI();
 		void NetMulticast_ReSpawnUI_Implementation();
@@ -188,10 +187,10 @@ public:
 	void DeathSetting();
 #pragma endregion
 
+	//미니언을 죽이고 얻은 전리품 세팅
 	UFUNCTION(Server, Reliable)
 	void Server_SetBooty(int Money, float Exp);
 	void Server_SetBooty_Implementation(int Money, float Exp);
 
 	void SetBooty(int Money, float Exp);
-
 };

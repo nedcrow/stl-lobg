@@ -442,12 +442,6 @@ void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 	}
 }
 
-void ABattleCharacter::PossessedBy(AController * NewController)
-{
-	Super::PossessedBy(NewController);
-	//OnRep_CurrentHP();
-}
-
 void ABattleCharacter::NetMulticast_ReSpawnUI_Implementation()
 {
 	OnRep_CurrentHP();
@@ -474,7 +468,8 @@ void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 		PS->PlayerMoney += Money;
 		PS->OnRep_Money();
 
-		PS->PlayerExp += Exp;
+		//PS->PlayerExp += Exp;
+		PS->SetExp(Exp);
 		PS->OnRep_Exp();
 	}
 }
@@ -488,6 +483,7 @@ void ABattleCharacter::SetBooty(int Money, float Exp)
 		PS->OnRep_Money();
 
 		PS->PlayerExp += Exp;
+		PS->NewExp += Exp;
 		PS->OnRep_Exp();
 	}
 }

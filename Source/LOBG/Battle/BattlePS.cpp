@@ -14,13 +14,16 @@ void ABattlePS::OnRep_Exp()
 	{
 		NextExp = PlayerExp * 2.f;
 		PlayerLevel += 1;
+		NewExp = 0;
 		OnRep_Level();
 	}
 
 	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
 	if (PC && PC->IsLocalController())
 	{
-		PC->BattleWidgetObject->SetExpBar(PlayerExp / NextExp);
+		float totalExp = NextExp - PlayerExp;
+		PC->BattleWidgetObject->SetExpBar(NewExp / totalExp);
+		UE_LOG(LogClass, Warning, TEXT("New Exp : %f, TotalExp : %f"), NewExp, totalExp);
 	}
 
 }
@@ -43,10 +46,19 @@ void ABattlePS::OnRep_Money()
 	}
 }
 
+void ABattlePS::SetExp(float AddExp)
+{
+	PlayerExp += AddExp;
+	NewExp += AddExp;
+	UE_LOG(LogClass, Warning, TEXT("New Exp : %f, PlayerExp : %f"), NewExp, PlayerExp);
+	OnRep_Exp();
+}
+
 void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABattlePS, PlayerLevel);
 	DOREPLIFETIME(ABattlePS, PlayerMoney);
 	DOREPLIFETIME(ABattlePS, PlayerExp);
+	DOREPLIFETIME(ABattlePS, NewExp);
 }
