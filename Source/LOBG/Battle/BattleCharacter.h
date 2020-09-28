@@ -94,8 +94,11 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 #pragma endregion
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_CurrentHP", Category = "Status")
 		float CurrentHP = 100.f;
+
+	UFUNCTION()
+	void OnRep_CurrentHP();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float MaxHP = 100.f;
@@ -180,6 +183,9 @@ public:
 #pragma endregion
 
 	UFUNCTION(Server, Reliable)
-	void Server_SetBooty(float Money, float Exp);
-	void Server_SetBooty_Implementation(float Money, float Exp);
+	void Server_SetBooty(int Money, float Exp);
+	void Server_SetBooty_Implementation(int Money, float Exp);
+
+	void SetUIMoney();
+	void SetUIExp();
 };

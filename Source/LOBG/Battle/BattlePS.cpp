@@ -3,6 +3,18 @@
 
 #include "BattlePS.h"
 #include "Net/UnrealNetwork.h"
+#include "BattlePC.h"
+#include "Kismet/GameplayStatics.h"
+#include "BattleWidgetBase.h"
+
+void ABattlePS::OnRep_Exp()
+{
+	if (Exp >= NextExp)
+	{
+		NextExp = Exp * 2;
+		Level += 1;
+	}
+}
 
 void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

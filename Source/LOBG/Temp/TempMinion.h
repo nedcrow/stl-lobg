@@ -33,7 +33,7 @@ public:
 
 	float CurrentHP = 20.f;
 
-	float MinionMoney = 100.0f;
+	int MinionMoney = 100;
 
 	float MinionExp = 100.0f;
 };

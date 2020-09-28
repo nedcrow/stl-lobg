@@ -17,6 +17,7 @@
 #include "../ReSpawn/ReSpawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "BattlePS.h"
+#include "BattleWidgetBase.h"
 
 
 // Sets default values
@@ -57,6 +58,11 @@ void ABattleCharacter::BeginPlay()
 	
 	CurrentHP = MaxHP;
 	CurrentState = EBattleCharacterState::Normal;
+
+	//UI초기화 및 유무 확인
+	OnRep_CurrentHP();
+	SetUIMoney();
+	SetUIExp();
 }
 
 // Called every frame
@@ -311,6 +317,18 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	return 0.0f;
 }
 
+void ABattleCharacter::OnRep_CurrentHP()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC && PC->IsLocalController())
+	{
+		if (PC->BattleWidgetObject)
+		{
+			PC->BattleWidgetObject->SetHPBar(CurrentHP / MaxHP);
+		}
+	}
+}
+
 void ABattleCharacter::Server_SetIronsight_Implementation(bool State)
 {
 	bIsIronsight = State;
@@ -425,13 +443,41 @@ void ABattleCharacter::DeathSetting()
 	DisableInput(Cast<APlayerController>(GetController()));
 }
 
-void ABattleCharacter::Server_SetBooty_Implementation(float Money, float Exp)
+void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 {
 	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 	if (PS)
 	{
 		PS->Money += Money;
-		PS->Exp += Exp;
+		SetUIMoney();
 
+		PS->Exp += Exp;
+		SetUIExp();
+	}
+}
+
+void ABattleCharacter::SetUIMoney()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC && PC->IsLocalController())
+	{
+		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+		if (PS)
+		{
+			PC->BattleWidgetObject->SetMoney(PS->Money);
+		}
+	}
+}
+
+void ABattleCharacter::SetUIExp()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC && PC->IsLocalController())
+	{
+		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+		if (PS)
+		{
+			PC->BattleWidgetObject->SetExpBar(PS->Exp / PS->NextExp);
+		}
 	}
 }

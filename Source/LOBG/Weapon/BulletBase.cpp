@@ -44,7 +44,7 @@ void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 	switch (ApplyDamageType)
 	{
 	case EApplyDamageType::Player:
-		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 10.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 1.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
 		break;
 	case EApplyDamageType::Minion:
 		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), 10.0f, PlayerController, this, UBulletDamageType::StaticClass());

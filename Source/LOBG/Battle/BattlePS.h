@@ -19,10 +19,15 @@ public:
 	int Level;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
-		float Money;
+		int Money;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
-		float Exp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_Exp", Category = "State")
+		float Exp = 0;
+
+	UFUNCTION()
+	void OnRep_Exp();
+
+	float NextExp = 200;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
