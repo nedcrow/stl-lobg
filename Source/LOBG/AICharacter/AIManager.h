@@ -40,8 +40,19 @@ public:
 	void RemoveMinion(AAIMinionChar* RemoveMinion);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnData")
-		TSubclassOf<class AAIMinionChar> MinionCharClass;	
+		TSubclassOf<class AAIMinionChar> MinionCharClass;
 
-	void SpawnMinions(int MinionQuantity);
+	// SpawnMinion
+	void SetSpawnQuantity(int MinionQuantity);
+
+	int LeftSpawnNumber = 0;
+	FVector CurrentSpawnLocation;
+	int CurrentRotatingNumber = 0;		// 360도 회전 횟수
+	float CurrentRotatingAngle = 0.f;		// 회전 각도
+	FTimerHandle RepeatSpawnHandle;
+
+	UFUNCTION()
+		void RepeatSpawnMinions();
+
 
 };

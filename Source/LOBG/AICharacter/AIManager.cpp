@@ -5,7 +5,9 @@
 
 #include "AIMinionChar.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 // Sets default values
 AAIManager::AAIManager()
@@ -20,14 +22,13 @@ void AAIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SeachCoursePoints();		// 웨이브 코스 포인트 찾아서 저장.
+	SeachCoursePoints();		// 웨이브 코스 포인트를 찾아서 저장.
 
-
-	// 테스트
-	SpawnMinions(1);
-	
+	// Test
+	SetSpawnQuantity(30);
 }
 
+// CoursePoints 찾기
 void AAIManager::SeachCoursePoints()
 {
 	TArray<AActor*> OutActors;
@@ -103,7 +104,7 @@ void AAIManager::RemoveMinion(AAIMinionChar * RemoveMinion)
 	}
 }
 
-void AAIManager::SpawnMinions(int MinionQuantity)
+void AAIManager::SetSpawnQuantity(int MinionQuantity)
 {
 	if (MinionQuantity < 1 || CoursePoints.Num() <= 0)
 	{
@@ -117,23 +118,79 @@ void AAIManager::SpawnMinions(int MinionQuantity)
 		UE_LOG(LogClass, Warning, TEXT("----CourseNumber------ %d"), CoursePoints[i]->CourseNumber);
 	}
 
+	if (LeftSpawnNumber <= 0)		// 스폰 횟수 체크
+	{
+		// 스폰 횟수 갱신
+		LeftSpawnNumber = MinionQuantity;
 
-	// 스폰 포인트 찾기
-	FVector SpawnLocation = CoursePoints[0]->GetActorLocation();
+		// 스폰 포인트 찾기
+		CurrentSpawnLocation = CoursePoints[0]->GetActorLocation();
+
+		CurrentRotatingNumber = 0;		// 스폰 회전 위치 초기화
+
+		// 액터 스폰 시작
+		RepeatSpawnMinions();
+	}
+	else
+	{
+		// 스폰 횟수 추가
+		LeftSpawnNumber += MinionQuantity;
+	}
+
+}
+
+void AAIManager::RepeatSpawnMinions()
+{
+	// 스폰 위치 조정
+	if (CurrentRotatingNumber <= 0)		// 숫자가 0 이하면 초기화
+	{
+		CurrentRotatingNumber = 0;
+		CurrentRotatingAngle = 0.f;
+	}
+	else
+	{
+		CurrentRotatingAngle += 60.f / CurrentRotatingNumber;		// 각도 변경
+		if (CurrentRotatingAngle >= 360.f)		// 회전이 360도 이상이면 다음 회전으로 이동하고 0도부터 시작.
+		{
+			CurrentRotatingNumber++;
+
+			if (CurrentRotatingNumber > 3)		// 3단계까지 스폰하면 다시 원점으로 돌아간다. 총 37개 생성 (1, 6, 12, 18).
+			{
+				CurrentRotatingNumber = 0;
+			}
+
+			CurrentRotatingAngle = 0.f;
+		}
+	}
+
+	// 현재 스폰 포인트 위치 + 캡슐 절반 높이 + 스폰 위치 상대 벡터
+	FVector NewSpawnLocation = CurrentSpawnLocation + FVector(0.f, 0.f, 88.f) + FRotator(0.f, CurrentRotatingAngle, 0.f).Vector() * (100.f * CurrentRotatingNumber);
 
 	// 액터 스폰
-	for (int i = 0; i < MinionQuantity; i++)
-	{
-		FActorSpawnParameters aaa;
-		aaa.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(MinionCharClass, FTransform(FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f), SpawnLocation));
-		//AAIMinionChar* NewMinion = GetWorld()->SpawnActorDeferred<AAIMinionChar>(MinionCharClass, FTransform(FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f), SpawnLocation), nullptr,nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+	AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(MinionCharClass, NewSpawnLocation, FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f));
 
-		// 스폰한 액터 저장
+	// 스폰한 액터 저장
+	if (NewMinion)
+	{
 		ActiveMinions.Add(NewMinion);
+		LeftSpawnNumber--;
 	}
+
 
 	// 스폰한 액터들의 이동 목표 설정
 
+	// 스폰 이펙트 생성
+
+
+	// 스폰 Repeat
+	if (LeftSpawnNumber > 0)
+	{
+		GetWorldTimerManager().SetTimer(RepeatSpawnHandle, this, &AAIManager::RepeatSpawnMinions, 0.5f, false);
+
+		if (CurrentRotatingNumber == 0)
+		{
+			CurrentRotatingNumber = 1;
+		}
+	}
 }
 
