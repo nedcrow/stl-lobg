@@ -13,10 +13,15 @@ UMeshesRingComponent::UMeshesRingComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	Body = CreateDefaultSubobject<USceneComponent>(TEXT("Body"));
-	float unit = 360/LimmitCount;
+
+	//float형이라서 360.f를 나눠야한다.
+	float unit = 360.f / LimmitCount;
 
 	for (int i = 0; i < LimmitCount; i++) {
-		UStaticMeshComponent* TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Missile_&d"), i);
+		//에러부분
+		//FString::Printf로 MissileName을 for문 마다 만들고 TempMesh 생성에 할당
+		FString MissileName = FString::Printf(TEXT("Missile_%d"), i);
+		UStaticMeshComponent* TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName(*MissileName));
 		TempMesh->SetStaticMesh(Mesh);
 		TempMesh->SetupAttachment(Body);
 		TempMesh->SetRelativeLocation(FVector(Radius, 0, 0));

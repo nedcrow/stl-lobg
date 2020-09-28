@@ -11,7 +11,9 @@ AMissileHub::AMissileHub()
 	PrimaryActorTick.bCanEverTick = true;
 
 	for (int i = 0; i < LimmitCount; i++) {
-		UStaticMeshComponent* Missile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Missile_&d"), i);
+		//에러부분
+		//FString::Printf로 (TEXT("Missile_%d"), i) 를 충족하고 FName형으로 변환
+		UStaticMeshComponent* Missile = CreateDefaultSubobject<UStaticMeshComponent>(FName(*FString::Printf(TEXT("Missile_%d"), i)));
 		Missile->SetStaticMesh(MissileMesh);
 		MissileMeshes.Add(Missile);
 	}

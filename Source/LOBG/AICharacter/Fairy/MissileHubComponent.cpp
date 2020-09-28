@@ -12,7 +12,10 @@ UMissileHubComponent::UMissileHubComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	for (int i = 0; i < LimmitCount; i++) {
-		UStaticMeshComponent* Missile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Missile_&d"), i);
+		//에러부분
+		//FString::Printf로 MissileName을 for문 마다 만들고 Missile 생성에 할당
+		FString MissileName = FString::Printf(TEXT("Missile_%d"), i);
+		UStaticMeshComponent* Missile = CreateDefaultSubobject<UStaticMeshComponent>(FName(*MissileName));
 		Missile->SetStaticMesh(MissileMesh);
 		MissileMeshes.Add(Missile);
 	}
