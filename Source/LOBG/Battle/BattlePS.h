@@ -15,17 +15,23 @@ class LOBG_API ABattlePS : public APlayerState
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
-	int Level;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_Level", Category = "State")
+	int PlayerLevel;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
-		int Money;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_Money", Category = "State")
+		int PlayerMoney = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_Exp", Category = "State")
-		float Exp = 0;
+		float PlayerExp = 0;
 
 	UFUNCTION()
 	void OnRep_Exp();
+
+	UFUNCTION()
+		void OnRep_Level();
+
+	UFUNCTION()
+		void OnRep_Money();
 
 	float NextExp = 200;
 

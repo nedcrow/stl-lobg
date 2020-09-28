@@ -178,6 +178,12 @@ public:
 		void Server_CallReSpawnToGM();
 	void Server_CallReSpawnToGM_Implementation();
 
+	virtual void PossessedBy(AController* NewController) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_ReSpawnUI();
+		void NetMulticast_ReSpawnUI_Implementation();
+
 	//죽을 때의 설정들
 	void DeathSetting();
 #pragma endregion
@@ -186,6 +192,6 @@ public:
 	void Server_SetBooty(int Money, float Exp);
 	void Server_SetBooty_Implementation(int Money, float Exp);
 
-	void SetUIMoney();
-	void SetUIExp();
+	void SetBooty(int Money, float Exp);
+
 };

@@ -61,8 +61,12 @@ void ABattleCharacter::BeginPlay()
 
 	//UI초기화 및 유무 확인
 	OnRep_CurrentHP();
-	SetUIMoney();
-	SetUIExp();
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->OnRep_Exp();
+		PS->OnRep_Money();
+	}
 }
 
 // Called every frame
@@ -225,7 +229,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	FHitResult OutHit;
 
 	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
-		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::ForDuration, OutHit, true, FLinearColor::Red, FLinearColor::Green, 1000.0f);
+		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::None, OutHit, true, FLinearColor::Red, FLinearColor::Green, 1000.0f);
 
 	if (Result && OutHit.GetActor() != nullptr)
 	{
@@ -287,7 +291,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 			if (PS)
 			{
-				UE_LOG(LogClass, Warning, TEXT("Money : %f, Exp : %f"), PS->Money, PS->Exp);
+				UE_LOG(LogClass, Warning, TEXT("Money : %d, Exp : %f"), PS->PlayerMoney, PS->PlayerExp);
 
 			}
 		}
@@ -295,6 +299,8 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
 
 		CurrentHP = TempHP;
+		//서버도 실행되게
+		OnRep_CurrentHP();
 
 		//죽었을때
 		if (CurrentHP <= 0)
@@ -436,6 +442,23 @@ void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 	}
 }
 
+void ABattleCharacter::PossessedBy(AController * NewController)
+{
+	Super::PossessedBy(NewController);
+	//OnRep_CurrentHP();
+}
+
+void ABattleCharacter::NetMulticast_ReSpawnUI_Implementation()
+{
+	OnRep_CurrentHP();
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->OnRep_Exp();
+		PS->OnRep_Money();
+	}
+}
+
 void ABattleCharacter::DeathSetting()
 {
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
@@ -448,36 +471,24 @@ void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 	if (PS)
 	{
-		PS->Money += Money;
-		SetUIMoney();
+		PS->PlayerMoney += Money;
+		PS->OnRep_Money();
 
-		PS->Exp += Exp;
-		SetUIExp();
+		PS->PlayerExp += Exp;
+		PS->OnRep_Exp();
 	}
 }
 
-void ABattleCharacter::SetUIMoney()
+void ABattleCharacter::SetBooty(int Money, float Exp)
 {
-	ABattlePC* PC = Cast<ABattlePC>(GetController());
-	if (PC && PC->IsLocalController())
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
 	{
-		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
-		if (PS)
-		{
-			PC->BattleWidgetObject->SetMoney(PS->Money);
-		}
+		PS->PlayerMoney += Money;
+		PS->OnRep_Money();
+
+		PS->PlayerExp += Exp;
+		PS->OnRep_Exp();
 	}
 }
 
-void ABattleCharacter::SetUIExp()
-{
-	ABattlePC* PC = Cast<ABattlePC>(GetController());
-	if (PC && PC->IsLocalController())
-	{
-		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
-		if (PS)
-		{
-			PC->BattleWidgetObject->SetExpBar(PS->Exp / PS->NextExp);
-		}
-	}
-}

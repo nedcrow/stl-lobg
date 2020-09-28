@@ -6,20 +6,47 @@
 #include "BattlePC.h"
 #include "Kismet/GameplayStatics.h"
 #include "BattleWidgetBase.h"
+#include "BattleCharacter.h"
 
 void ABattlePS::OnRep_Exp()
 {
-	if (Exp >= NextExp)
+	if (PlayerExp >= NextExp)
 	{
-		NextExp = Exp * 2;
-		Level += 1;
+		NextExp = PlayerExp * 2.f;
+		PlayerLevel += 1;
+		OnRep_Level();
+	}
+
+	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
+	if (PC && PC->IsLocalController())
+	{
+		PC->BattleWidgetObject->SetExpBar(PlayerExp / NextExp);
+	}
+
+}
+
+void ABattlePS::OnRep_Level()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
+	if (PC && PC->IsLocalController())
+	{
+		PC->BattleWidgetObject->SetLevel(PlayerLevel);
+	}
+}
+
+void ABattlePS::OnRep_Money()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
+	if (PC && PC->IsLocalController())
+	{
+		PC->BattleWidgetObject->SetMoney(PlayerMoney);
 	}
 }
 
 void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ABattlePS, Level);
-	DOREPLIFETIME(ABattlePS, Money);
-	DOREPLIFETIME(ABattlePS, Exp);
+	DOREPLIFETIME(ABattlePS, PlayerLevel);
+	DOREPLIFETIME(ABattlePS, PlayerMoney);
+	DOREPLIFETIME(ABattlePS, PlayerExp);
 }

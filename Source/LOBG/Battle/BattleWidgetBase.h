@@ -24,6 +24,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UTextBlock* Money;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
+		class UTextBlock* Level;
+
 	virtual void NativeConstruct()override;
 
 	void SetHPBar(float Percent);
@@ -31,4 +34,6 @@ public:
 	void SetExpBar(float Percent);
 
 	void SetMoney(int AddMoney);
+
+	void SetLevel(int AddLevel);
 };

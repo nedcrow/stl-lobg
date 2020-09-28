@@ -27,7 +27,8 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			//플레이어컨트롤러에 연결
 			PC->Possess(BattlePlayer);
 
-			//PlayerState에 저장된 정보 동기화???
+			//컨트롤러 연결 후 리셋할 목록들
+			BattlePlayer->NetMulticast_ReSpawnUI();
 		}
 	}
 }
