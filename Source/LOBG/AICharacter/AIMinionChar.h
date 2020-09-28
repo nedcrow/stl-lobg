@@ -35,7 +35,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	float WalkSpeed = 300.f;
+	float WalkSpeed = 150.f;
 
 	// AI
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")

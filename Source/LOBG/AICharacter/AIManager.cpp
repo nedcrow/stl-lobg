@@ -104,6 +104,7 @@ void AAIManager::RemoveMinion(AAIMinionChar * RemoveMinion)
 	}
 }
 
+// 스폰 설정 및 시작
 void AAIManager::SetSpawnQuantity(int MinionQuantity)
 {
 	if (MinionQuantity < 1 || CoursePoints.Num() <= 0)
@@ -139,6 +140,7 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 
 }
 
+// 스폰 머신
 void AAIManager::RepeatSpawnMinions()
 {
 	// 스폰 위치 조정
@@ -164,7 +166,7 @@ void AAIManager::RepeatSpawnMinions()
 	}
 
 	// 현재 스폰 포인트 위치 + 캡슐 절반 높이 + 스폰 위치 상대 벡터
-	FVector NewSpawnLocation = CurrentSpawnLocation + FVector(0.f, 0.f, 88.f) + FRotator(0.f, CurrentRotatingAngle, 0.f).Vector() * (100.f * CurrentRotatingNumber);
+	FVector NewSpawnLocation = CurrentSpawnLocation + FVector(0.f, 0.f, 88.f) + FRotator(0.f, CurrentRotatingAngle, 0.f).Vector() * (200.f * CurrentRotatingNumber);
 
 	// 액터 스폰
 	AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(MinionCharClass, NewSpawnLocation, FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f));
@@ -174,12 +176,13 @@ void AAIManager::RepeatSpawnMinions()
 	{
 		ActiveMinions.Add(NewMinion);
 		LeftSpawnNumber--;
+
+		// 스폰한 액터들의 이동 목표 설정
+
+		// 스폰 이펙트 생성
+
 	}
 
-
-	// 스폰한 액터들의 이동 목표 설정
-
-	// 스폰 이펙트 생성
 
 
 	// 스폰 Repeat
