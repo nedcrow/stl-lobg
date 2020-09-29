@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 // Sets default values
 AAIManager::AAIManager()
@@ -24,8 +26,6 @@ void AAIManager::BeginPlay()
 
 	SeachCoursePoints();		// 웨이브 코스 포인트를 찾아서 저장.
 
-	// Test
-	SetSpawnQuantity(30);
 }
 
 // CoursePoints 찾기
@@ -77,7 +77,77 @@ void AAIManager::SeachCoursePoints()
 			}
 		}
 	}
-	
+
+
+	//FVector StartLast;
+	//FVector GoalFirst;
+
+	//for (int i = 0; i < CoursePoints.Num(); i++)
+	//{
+	//	for (int k = i + 1; k < CoursePoints.Num(); k++)
+	//	{
+	//		if (CoursePoints[i]->WaveCourse == CoursePoints[k]->WaveCourse)
+	//		{
+	//			UKismetSystemLibrary::DrawDebugLine(GetWorld(), CoursePoints[i]->GetActorLocation(), CoursePoints[k]->GetActorLocation(), FLinearColor::Blue, -1.f, 30.f);
+	//		}
+	//		else 
+	//		{
+	//			if (CoursePoints[i]->WaveCourse == EWaveCourse::SpawnPoint)
+	//			{
+	//				StartLast = CoursePoints[i]->GetActorLocation();
+	//			}
+
+	//			if (CoursePoints[k]->WaveCourse == EWaveCourse::Goal)
+	//			{
+	//				GoalFirst = CoursePoints[k]->GetActorLocation();
+	//			}
+	//			else
+	//			{
+
+	//			}
+
+	//			
+	//		}
+	//	
+	//	}
+	//}
+}
+
+// BB의 목표 위치 바꾸기.
+bool AAIManager::ChangeNextTarget(AAIController * AIController)
+{
+	if (AIController)		// 컨트롤러
+	{
+		AAIMinionChar* AIChar = AIController->GetPawn<AAIMinionChar>();
+
+		if (AIChar)		// 캐릭터. 코스포인트
+		{
+			if (!AIChar->CurrentMoveTarget && CoursePoints.Num() > 0)
+			{
+				AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 다시 채운다.
+			}
+
+			int Index = -1;
+			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);
+			int NextIndex = Index + 1;
+			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints[NextIndex])		// 다음 코스포인트
+			{
+				UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
+				if (BBComp)		// 블랙보드
+				{
+					FVector RelativeLocation = CoursePoints[NextIndex]->GetActorLocation() - AIChar->CurrentMoveTarget->GetActorLocation();
+
+					BBComp->SetValueAsVector(TEXT("CourseLocation"), AIChar->GetActorLocation() + RelativeLocation);		// 코스 로케이션 키 변경
+
+					AIChar->CurrentMoveTarget = CoursePoints[NextIndex];		// 코스포인트 저장.
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 // Called every frame
@@ -178,6 +248,11 @@ void AAIManager::RepeatSpawnMinions()
 		LeftSpawnNumber--;
 
 		// 스폰한 액터들의 이동 목표 설정
+		AAIController* AIC = NewMinion->GetController<AAIController>();
+		if (AIC)
+		{
+			ChangeNextTarget(AIC);		// BB 키에 목표 로케이션 입력
+		}
 
 		// 스폰 이펙트 생성
 

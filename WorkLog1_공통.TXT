@@ -107,6 +107,10 @@
 0929
 오정원
 총 애셋 추가. FirstPerson 폴더.
+ABattleGM 비긴플레이에서 AIManger 스폰. (테스트를 위해서 레벨BP에서 실행)
+AI스폰 후 단순 이동 구현.
+
+
 
 
 
