@@ -23,4 +23,7 @@
   Add source about fairy & Fix fairy blueprint
   Cleanup source about fairy
   Fix&Test source about fairy 
-  (남은 테스트 컴포넌트로 BP 매개변수만 받고 액터에서 mesh 생성 배치 회전)
+  (남은 테스트 = 컴포넌트로 BP 매개변수만 받고 액터에서 mesh 생성 배치 회전)
+
+0929
+  Fix&Test source about fairy folder (CreateDefaultSubobject -> InstanceStaticMesh)

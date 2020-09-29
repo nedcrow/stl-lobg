@@ -106,7 +106,10 @@
 
 0929
 오정원
-총 애셋 추가. FirstPerson 폴더.
+  총 애셋 추가. FirstPerson 폴더.
+
+황하림
+  Fix&Test source about fairy folder (CreateDefaultSubobject -> InstanceStaticMesh)
 
 
 

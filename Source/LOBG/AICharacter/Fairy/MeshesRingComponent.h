@@ -16,8 +16,6 @@ public:
 	// Sets default values for this component's properties
 	UMeshesRingComponent();
 
-	class USceneComponent* Body;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -27,22 +25,18 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Base property
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TArray<UStaticMeshComponent*> Meshes;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Mesh")
 	class UStaticMesh* Mesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MeshCount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Speed = 100.f;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+	int MeshCount = 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 	float Radius = 32.f;
 
 	// About rotate
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
+	float Speed = 100.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
 	uint8 bIsRotatable : 1;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
 	uint8 bIsLookBody : 1;
-
-	void RotateAround(float DeltaTime);
 };

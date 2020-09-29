@@ -29,7 +29,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMeshComponent* Body;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="AMeshesRing")
 	class AMeshesRing* MissileHub;
 
 protected:
@@ -77,22 +77,4 @@ public:
 	// process after saw something
 	UFUNCTION()
 	void ProcessSeenPawn(APawn* Pawn);
-
-	// Base property
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		TArray<UStaticMeshComponent*> Meshes;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UStaticMesh* Mesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		int MeshCount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float Speed = 100.f;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float Radius = 32.f;
-
-	// About rotate
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		uint8 bIsRotatable : 1;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		uint8 bIsLookBody : 1;
 };

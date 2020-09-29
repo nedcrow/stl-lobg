@@ -9,13 +9,17 @@
 UCLASS()
 class LOBG_API AMeshesRing : public AActor
 {
-	GENERATED_BODY()
+	GENERATED_BODY() 
 	
 public:	
 	// Sets default values for this actor's properties
 	AMeshesRing();
 
-	class USceneComponent* MeshesRing;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	class USphereComponent* SphereCollision;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	class USceneComponent* InnerCore;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,22 +30,23 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Base property
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		TArray<UStaticMeshComponent*> Meshes;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UStaticMesh* Mesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		int MeshCount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float Speed = 100.f;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float Radius = 32.f;
+	FTransform* TempTransform;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+	class UInstancedStaticMeshComponent* IncetancedMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+	int MeshCount = 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+	float Radius = 32.f;
 
 	// About rotate
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		uint8 bIsRotatable : 1;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		uint8 bIsLookBody : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
+	float Speed = 100.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
+	uint8 bIsRotatable : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
+	uint8 bIsLookBody : 1;
 
 	void RotateAround(float DeltaTime);
 };
