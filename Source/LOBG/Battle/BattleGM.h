@@ -15,6 +15,18 @@ class LOBG_API ABattleGM : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
+
+	// AIManager
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+		TSubclassOf<class AAIManager> AIManagerClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+		class AAIManager* AIManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+		int SpawnAINumber = 0;
+
+
+
 	//리스폰 요청
 	void CallReSpawn(class ABattleCharacter* Pawn);
 
@@ -23,4 +35,9 @@ public:
 		TSubclassOf<class ABattleCharacter> PlayerClass;
 
 	void LevelUp();
+
+
+
+
+
 };

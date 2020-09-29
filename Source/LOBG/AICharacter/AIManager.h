@@ -29,6 +29,7 @@ public:
 	TArray<AWaveCoursePoint*> CoursePoints;
 
 	void SeachCoursePoints();		// 코스 포인트 검색 후 배열에 저장.
+	bool ChangeNextTarget(class AAIController* AIController);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -43,7 +44,8 @@ public:
 		TSubclassOf<class AAIMinionChar> MinionCharClass;
 
 	// SpawnMinion
-	void SetSpawnQuantity(int MinionQuantity);
+	UFUNCTION(BlueprintCallable)
+		void SetSpawnQuantity(int MinionQuantity);
 
 	int LeftSpawnNumber = 0;
 	FVector CurrentSpawnLocation;

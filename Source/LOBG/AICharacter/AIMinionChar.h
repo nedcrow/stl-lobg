@@ -47,4 +47,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetState(EMinioonState NewState);
+
+	// MoveTarget
+	class AWaveCoursePoint* CurrentMoveTarget;
 };

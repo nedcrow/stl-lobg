@@ -7,6 +7,28 @@
 #include "Kismet/GameplayStatics.h"
 #include "BattlePC.h"
 #include "BattlePS.h"
+#include "../AICharacter/AIManager.h"
+
+void ABattleGM::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	// AIManager Spawn.
+	if (AIManagerClass)
+	{
+		AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
+		if (AIM)
+		{
+			AIManager = AIM;
+
+			if (SpawnAINumber > 0)
+			{
+				AIM->SetSpawnQuantity(SpawnAINumber);
+			}
+		}
+	}
+}
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 {
