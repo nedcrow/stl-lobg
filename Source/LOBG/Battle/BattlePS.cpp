@@ -16,12 +16,13 @@ void ABattlePS::OnRep_Exp()
 		PlayerLevel += 1;
 		NewExp = 0;
 		OnRep_Level();
+		TempExp = PlayerExp;
 	}
 
 	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
 	if (PC && PC->IsLocalController())
 	{
-		float totalExp = NextExp - PlayerExp;
+		float totalExp = NextExp - TempExp;
 		PC->BattleWidgetObject->SetExpBar(NewExp / totalExp);
 		UE_LOG(LogClass, Warning, TEXT("New Exp : %f, TotalExp : %f"), NewExp, totalExp);
 	}
@@ -49,7 +50,7 @@ void ABattlePS::OnRep_Money()
 void ABattlePS::SetExp(float AddExp)
 {
 	PlayerExp += AddExp;
-	NewExp += AddExp;
+	NewExp = AddExp;
 	UE_LOG(LogClass, Warning, TEXT("New Exp : %f, PlayerExp : %f"), NewExp, PlayerExp);
 	OnRep_Exp();
 }
