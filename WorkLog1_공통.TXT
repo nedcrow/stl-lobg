@@ -114,5 +114,21 @@
   Fix&Test source about fairy folder (CreateDefaultSubobject -> InstanceStaticMesh)
 
 
+1001
+오정원
+미니언ABP 조준, 사격 추가.
+배틀캐릭터, 미니언캐릭터 ABP 본마다블렌딩 배열에 spine_01 추가
+스켈레탈메시컴포넌트로 웨폰컴포넌트 클래스 생성. AI캐릭터에 장착. 무기 메시 적용.
+이미시브 총알 그림자 생성 안되게 수정.
+
+
+
+
+
+
+
+
+
+
 
 

@@ -31,7 +31,9 @@ AEmissiveBullet::AEmissiveBullet()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(CollisionComp);
 	StaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
-	
+	StaticMesh->bCastDynamicShadow = false;		// Disallow mesh to cast dynamic shadows
+	StaticMesh->CastShadow = false;			// Disallow mesh to cast other shadows
+
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
