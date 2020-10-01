@@ -13,5 +13,6 @@ UCLASS()
 class LOBG_API ABattleGS : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+public:
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

@@ -37,7 +37,12 @@ public:
 	void LevelUp();
 
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object")
+		TSubclassOf<class ATempTower> TempTowerClass;
 
+	void CountTower();
 
+	int TowerCount;
 
+	void GoLobby();
 };

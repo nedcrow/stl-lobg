@@ -7,7 +7,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "BattlePC.h"
 #include "BattlePS.h"
+#include "BattleGS.h"
 #include "../AICharacter/AIManager.h"
+#include "../Temp/TempTower.h"
 
 void ABattleGM::BeginPlay()
 {
@@ -28,6 +30,11 @@ void ABattleGM::BeginPlay()
 			}
 		}
 	}
+
+	TArray<AActor*> OutTowers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
+	TowerCount = OutTowers.Num();
+	UE_LOG(LogClass, Warning, TEXT("TowerCount is %d"), TowerCount);
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
@@ -59,3 +66,21 @@ void ABattleGM::LevelUp()
 {
 	
 }
+
+void ABattleGM::CountTower()
+{
+	TowerCount--;
+	UE_LOG(LogClass, Warning, TEXT("TowerCount is %d"), TowerCount);
+
+	if (TowerCount == 0)
+	{
+		FTimerHandle GameOverTimer;
+		GetWorldTimerManager().SetTimer(GameOverTimer, this, &ABattleGM::GoLobby, 3.f);
+	}
+}
+
+void ABattleGM::GoLobby()
+{
+	GetWorld()->ServerTravel(TEXT("Step02_Lobby"));
+}
+
