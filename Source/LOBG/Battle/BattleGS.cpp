@@ -2,4 +2,12 @@
 
 
 #include "BattleGS.h"
+#include "Net/UnrealNetwork.h"
+#include "BattlePC.h"
+#include "Kismet/GameplayStatics.h"
+#include "BattleWidgetBase.h"
 
+void ABattleGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}

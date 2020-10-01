@@ -12,6 +12,7 @@ void UBattleWidgetBase::NativeConstruct()
 
 	Money = Cast<UTextBlock>(GetWidgetFromName(TEXT("MoneyText")));
 	Level = Cast<UTextBlock>(GetWidgetFromName(TEXT("LevelText")));
+	CountPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("CountPlayerText")));
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
 	ExpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ExpBar")));
 }
@@ -23,13 +24,11 @@ void UBattleWidgetBase::SetHPBar(float Percent)
 
 void UBattleWidgetBase::SetExpBar(float Percent)
 {
-	UE_LOG(LogClass, Warning, TEXT("InputWidgetExp"));
 	ExpBar->SetPercent(Percent);
 }
 
 void UBattleWidgetBase::SetMoney(int AddMoney)
 {
-	UE_LOG(LogClass, Warning, TEXT("InputWidgetMoney"));
 	Money->SetText(UKismetTextLibrary::Conv_IntToText(AddMoney));
 }
 

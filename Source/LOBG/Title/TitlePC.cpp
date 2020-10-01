@@ -10,7 +10,7 @@ void ATitlePC::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (TitleWidgetClass)
+	if (TitleWidgetClass && IsLocalPlayerController())
 	{
 		TitleWidgetObject = CreateWidget<UTitleWidgetBase>(this, TitleWidgetClass);
 		TitleWidgetObject->AddToViewport();

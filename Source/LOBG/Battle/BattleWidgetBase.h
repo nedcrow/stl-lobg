@@ -7,13 +7,13 @@
 #include "BattleWidgetBase.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class LOBG_API UBattleWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UProgressBar* HPBar;
@@ -27,6 +27,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UTextBlock* Level;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
+		class UTextBlock* CountPlayer;
+
+
 	virtual void NativeConstruct()override;
 
 	void SetHPBar(float Percent);
@@ -36,4 +40,5 @@ public:
 	void SetMoney(int AddMoney);
 
 	void SetLevel(int AddLevel);
+
 };

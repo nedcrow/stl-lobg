@@ -47,6 +47,7 @@ void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 1.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
 		break;
 	case EApplyDamageType::Minion:
+	case EApplyDamageType::Tower:
 		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), 10.0f, PlayerController, this, UBulletDamageType::StaticClass());
 		break;
 	default:
@@ -81,6 +82,11 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	else if (OtherActor->ActorHasTag(TEXT("Minion")))
 	{
 		CurrentDamageType = EApplyDamageType::Minion;
+		ApplyDamageProcess(CurrentDamageType);
+	}
+	else if (OtherActor->ActorHasTag(TEXT("Tower")))
+	{
+		CurrentDamageType = EApplyDamageType::Tower;
 		ApplyDamageProcess(CurrentDamageType);
 	}
 

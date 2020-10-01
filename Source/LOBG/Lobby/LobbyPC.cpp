@@ -7,12 +7,12 @@
 
 void ALobbyPC::BeginPlay() {
 	Super::BeginPlay();
-	if (LobbyWidgetClass) {
+	if (LobbyWidgetClass && IsLocalPlayerController()) {
 		LobbyWidgetObject = CreateWidget<ULobbyWidgetBase>(this, LobbyWidgetClass);
 		LobbyWidgetObject->AddToViewport();
 
 		bShowMouseCursor = true;
-		SetInputMode(FInputModeUIOnly());
+		SetInputMode(FInputModeGameAndUI());
 	}
 }
 

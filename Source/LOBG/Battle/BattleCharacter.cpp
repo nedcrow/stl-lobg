@@ -309,6 +309,11 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			CurrentState = EBattleCharacterState::Dead;
 			FTimerHandle DeadTimer;
 			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
+
+			ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (GM)
+			{
+			}
 		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
