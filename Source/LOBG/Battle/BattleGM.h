@@ -16,6 +16,7 @@ class LOBG_API ABattleGM : public AGameModeBase
 
 public:
 	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	// AIManager
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
@@ -34,15 +35,23 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Player")
 		TSubclassOf<class ABattleCharacter> PlayerClass;
 
-	void LevelUp();
-
-
+	//Towerclass 받기
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object")
 		TSubclassOf<class ATempTower> TempTowerClass;
 
+	//맵상의 타워가 줄어들면 -카운트하고 타워가 0이면 GoLobby실행
 	void CountTower();
 
 	int TowerCount;
 
+	//로비로 돌아가기
 	void GoLobby();
+
+	//팀 나누기
+	void SplitTeam();
+
+	//Red, Blue 팀맴버수
+	int RedPlayerNumber = 0;
+
+	int BluePlayerNumber = 0;
 };

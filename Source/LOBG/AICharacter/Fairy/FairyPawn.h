@@ -29,8 +29,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMeshComponent* Body;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="AMeshesRing")
-	class AMeshesRing* MissileHub;
+	/*UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="AMeshesRing")
+	class AMeshesRing* MissileHub;*/
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
+	class UMeshesRingComponent* MeshesRingComponent;
 
 protected:
 	// Called when the game starts or when spawned

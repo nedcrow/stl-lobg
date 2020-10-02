@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BattlePS.h"
 #include "BattleWidgetBase.h"
+#include "../LOBGGameInstance.h"
 
 
 // Sets default values
@@ -66,6 +67,12 @@ void ABattleCharacter::BeginPlay()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
+	}
+
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		UE_LOG(LogClass, Warning, TEXT("%f TeamColor is %d"), *GI->GetUserID(), GI->TeamColor);
 	}
 }
 

@@ -53,6 +53,10 @@ void UTitleWidgetBase::SaveUserID()
 	if (GI)
 	{
 		FString UserID = UserIDText->GetText().ToString();
+		if (UserID.IsEmpty())
+		{
+			UserID = FString::Printf(TEXT("%dUser"), FMath::RandRange(1, 100));
+		}
 		GI->SetUserID(UserID);
 	}
 }

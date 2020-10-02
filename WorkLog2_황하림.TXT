@@ -27,3 +27,8 @@
 
 0929
   Fix&Test source about fairy folder (CreateDefaultSubobject -> InstanceStaticMesh)
+
+1002
+  Cleanup
+  Merge & Cleanup
+  Fix about fairy instancedMesh (Actor -> Component)
