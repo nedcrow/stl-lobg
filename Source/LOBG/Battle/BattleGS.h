@@ -6,6 +6,8 @@
 #include "GameFramework/GameStateBase.h"
 #include "BattleGS.generated.h"
 
+
+
 /**
  * 
  */

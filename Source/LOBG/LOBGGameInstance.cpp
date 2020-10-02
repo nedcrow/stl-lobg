@@ -5,10 +5,6 @@
 
 FString ULOBGGameInstance::GetUserID()
 {
-	if (UserID.IsEmpty())
-	{
-		return FString::Printf(TEXT("%dUser"), FMath::RandRange(1, 100));
-	}
 	return UserID;
 }
 

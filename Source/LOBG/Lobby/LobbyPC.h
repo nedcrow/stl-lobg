@@ -7,7 +7,7 @@
 #include "LobbyPC.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class LOBG_API ALobbyPC : public APlayerController
@@ -23,9 +23,17 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SendMessage(const FText& Message);
-		void Server_SendMessage_Implementation(const FText& Message);
+	void Server_SendMessage_Implementation(const FText& Message);
 
 	UFUNCTION(Client, Reliable)
 		void Client_SendMessage(const FText& Message);
-		void Client_SendMessage_Implementation(const FText& Message);
+	void Client_SendMessage_Implementation(const FText& Message);
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetTeamColor(const FString& NewName);
+	void Server_SetTeamColor_Implementation(const FString& NewName);
+
+	UFUNCTION(Client, Reliable)
+		void Client_SetTeamColor(const FString& NewName);
+	void Client_SetTeamColor_Implementation(const FString& NewName);
 };

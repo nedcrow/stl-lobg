@@ -24,6 +24,10 @@ public:
 	// Sets default values for this character's properties
 	AAIMinionChar();
 
+	// Components
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
+		class UWeaponComponent* Weapon;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,6 +35,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// For RPC
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -50,4 +57,9 @@ public:
 
 	// MoveTarget
 	class AWaveCoursePoint* CurrentMoveTarget;
+
+	// Fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		uint8 bIsFire : 1;
+	
 };

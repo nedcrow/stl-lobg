@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "BattlePS.generated.h"
 
+
+
 /**
  * 
  */
@@ -42,4 +44,6 @@ public:
 	float NewExp = 0;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//ETeamColor TeamColor;
 };

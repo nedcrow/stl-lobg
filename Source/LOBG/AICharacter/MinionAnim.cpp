@@ -10,9 +10,16 @@ void UMinionAnim::NativeUpdateAnimation(float DeltaSeconds)
 	AAIMinionChar* MinionPawn = Cast<AAIMinionChar>(TryGetPawnOwner());
 	if (MinionPawn && MinionPawn->IsValidLowLevelFast())
 	{
-		// Move
+		// State
 		CurrentState = MinionPawn->CurrentState;
 
+		// Move
 		MoveSpeed = MinionPawn->GetCharacterMovement()->Velocity.Size();
+
+		// IsFire
+		bIsFire = MinionPawn->bIsFire;
+
+		// AimPitch
+		//AimPitch = MinionPawn
 	}
 }

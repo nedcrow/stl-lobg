@@ -31,4 +31,18 @@ public:
 	// About chatting
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UChattingWidgetBase* ChattingWidget;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UScrollBox* RedTeamSlot;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UScrollBox* BlueTeamSlot;
+
+	void InitSlot();
+
+	void SplitTeam(FString UserID);
+
+	int IsEmptySlot();
+
+	void SetSlot(int SlotIndex, FString UserID);
 };

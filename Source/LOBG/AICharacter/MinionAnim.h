@@ -25,5 +25,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		float MoveSpeed;
 
+	// Fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsFire : 1;
 
+	// Aim
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		float AimPitch;
 };
