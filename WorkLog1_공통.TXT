@@ -121,6 +121,10 @@
 스켈레탈메시컴포넌트로 웨폰컴포넌트 클래스 생성. AI캐릭터에 장착. 무기 메시 적용.
 이미시브 총알 그림자 생성 안되게 수정.
 
+1002
+  Merge & Cleanup
+  Fix about fairy instancedMesh (Actor -> Component)
+
 
 
 

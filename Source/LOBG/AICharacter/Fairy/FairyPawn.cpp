@@ -8,6 +8,7 @@
 #include "Perception/PawnSensingComponent.h"
 
 #include "MeshesRing.h"
+#include "MeshesRingComponent.h"
 #include "FairyAIController.h"
 
 // Sets default values
@@ -23,8 +24,11 @@ AFairyPawn::AFairyPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	MissileHub = CreateDefaultSubobject<AMeshesRing>(TEXT("MissileHub"));
-	MissileHub->GetRootComponent()->SetupAttachment(Body);
+	//MissileHub = CreateDefaultSubobject<AMeshesRing>(TEXT("MissileHub"));
+	//MissileHub->GetRootComponent()->SetupAttachment(Body);
+
+	MeshesRingComponent = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("MeshesRingComponent"));
+	MeshesRingComponent->SetupAttachment(Body);
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;

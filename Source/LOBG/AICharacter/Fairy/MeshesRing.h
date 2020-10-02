@@ -30,6 +30,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Base property
+	float OneDegree = 0.01745; // = pi / 180 radian
+	float OneRadian = 57.2958; // = 180 / pi degree
 	FTransform* TempTransform;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")

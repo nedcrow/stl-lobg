@@ -3,40 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "MeshesRingComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LOBG_API UMeshesRingComponent : public USceneComponent
+/**
+ *
+ */
+UCLASS()
+class LOBG_API UMeshesRingComponent : public UInstancedStaticMeshComponent
 {
 	GENERATED_BODY()
-
-public:	
-	// Sets default values for this component's properties
+public:
 	UMeshesRingComponent();
 
-protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Base property
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Mesh")
-	class UStaticMesh* Mesh;
+	float OneDegree = 0.01745; // = pi / 180 radian
+	float OneRadian = 57.2958; // = 180 / pi degree
+	FTransform* TempTransform;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
-	int MeshCount = 1;
+		int MeshCount = 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
-	float Radius = 32.f;
+		float Radius = 32.f;
 
 	// About rotate
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
-	float Speed = 100.f;
+		float Speed = 100.f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
-	uint8 bIsRotatable : 1;
+		uint8 bIsRotatable : 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
-	uint8 bIsLookBody : 1;
+		uint8 bIsLookBody : 1;
+
+	void RotateAround(float DeltaTime);
 };
