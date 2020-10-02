@@ -5,11 +5,13 @@
 
 #include "MinionAIC.h"
 #include "../Weapon/WeaponComponent.h"
+#include "../Weapon/EmissiveBullet.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAIMinionChar::AAIMinionChar()
@@ -73,5 +75,44 @@ void AAIMinionChar::SetState(EMinioonState NewState)
 	{
 		MinionAIC->SetValueState(NewState);
 	}
+}
+
+// Fire
+void AAIMinionChar::OnFire()
+{
+	// 액터 방향 구하기
+	// 총알 스폰
+	if (ProjectileClass != NULL)
+	{
+		UWorld* const World = GetWorld();
+		if (World != NULL)
+		{
+			const FRotator SpawnRotation = GetControlRotation();
+			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("WeaponSocket")) : GetActorLocation() + SpawnRotation.RotateVector(FVector(100.0f, 0.0f, 10.0f));
+
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			// spawn the projectile at the muzzle
+			World->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+		}
+	}
+	else
+	{
+		return;
+	}
+
+	// 소리 스폰
+
+	// 사격 몽타주 재생
+	if (FireMontage)
+	{
+		PlayAnimMontage(FireMontage, 1.f, TEXT("Fire_Rifle_Hip"));
+	}
+
+
 }
 

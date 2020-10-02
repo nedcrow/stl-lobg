@@ -14,4 +14,6 @@ class LOBG_API UWeaponComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 	
+public:
+
 };

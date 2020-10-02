@@ -148,7 +148,7 @@ public:
 	void NetMulticast_StartDeath_Implementation(int Index);
 
 	// Reload
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Data")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* ReloadMontage;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")

@@ -36,7 +36,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// For RPC
+	// Network
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called to bind functionality to input
@@ -61,5 +61,16 @@ public:
 	// Fire
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsFire : 1;
-	
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+		TSubclassOf<class AEmissiveBullet> ProjectileClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* FireMontage;
+
+	void OnFire();
+
+	//UFUNCTION(Server, Reliable)
+	//	void Server_ProcessFire(FVector StartLine, FVector EndLine);
+	//void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
+
+
 };
