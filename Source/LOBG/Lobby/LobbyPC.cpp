@@ -51,9 +51,18 @@ void ALobbyPC::Server_SetTeamColor_Implementation(const FString& NewName)
 			PC->Client_SetTeamColor(NewName);
 		}
 	}
+	//NetMulticast_SetTeamColor(NewName);
 }
 
 void ALobbyPC::Client_SetTeamColor_Implementation(const FString& NewName)
+{
+	if (LobbyWidgetObject)
+	{
+		LobbyWidgetObject->SplitTeam(NewName);
+	}
+}
+
+void ALobbyPC::NetMulticast_SetTeamColor_Implementation(const FString& NewName)
 {
 	if (LobbyWidgetObject)
 	{

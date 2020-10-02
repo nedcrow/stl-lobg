@@ -6,6 +6,7 @@
 #include "UI/LobbyWidgetBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/TeamSlot.h"
 
 void ALobbyGS::OnRepConnectCount()
 {
@@ -21,4 +22,9 @@ void ALobbyGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALobbyGS, ConnectCount);
+}
+
+void ALobbyGS::AddSlotArray(UTeamSlot* NewSlot)
+{
+	SlotArray.Add(NewSlot);
 }

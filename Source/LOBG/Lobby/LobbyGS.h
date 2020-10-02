@@ -22,4 +22,8 @@ public:
 		void OnRepConnectCount();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	TArray<class UTeamSlot*> SlotArray;
+
+	void AddSlotArray(class UTeamSlot* NewSlot);
 };

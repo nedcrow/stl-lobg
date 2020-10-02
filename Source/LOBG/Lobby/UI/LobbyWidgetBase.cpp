@@ -80,12 +80,48 @@ void ULobbyWidgetBase::InitSlot()
 	}
 }
 
+void ULobbyWidgetBase::SetOtherClientSlot()
+{
+	
+	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		UE_LOG(LogClass, Warning, TEXT("SlotArray num is %d"), GS->SlotArray.Num());
+		
+		if (GS->SlotArray.Num() != 0)
+		{
+					
+			for (int i = 0; i < GS->SlotArray.Num(); ++i)
+			{
+				int FindIndex = IsEmptySlot();
+				if (FindIndex > -1)
+				{
+					FString NewName = GS->SlotArray[i]->UserName->GetText().ToString();
+					SetSlot(FindIndex, NewName);
+				}
+			}
+		}
+	}
+}
+
 void ULobbyWidgetBase::SplitTeam(FString UserID)
 {
-	//ÆÀ ³ª´©±â
+	ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
+	if (GI)
+	{
+		if (GI->GetUserID() == UserID)
+		{
+			SetOtherClientSlot();
+		}
+	}
 	ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
 	if (PC)
 	{
+		if (PC->IsLocalPlayerController())
+		{
+			
+		}
+		
 		int FindIndex = IsEmptySlot();
 		if (FindIndex > -1)
 		{
@@ -129,11 +165,13 @@ void ULobbyWidgetBase::SetSlot(int SlotIndex, FString UserID)
 				UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(SlotIndex - 11));
 				if (BlueSlot && BlueSlot->bUse == false)
 				{
-					BlueSlot->bUse = true;
-					BlueSlot->SetColor(FLinearColor::Blue);
-					BlueSlot->SetUserName(UserID);
+					//BlueSlot->bUse = true;
+					//BlueSlot->SetColor(FLinearColor::Blue);
+					//BlueSlot->SetUserName(UserID);
+					//BlueSlot->SetVisibility(ESlateVisibility::Visible);
+					//AddSlotArray(BlueSlot);
 					GI->TeamColor = ETeamColor::Blue;
-					BlueSlot->SetVisibility(ESlateVisibility::Visible);
+					BlueSlot->TestRule(UserID);
 				}
 			}
 			else
@@ -141,14 +179,33 @@ void ULobbyWidgetBase::SetSlot(int SlotIndex, FString UserID)
 				UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(SlotIndex));
 				if (RedSlot && RedSlot->bUse == false)
 				{
-					RedSlot->bUse = true;
-					RedSlot->SetColor(FLinearColor::Red);
-					RedSlot->SetUserName(UserID);
+					//RedSlot->bUse = true;
+					//RedSlot->SetColor(FLinearColor::Red);
+					//RedSlot->SetUserName(UserID);
+					//GI->TeamColor = ETeamColor::Red;
+					//RedSlot->SetVisibility(ESlateVisibility::Visible);
+					//ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
+					//if (GS)
+					//{
+					//	//GS->SlotArray.Add(RedSlot);
+					//	AddSlotArray(RedSlot);
+					//}
 					GI->TeamColor = ETeamColor::Red;
-					RedSlot->SetVisibility(ESlateVisibility::Visible);
+					RedSlot->TestRule(UserID);
 				}
 			}
 		}
+	}
+}
+
+
+
+void ULobbyWidgetBase::AddSlotArray(UTeamSlot* NewSlot)
+{
+	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		GS->AddSlotArray(NewSlot);
 	}
 }
 

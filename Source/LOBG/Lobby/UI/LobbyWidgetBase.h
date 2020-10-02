@@ -40,9 +40,13 @@ public:
 
 	void InitSlot();
 
+	void SetOtherClientSlot();
+
 	void SplitTeam(FString UserID);
 
 	int IsEmptySlot();
 
 	void SetSlot(int SlotIndex, FString UserID);
+
+	void AddSlotArray(class UTeamSlot* NewSlot);
 };

@@ -4,7 +4,9 @@
 #include "TeamSlot.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
-
+#include "LobbyWidgetBase.h"
+#include "../LobbyGS.h"
+#include "Kismet/GameplayStatics.h"
 
 void UTeamSlot::NativeConstruct()
 {
@@ -22,4 +24,18 @@ void UTeamSlot::SetColor(FLinearColor NewColor)
 void UTeamSlot::SetUserName(FString NewName)
 {
 	UserName->SetText(FText::FromString(NewName));
+}
+
+void UTeamSlot::TestRule(FString NewName)
+{
+	bUse = true;
+	SetColor(FLinearColor::Blue);
+	SetUserName(NewName);
+	SetVisibility(ESlateVisibility::Visible);
+	
+	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		GS->AddSlotArray(this);
+	}
 }

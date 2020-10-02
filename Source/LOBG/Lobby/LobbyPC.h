@@ -36,4 +36,8 @@ public:
 	UFUNCTION(Client, Reliable)
 		void Client_SetTeamColor(const FString& NewName);
 	void Client_SetTeamColor_Implementation(const FString& NewName);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_SetTeamColor(const FString& NewName);
+	void NetMulticast_SetTeamColor_Implementation(const FString& NewName);
 };
