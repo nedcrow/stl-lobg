@@ -72,7 +72,7 @@ void ABattleCharacter::BeginPlay()
 	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 	if (GI)
 	{
-		UE_LOG(LogClass, Warning, TEXT("%f TeamColor is %d"), *GI->GetUserID(), GI->TeamColor);
+		UE_LOG(LogClass, Warning, TEXT("%s TeamColor is %d"), *GI->GetUserID(), GI->TeamColor);
 	}
 }
 

@@ -23,8 +23,3 @@ void ALobbyGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 
 	DOREPLIFETIME(ALobbyGS, ConnectCount);
 }
-
-void ALobbyGS::AddSlotArray(UTeamSlot* NewSlot)
-{
-	SlotArray.Add(NewSlot);
-}

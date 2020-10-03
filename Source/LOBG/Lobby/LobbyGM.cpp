@@ -3,6 +3,9 @@
 
 #include "LobbyGM.h"
 #include "LobbyGS.h"
+#include "LobbyPC.h"
+#include "UI/LobbyWidgetBase.h"
+#include "../LOBGGameInstance.h"
 
 void ALobbyGM::PostLogin(APlayerController* NewPlayer) {
 	Super::PostLogin(NewPlayer);
@@ -34,6 +37,24 @@ void ALobbyGM::CountConnect()
 		for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++) {
 			GS->ConnectCount++;
 			GS->OnRepConnectCount();
+		}
+	}
+}
+
+void ALobbyGM::MakeTeam(ALobbyPC* NewController, const FString& UserName)
+{
+	if (NewController)
+	{
+		UserNameArray.Emplace(UserName);
+
+		for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+		{
+			ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
+			if (PC)
+			{
+				//if(PC->LobbyWidgetObject)로 검사하는거 하면 실행안됨 왜?
+				PC->Client_SplitTeam(UserNameArray);
+			}
 		}
 	}
 }

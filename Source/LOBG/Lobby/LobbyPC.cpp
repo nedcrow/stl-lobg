@@ -5,6 +5,8 @@
 #include "UI/LobbyWidgetBase.h"
 #include "UI/ChattingWidgetBase.h"
 #include "../LOBGGameInstance.h"
+#include "LobbyGM.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALobbyPC::BeginPlay() {
 	Super::BeginPlay();
@@ -18,15 +20,16 @@ void ALobbyPC::BeginPlay() {
 		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 		if (GI)
 		{
-			const FString UserName = GI->GetUserID();
-			Server_SetTeamColor(UserName);
+			MyUserID = GI->GetUserID();
 		}
+		Server_BeginPC(MyUserID);
 	}
 }
 
 void ALobbyPC::Server_SendMessage_Implementation(const FText& Message)
 {
 	if (LobbyWidgetObject) {
+
 		LobbyWidgetObject->ChattingWidget->AddMessage(Message);
 	}
 }
@@ -41,31 +44,30 @@ void ALobbyPC::Client_SendMessage_Implementation(const FText& Message)
 	}
 }
 
-void ALobbyPC::Server_SetTeamColor_Implementation(const FString& NewName)
+FString ALobbyPC::GetGIUserID()
 {
-	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++)
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
 	{
-		ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
-		if (PC)
-		{
-			PC->Client_SetTeamColor(NewName);
-		}
+		return GI->GetUserID();
 	}
-	//NetMulticast_SetTeamColor(NewName);
+	return FString();
 }
 
-void ALobbyPC::Client_SetTeamColor_Implementation(const FString& NewName)
+void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& NewArray)
 {
-	if (LobbyWidgetObject)
+	if (IsLocalPlayerController() && LobbyWidgetObject)
 	{
-		LobbyWidgetObject->SplitTeam(NewName);
+		LobbyWidgetObject->SplitTeam(NewArray);
+		
 	}
 }
 
-void ALobbyPC::NetMulticast_SetTeamColor_Implementation(const FString& NewName)
+void ALobbyPC::Server_BeginPC_Implementation(const FString& UserName)
 {
-	if (LobbyWidgetObject)
+	ALobbyGM* GM = Cast<ALobbyGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
 	{
-		LobbyWidgetObject->SplitTeam(NewName);
+		GM->MakeTeam(this, UserName);
 	}
 }

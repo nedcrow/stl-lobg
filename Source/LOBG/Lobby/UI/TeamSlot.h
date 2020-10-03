@@ -26,6 +26,4 @@ public:
     void SetUserName(FString NewName);
 
     bool bUse = false;
-
-    void TestRule(FString NewName);
 };

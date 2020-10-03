@@ -9,8 +9,9 @@
 UENUM(BlueprintType)
 enum class ETeamColor : uint8
 {
-	Red = 0 UMETA(Display = "Red"),
-	Blue = 1 UMETA(Display = "Blue"),
+	None = 0 UMETA(Display = "None"),
+	Red = 1 UMETA(Display = "Red"),
+	Blue = 2 UMETA(Display = "Blue"),
 };
 
 /**
@@ -29,5 +30,5 @@ public:
 	void SetUserID(FString NewUserID);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
-		ETeamColor TeamColor;
+		ETeamColor TeamColor = ETeamColor::None;
 };

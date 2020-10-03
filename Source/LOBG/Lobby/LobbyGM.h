@@ -21,4 +21,7 @@ public:
 
 	void StartGame();
 	void CountConnect();
+	void MakeTeam(class ALobbyPC* NewController, const FString& UserName);
+
+	TArray<FString> UserNameArray;
 };

@@ -29,15 +29,15 @@ public:
 		void Client_SendMessage(const FText& Message);
 	void Client_SendMessage_Implementation(const FText& Message);
 
-	UFUNCTION(Server, Reliable)
-		void Server_SetTeamColor(const FString& NewName);
-	void Server_SetTeamColor_Implementation(const FString& NewName);
+	FString GetGIUserID();
+
+	FString MyUserID;
 
 	UFUNCTION(Client, Reliable)
-		void Client_SetTeamColor(const FString& NewName);
-	void Client_SetTeamColor_Implementation(const FString& NewName);
+		void Client_SplitTeam(const TArray<FString>& NewArray);
+	void Client_SplitTeam_Implementation(const TArray<FString>& NewArray);
 
-	UFUNCTION(NetMulticast, Reliable)
-		void NetMulticast_SetTeamColor(const FString& NewName);
-	void NetMulticast_SetTeamColor_Implementation(const FString& NewName);
+	UFUNCTION(Server, Reliable)
+		void Server_BeginPC(const FString& UserName);
+		void Server_BeginPC_Implementation(const FString& UserName);
 };

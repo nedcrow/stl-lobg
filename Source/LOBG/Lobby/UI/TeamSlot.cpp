@@ -25,17 +25,3 @@ void UTeamSlot::SetUserName(FString NewName)
 {
 	UserName->SetText(FText::FromString(NewName));
 }
-
-void UTeamSlot::TestRule(FString NewName)
-{
-	bUse = true;
-	SetColor(FLinearColor::Blue);
-	SetUserName(NewName);
-	SetVisibility(ESlateVisibility::Visible);
-	
-	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GS)
-	{
-		GS->AddSlotArray(this);
-	}
-}

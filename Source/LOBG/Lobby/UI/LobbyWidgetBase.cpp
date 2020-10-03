@@ -22,11 +22,13 @@ void ULobbyWidgetBase::NativeConstruct()
 	RedTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("RedTeamSlot")));
 	BlueTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("BlueTeamSlot")));
 
-	if (StartGameButton) {
+	if (StartGameButton)
+	{
 		StartGameButton->OnClicked.AddDynamic(this, &ULobbyWidgetBase::OnStartGameButton);
 	}
 
-	if (ConnectCount) {
+	if (ConnectCount)
+	{
 		ConnectCount->SetText(FText::FromString("1"));
 	}
 
@@ -36,14 +38,16 @@ void ULobbyWidgetBase::NativeConstruct()
 void ULobbyWidgetBase::OnStartGameButton()
 {
 	ALobbyGM* GM = Cast<ALobbyGM>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GM) {
+	if (GM)
+	{
 		GM->StartGame();
 	}
 } // 게임 시작은 방장의 권한
 
 void ULobbyWidgetBase::HideStartGameButton()
 {
-	if (StartGameButton) {
+	if (StartGameButton)
+	{
 		StartGameButton->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
@@ -51,7 +55,8 @@ void ULobbyWidgetBase::HideStartGameButton()
 void ULobbyWidgetBase::SetConnectCount(int Value)
 {
 	FString Temp = FString::Printf(TEXT("%d"), Value);
-	if (ConnectCount) {
+	if (ConnectCount)
+	{
 		ConnectCount->SetText(FText::FromString(Temp));
 	}
 }
@@ -80,56 +85,6 @@ void ULobbyWidgetBase::InitSlot()
 	}
 }
 
-void ULobbyWidgetBase::SetOtherClientSlot()
-{
-	
-	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GS)
-	{
-		UE_LOG(LogClass, Warning, TEXT("SlotArray num is %d"), GS->SlotArray.Num());
-		
-		if (GS->SlotArray.Num() != 0)
-		{
-					
-			for (int i = 0; i < GS->SlotArray.Num(); ++i)
-			{
-				int FindIndex = IsEmptySlot();
-				if (FindIndex > -1)
-				{
-					FString NewName = GS->SlotArray[i]->UserName->GetText().ToString();
-					SetSlot(FindIndex, NewName);
-				}
-			}
-		}
-	}
-}
-
-void ULobbyWidgetBase::SplitTeam(FString UserID)
-{
-	ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
-	if (GI)
-	{
-		if (GI->GetUserID() == UserID)
-		{
-			SetOtherClientSlot();
-		}
-	}
-	ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
-	if (PC)
-	{
-		if (PC->IsLocalPlayerController())
-		{
-			
-		}
-		
-		int FindIndex = IsEmptySlot();
-		if (FindIndex > -1)
-		{
-			SetSlot(FindIndex, UserID);
-		}
-	}
-}
-
 int ULobbyWidgetBase::IsEmptySlot()
 {
 	for (int i = 0; i < RedTeamSlot->GetChildrenCount(); ++i)
@@ -152,60 +107,89 @@ int ULobbyWidgetBase::IsEmptySlot()
 	return -1;
 }
 
-void ULobbyWidgetBase::SetSlot(int SlotIndex, FString UserID)
+void ULobbyWidgetBase::SplitTeam(const TArray<FString>& NewNames)
 {
-	ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
-	if (PC)
+	int FindIndex = IsEmptySlot();
+	if (FindIndex == 0)
 	{
 		ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
 		if (GI)
 		{
-			if (SlotIndex > 10)
+			for (int i = 0; i < NewNames.Num() - 1; ++i)
 			{
-				UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(SlotIndex - 11));
+				if (FindIndex > -1)
+				{
+					if (FindIndex > 10)
+					{
+						UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(FindIndex - 11));
+						if (BlueSlot && BlueSlot->bUse == false)
+						{
+							BlueSlot->bUse = true;
+							BlueSlot->SetColor(FLinearColor::Blue);
+							BlueSlot->SetUserName(NewNames[i]);
+							BlueSlot->SetVisibility(ESlateVisibility::Visible);
+						}
+					}
+					else
+					{
+						UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(FindIndex));
+						if (RedSlot && RedSlot->bUse == false)
+						{
+							RedSlot->bUse = true;
+							RedSlot->SetColor(FLinearColor::Red);
+							RedSlot->SetUserName(NewNames[i]);
+							RedSlot->SetVisibility(ESlateVisibility::Visible);
+						}
+					}
+				}
+				FindIndex = IsEmptySlot();
+			}
+		}
+	}
+	if (FindIndex > -1)
+	{
+		ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
+		if (GI)
+		{
+			if (FindIndex > 10)
+			{
+				UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(FindIndex - 11));
 				if (BlueSlot && BlueSlot->bUse == false)
 				{
-					//BlueSlot->bUse = true;
-					//BlueSlot->SetColor(FLinearColor::Blue);
-					//BlueSlot->SetUserName(UserID);
-					//BlueSlot->SetVisibility(ESlateVisibility::Visible);
-					//AddSlotArray(BlueSlot);
-					GI->TeamColor = ETeamColor::Blue;
-					BlueSlot->TestRule(UserID);
+					BlueSlot->bUse = true;
+					BlueSlot->SetColor(FLinearColor::Blue);
+					BlueSlot->SetUserName(NewNames.Last());
+					BlueSlot->SetVisibility(ESlateVisibility::Visible);
+
+					ALobbyPC* PC = Cast<ALobbyPC>(GetOwningPlayer());
+					if (PC && PC->IsLocalPlayerController())
+					{
+						GI->TeamColor = ETeamColor::Blue;
+						UE_LOG(LogClass, Warning, TEXT("TeamColor Blue"));
+					}
+					
 				}
 			}
 			else
 			{
-				UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(SlotIndex));
+				UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(FindIndex));
 				if (RedSlot && RedSlot->bUse == false)
 				{
-					//RedSlot->bUse = true;
-					//RedSlot->SetColor(FLinearColor::Red);
-					//RedSlot->SetUserName(UserID);
-					//GI->TeamColor = ETeamColor::Red;
-					//RedSlot->SetVisibility(ESlateVisibility::Visible);
-					//ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
-					//if (GS)
-					//{
-					//	//GS->SlotArray.Add(RedSlot);
-					//	AddSlotArray(RedSlot);
-					//}
-					GI->TeamColor = ETeamColor::Red;
-					RedSlot->TestRule(UserID);
+					RedSlot->bUse = true;
+					RedSlot->SetColor(FLinearColor::Red);
+					RedSlot->SetUserName(NewNames.Last());
+					RedSlot->SetVisibility(ESlateVisibility::Visible);
+
+					ALobbyPC* PC = Cast<ALobbyPC>(GetOwningPlayer());
+					if (PC && PC->IsLocalPlayerController())
+					{
+						GI->TeamColor = ETeamColor::Red;
+						UE_LOG(LogClass, Warning, TEXT("TeamColor Red"));
+					}
+					
 				}
 			}
 		}
-	}
-}
-
-
-
-void ULobbyWidgetBase::AddSlotArray(UTeamSlot* NewSlot)
-{
-	ALobbyGS* GS = Cast<ALobbyGS>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GS)
-	{
-		GS->AddSlotArray(NewSlot);
 	}
 }
 
