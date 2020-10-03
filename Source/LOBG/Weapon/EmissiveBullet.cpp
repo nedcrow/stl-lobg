@@ -72,7 +72,9 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 	{
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
+		//Destroy();
 	}
+
+	SetLifeSpan(0.2f);
 }
 
