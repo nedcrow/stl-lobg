@@ -13,6 +13,13 @@ enum class EFairyState : uint8 {
 	Death = 2 UMETA(Display = Death),
 };
 
+UENUM()
+enum class ETeam : uint8 {
+	TeamBlue = 0 UMETA(Display = TeamBlue),
+	TeamRed = 1 UMETA(Display = TeamRed),
+	Neutral = 2 UMETA(Display = Neutral),
+};
+
 UCLASS()
 class LOBG_API AFairyPawn : public APawn
 {
@@ -28,9 +35,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMeshComponent* Body;
-
-	/*UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="AMeshesRing")
-	class AMeshesRing* MissileHub;*/
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
 	class UMeshesRingComponent* MeshesRingComponent;
@@ -63,7 +67,11 @@ public:
 	UFUNCTION()
 	void OnRepCurrentHP();
 
+
 	// State & AI ref
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	ETeam CurrentTeam;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 	EFairyState CurrentState;
 
@@ -73,11 +81,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UBehaviorTree* BTFairy;
 
+
 	// Sensing
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UPawnSensingComponent* PawnSensingComponent;
 
-	// process after saw something
 	UFUNCTION()
 	void ProcessSeenPawn(APawn* Pawn);
+
+
+	// fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	uint8 bIsEndFire : 1;
+
+	UFUNCTION()
+	void StartFireTo(FVector TargetLocation);
+
+	UFUNCTION()
+	void EndFire();
 };

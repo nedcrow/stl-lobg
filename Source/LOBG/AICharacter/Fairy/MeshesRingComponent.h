@@ -23,7 +23,7 @@ public:
 	// Base property
 	float OneDegree = 0.01745; // = pi / 180 radian
 	float OneRadian = 57.2958; // = 180 / pi degree
-	FTransform* TempTransform;
+	TArray<FTransform> SpawnTransforms;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		int MeshCount = 1;
@@ -39,4 +39,10 @@ public:
 		uint8 bIsLookBody : 1;
 
 	void RotateAround(float DeltaTime);
+
+	UFUNCTION()
+	void RemoveOne();
+
+	UFUNCTION()
+	void AddOne();
 };

@@ -131,6 +131,7 @@
 원하는 결과가 나오지 않음
 
 1002
+  황하림
   Merge & Cleanup
   Fix about fairy instancedMesh (Actor -> Component)
 
@@ -148,6 +149,9 @@ AI 공격함수 기본틀 작성.
 문제는 UI네트워크 동기화 중에 다른 플레이어의 TeamColor를 바꿔버리는 문제 발생
 내일 해결할 예정
 
+1004
+  황하림
+  Fix about fairy instancedMesh (remove, add, etc)
 
 
 

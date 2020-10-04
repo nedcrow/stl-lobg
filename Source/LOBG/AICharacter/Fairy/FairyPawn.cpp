@@ -6,10 +6,13 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "MeshesRing.h"
 #include "MeshesRingComponent.h"
 #include "FairyAIController.h"
+#include "Engine/StaticMeshActor.h"
+//#include "../../Weapon/BulletBase.h"
 
 // Sets default values
 AFairyPawn::AFairyPawn()
@@ -24,15 +27,13 @@ AFairyPawn::AFairyPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	//MissileHub = CreateDefaultSubobject<AMeshesRing>(TEXT("MissileHub"));
-	//MissileHub->GetRootComponent()->SetupAttachment(Body);
-
 	MeshesRingComponent = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("MeshesRingComponent"));
 	MeshesRingComponent->SetupAttachment(Body);
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
 
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeam"), true);
 }
 
 // Called when the game starts or when spawned
@@ -102,7 +103,7 @@ void AFairyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 void AFairyPawn::OnRepCurrentHP()
 {
-	// HP bar UI 변경
+	// HP UI 변경
 }
 
 // Blackboard 포함한 State 변경
@@ -116,20 +117,39 @@ void AFairyPawn::SetCurrentState(EFairyState NewState)
 	}
 }
 
-// 알림 및 피사체 발사
+// Sensing
 void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 {
-	// 발견 알림
 	if (CurrentState == EFairyState::Idle) {
 		SetCurrentState(EFairyState::Fight);
 		//Set Blackboard Value
 		AFairyAIController* AIC = GetController<AFairyAIController>();
-		if (AIC)
+		if (AIC) // CurrentTeam 체크 필요
 		{
 			AIC->SetEnemy(Pawn);
+			StartFireTo(Pawn->GetActorLocation());
 		}
 	}
 
 
 }
+
+// Fire
+void AFairyPawn::StartFireTo(FVector TargetLocation)
+{
+	if (!bIsEndFire) {
+		FVector StartLocation = MeshesRingComponent->InstanceBodies[MeshesRingComponent->GetInstanceCount() - 1]->GetUnrealWorldTransform().GetLocation();
+		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+		MeshesRingComponent->RemoveOne();
+		AStaticMeshActor* Missile = GetWorld()->SpawnActor<AStaticMeshActor>(MeshesRingComponent->GetStaticMesh()->GetClass(), StartLocation, StartDirection);
+		// Missile 발사
+	}
+}
+
+void AFairyPawn::EndFire()
+{
+	bIsEndFire = true;
+}
+
+
 

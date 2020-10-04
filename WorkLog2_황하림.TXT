@@ -32,3 +32,6 @@
   Cleanup
   Merge & Cleanup
   Fix about fairy instancedMesh (Actor -> Component)
+
+1004
+  Fix about fairy instancedMesh (remove, add, etc)
