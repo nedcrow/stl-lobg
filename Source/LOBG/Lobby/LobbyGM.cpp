@@ -7,7 +7,8 @@
 #include "UI/LobbyWidgetBase.h"
 #include "../LOBGGameInstance.h"
 
-void ALobbyGM::PostLogin(APlayerController* NewPlayer) {
+void ALobbyGM::PostLogin(APlayerController* NewPlayer)
+{
 	Super::PostLogin(NewPlayer);
 	CountConnect();
 }
@@ -32,29 +33,33 @@ void ALobbyGM::StartGame()
 void ALobbyGM::CountConnect()
 {
 	ALobbyGS* GS = GetGameState<ALobbyGS>();
-	if (GS) {
+	if (GS)
+	{
 		GS->ConnectCount = 0;
-		for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++) {
+		for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++)
+		{
 			GS->ConnectCount++;
 			GS->OnRepConnectCount();
 		}
 	}
 }
 
-void ALobbyGM::MakeTeam(ALobbyPC* NewController, const FString& UserName)
+void ALobbyGM::MakeTeam(const FString& UserName)
 {
-	if (NewController)
-	{
-		UserNameArray.Emplace(UserName);
+	//추가된 플레이어의 이름을 배열에 추가
+	UserNameArray.Emplace(UserName);
 
-		for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+	{
+		ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
+		if (PC)
 		{
-			ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
-			if (PC)
-			{
-				//if(PC->LobbyWidgetObject)로 검사하는거 하면 실행안됨 왜?
-				PC->Client_SplitTeam(UserNameArray);
-			}
+			//if(PC->LobbyWidgetObject)로 검사하는거 하면 실행안됨 왜?
+			//서버에 있는 PC라서 LobbyWidgetObject가 없기 때문에
+
+			//각 PC에 슬롯 동기화
+			PC->Client_SplitTeam(UserNameArray);
 		}
 	}
+
 }

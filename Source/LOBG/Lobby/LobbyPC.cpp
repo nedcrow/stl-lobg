@@ -17,12 +17,12 @@ void ALobbyPC::BeginPlay() {
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeGameAndUI());
 
+		//플레이어 아이디를 가지고 서버에 보낸다
 		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 		if (GI)
 		{
-			MyUserID = GI->GetUserID();
+			Server_BeginPC(GI->GetUserID());
 		}
-		Server_BeginPC(MyUserID);
 	}
 }
 
@@ -44,16 +44,6 @@ void ALobbyPC::Client_SendMessage_Implementation(const FText& Message)
 	}
 }
 
-FString ALobbyPC::GetGIUserID()
-{
-	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-	if (GI)
-	{
-		return GI->GetUserID();
-	}
-	return FString();
-}
-
 void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& NewArray)
 {
 	if (IsLocalPlayerController() && LobbyWidgetObject)
@@ -68,6 +58,6 @@ void ALobbyPC::Server_BeginPC_Implementation(const FString& UserName)
 	ALobbyGM* GM = Cast<ALobbyGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
-		GM->MakeTeam(this, UserName);
+		GM->MakeTeam(UserName);
 	}
 }

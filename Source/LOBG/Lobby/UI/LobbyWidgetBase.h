@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "../../LOBGGameInstance.h"
 #include "LobbyWidgetBase.generated.h"
 
 /**
@@ -32,15 +33,25 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UChattingWidgetBase* ChattingWidget;
 
+	//TeamSlot
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UScrollBox* RedTeamSlot;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UScrollBox* BlueTeamSlot;
 
+	//SlotÃÊ±âÈ­
 	void InitSlot();
 
+	//ºó½½·Ô È®ÀÎ
 	int IsEmptySlot();
 
+	//ÆÀ³ª´©±â
 	void SplitTeam(const TArray<FString>& NewNames);
+
+	//½½·Ô¼³Á¤
+	ETeamColor SetSlot(FString UserName, int Index);
+
+	//ÇÃ·¹ÀÌ¾îÀÇ ÆÀ»ö±ò ¼³Á¤
+	void SetGITeamColor(ETeamColor Color);
 };

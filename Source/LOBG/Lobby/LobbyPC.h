@@ -29,10 +29,6 @@ public:
 		void Client_SendMessage(const FText& Message);
 	void Client_SendMessage_Implementation(const FText& Message);
 
-	FString GetGIUserID();
-
-	FString MyUserID;
-
 	UFUNCTION(Client, Reliable)
 		void Client_SplitTeam(const TArray<FString>& NewArray);
 	void Client_SplitTeam_Implementation(const TArray<FString>& NewArray);
