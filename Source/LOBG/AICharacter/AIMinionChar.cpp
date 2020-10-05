@@ -66,6 +66,7 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 		return;
 	}
 
+	UE_LOG(LogClass, Warning, TEXT("ProcessSeenPawn()"));
 
 	if (Pawn->ActorHasTag("Minion"))
 	{
@@ -89,9 +90,16 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 		//}
 	}
 
-	AMinionAIC* MinionAIC = GetController<AMinionAIC>();
+	//AMinionAIC* MinionAIC = GetController<AMinionAIC>();
+	//if (MinionAIC)
+	//{
+	//}
+
+
+	AMinionAIC* MinionAIC = Cast<AMinionAIC>(GetController());
 	if (MinionAIC)
 	{
+		MinionAIC->SetValueTargetPawn(Pawn);
 	}
 
 	SetState(EMinioonState::Battle);
