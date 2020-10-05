@@ -38,4 +38,6 @@
 
 1005
   Fix LobbyPC (Chatting)
+  Fix fairy tags
+  Test fairy damage
   

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "FairyPawn.h"
@@ -14,6 +14,7 @@
 #include "MeshesRingComponent.h"
 #include "FairyAIController.h"
 #include "Engine/StaticMeshActor.h"
+#include "UObject/Class.h"
 //#include "../../Weapon/BulletBase.h"
 
 // Sets default values
@@ -34,15 +35,14 @@ AFairyPawn::AFairyPawn()
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
-
-	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeam"), true);
-	Tags.Add(TEXT("Tower"));
 }
 
 // Called when the game starts or when spawned
 void AFairyPawn::BeginPlay()
 {
 	Super::BeginPlay();	
+
+	NetMulticast_ResetTags(TEXT("None"));
 
 	CurrentHP = MaxHP;
 
@@ -52,8 +52,6 @@ void AFairyPawn::BeginPlay()
 	{
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
-
-	//UE_LOG(LogClass, Warning, TEXT("Test_%d"), MissileHub->Meshes->Num());
 }
 
 // Called every frame
@@ -76,24 +74,25 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 	{
 		return 0.0f;
 	}
-
-	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) {
+	UE_LOG(LogClass, Warning, TEXT("ÎàÑÍ∞Ä ÎÇò ÎïåÎ¶º! (HP : %f)"), Damage);
+	//if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) {
 		float TempHP = 0;
-		// if (DamageCauser Tag == ºˆ∏Æµµ±∏) {
+		// if (DamageCauser Tag == ÏàòÎ¶¨ÎèÑÍµ¨) {
 		//TempHP = CurrentHP + Damage;
 		//}
-		// else if (DamageCauser Tag == Bullet && EventInstigator ≥ª∞° æ∆¥œ∏È) {
+		// else if (DamageCauser Tag == Bullet && EventInstigator ÎÇ¥Í∞Ä ÏïÑÎãàÎ©¥) {
 		TempHP = CurrentHP - Damage;
-		UE_LOG(LogClass, Warning, TEXT("¥©∞° ≥™ ∂ß∏≤!"));
-		// ««∞› æ÷¥œ∏ﬁ¿Ãº«
+		UE_LOG(LogClass, Warning, TEXT("ÎàÑÍ∞Ä ÎÇò ÎïåÎ¶º! (HP : %f)"), TempHP);
+
+		// ÌîºÍ≤© Ïï†ÎãàÎ©îÏù¥ÏÖò
 		//}
 
 		CurrentHP = FMath::Clamp(CurrentHP, 0.0f, 100.0f);
 
 		if (CurrentHP <= 0 && EventInstigator != NULL)
 		{
-			// ¡◊¿Ω æ÷¥œ∏ﬁ¿Ãº«
-			// ∏∑≈∏ ∆¿¿∏∑Œ TeamColor ∫Ø∞Ê
+			// Ï£ΩÏùå Ïï†ÎãàÎ©îÏù¥ÏÖò
+			// ÎßâÌÉÄ ÌåÄÏúºÎ°ú TeamColor Î≥ÄÍ≤Ω
 			if (EventInstigator->GetPawn()->ActorHasTag(TEXT("Player"))) {
 				//ABattlePC* PC = Cast<ABattlePC*>(EventInstigator->GetPawn());
 				UE_LOG(LogClass, Warning, TEXT("from Player"));
@@ -102,7 +101,7 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 				UE_LOG(LogClass, Warning, TEXT("from Minion"));
 			}
 		}
-	}
+	//}
 
 	
 	return 0.0f;
@@ -117,10 +116,10 @@ void AFairyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 void AFairyPawn::OnRepCurrentHP()
 {
-	// HP UI ∫Ø∞Ê
+	// HP UI Î≥ÄÍ≤Ω
 }
 
-// Blackboard ∆˜«‘«— State ∫Ø∞Ê
+// Blackboard Ìè¨Ìï®Ìïú State Î≥ÄÍ≤Ω
 void AFairyPawn::SetCurrentState(EFairyState NewState)
 {
 	CurrentState = NewState;
@@ -138,7 +137,7 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 		SetCurrentState(EFairyState::Fight);
 		//Set Blackboard Value
 		AFairyAIController* AIC = GetController<AFairyAIController>();
-		if (AIC) // CurrentTeam √º≈© « ø‰
+		if (AIC) // CurrentTeam Ï≤¥ÌÅ¨ ÌïÑÏöî
 		{
 			AIC->SetEnemy(Pawn);
 			StartFireTo(Pawn->GetActorLocation());
@@ -156,13 +155,29 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 		MeshesRingComponent->RemoveOne();
 		AStaticMeshActor* Missile = GetWorld()->SpawnActor<AStaticMeshActor>(MeshesRingComponent->GetStaticMesh()->GetClass(), StartLocation, StartDirection);
-		// Missile πﬂªÁ
+		// Missile Î∞úÏÇ¨
 	}
 }
 
 void AFairyPawn::EndFire()
 {
 	bIsEndFire = true;
+}
+
+
+void AFairyPawn::NetMulticast_ResetTags_Implementation(const FName & TowerTag)
+{
+	if (Tags.Num() <= 0) {
+		const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeamColor"), true);
+
+		Tags.Add(TEXT("Tower"));	
+		if (enumPtr) Tags.Add(FName(enumPtr->GetNameStringByIndex((int32)TeamColor)));
+	}
+	else {
+		Tags.Empty();
+		Tags.Add(TEXT("Tower"));
+		Tags.Add(TowerTag);
+	}
 }
 
 

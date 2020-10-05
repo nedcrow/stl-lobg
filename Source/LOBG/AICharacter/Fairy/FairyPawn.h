@@ -59,7 +59,7 @@ public:
 	float MaxHP;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere)
-	float CurrentHP;
+	float CurrentHP=100;
 
 	UFUNCTION()
 	void OnRepCurrentHP();
@@ -96,4 +96,9 @@ public:
 
 	UFUNCTION()
 	void EndFire();
+
+	// Reset Tag (최초에는 BP에서 선택한 값으로 세팅)
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_ResetTags(const FName& TowerTag);
+	void NetMulticast_ResetTags_Implementation(const FName& TowerTag);
 };
