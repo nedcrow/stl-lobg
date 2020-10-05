@@ -64,7 +64,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float AttackDamage = 10.f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
-		ETeamColor TeamColor = ETeamColor::None;
+		FName TeamName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		EMinioonState CurrentState;
 

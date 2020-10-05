@@ -61,10 +61,11 @@ void AAIMinionChar::BeginPlay()
 
 void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 {
-	if (CurrentState != EMinioonState::Normal)
+	if (CurrentState != EMinioonState::Normal || Pawn->ActorHasTag(TeamName))
 	{
 		return;
 	}
+
 
 	if (Pawn->ActorHasTag("Minion"))
 	{
