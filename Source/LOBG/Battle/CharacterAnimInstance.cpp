@@ -9,21 +9,28 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	ABattleCharacter* Pawn = Cast<ABattleCharacter>(TryGetPawnOwner());
-	if (Pawn && Pawn->IsValidLowLevel()) {
+	if (Pawn && Pawn->IsValidLowLevel())
+	{
 		// Move animation
 		Direction = CalculateDirection(Pawn->GetCharacterMovement()->Velocity, Pawn->GetActorRotation());
 		Speed = Pawn->GetCharacterMovement()->Velocity.Size();
-		
+
 		//bIsFire = Pawn->bIsFire;
 		bIsCrouched = Pawn->bIsCrouched;
 		bIsIronsight = Pawn->bIsIronsight;
-		
+
 
 		// Reload - Test
 		bIsReload = Pawn->bIsReload;
-		if (Pawn->bIsReload) {
-			// Montage 있고, Montage가 실행중 아니면 ReloadMontage 실행
+		// Montage 있고, Montage가 실행중 아니면 ReloadMontage 실행
+		if (Pawn->ReloadMontage && bIsReload)
+		{
+			if (!Montage_IsPlaying(Pawn->ReloadMontage))
+			{
+				Pawn->PlayAnimMontage(Pawn->ReloadMontage);
+			}
 		}
+
 
 		// SetCurrentAngle & Lean
 		bIsLeanLeft = Pawn->bIsLeanLeft;

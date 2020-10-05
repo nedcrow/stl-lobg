@@ -29,8 +29,8 @@ public:
 		class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UCameraComponent* Camera;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)		// 公扁 备泅 规过
-	//	class UTPSWeaponComponent* Weapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)		// 公扁 备泅 规过
+		class UWeaponComponent* Weapon;
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,9 +72,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class ABulletBase> BulletClass;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-		class USceneComponent* Muzzle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsFire : 1;
@@ -151,7 +148,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* ReloadMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsReload : 1;
 
 	UFUNCTION(Server, Reliable)

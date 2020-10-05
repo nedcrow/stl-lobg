@@ -27,12 +27,26 @@ void AMinionAIC::OnPossess(APawn * InPawn)
 
 void AMinionAIC::OnUnPossess()
 {
-	BTComponent->StopTree();
+	if (BBComponent)
+	{
+		BTComponent->StopTree();
+	}
 
 	Super::OnUnPossess();
 }
 
 void AMinionAIC::SetValueState(EMinioonState NewState)
 {
-	BBComponent->SetValueAsEnum(TEXT("MinionState"), (uint8)NewState);
+	if (BBComponent)
+	{
+		BBComponent->SetValueAsEnum(TEXT("MinionState"), (uint8)NewState);
+	}
+}
+
+void AMinionAIC::SetValueTargetPawn(APawn* NewPawn)
+{
+	if (BBComponent)
+	{
+		BBComponent->SetValueAsObject(TEXT("TargetPawn"), NewPawn);
+	}
 }

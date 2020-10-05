@@ -3,3 +3,7 @@
 
 #include "WeaponComponent.h"
 
+UWeaponComponent::UWeaponComponent()
+{
+	ComponentTags.Add(TEXT("Weapon"));
+}
