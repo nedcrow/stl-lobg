@@ -62,17 +62,11 @@ void ABattleCharacter::BeginPlay()
 
 	//UI초기화 및 유무 확인
 	OnRep_CurrentHP();
-	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
 	if (PS)
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
-	}
-
-	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-	if (GI)
-	{
-		UE_LOG(LogClass, Warning, TEXT("%s TeamColor is %d"), *GI->GetUserID(), GI->TeamColor);
 	}
 }
 
@@ -191,6 +185,16 @@ void ABattleCharacter::StartFire()
 {
 	bIsFire = true;
 	OnFire();
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+		if (GI)
+		{
+			UE_LOG(LogClass, Warning, TEXT("MyTeamColor is %d"), PS->TeamColor);
+			UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
+		}
+	}
 }
 
 void ABattleCharacter::StopFire()
@@ -251,6 +255,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		if (Bullet)
 		{
 			Bullet->SetDamageInfo(OutHit, GetController());
+			//Bullet->Tags.Add(TEXT("Red"));
 		}
 	}
 	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
@@ -299,8 +304,13 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			if (PS)
 			{
 				UE_LOG(LogClass, Warning, TEXT("Money : %d, Exp : %f"), PS->PlayerMoney, PS->PlayerExp);
-
+				ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+				if (GI)
+				{
+					UE_LOG(LogClass, Warning, TEXT("%s PSTeamColor is %d"), *GI->GetUserID(), PS->TeamColor);
+				}
 			}
+			UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
 		}
 
 		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
@@ -498,5 +508,10 @@ void ABattleCharacter::SetBooty(int Money, float Exp)
 		PS->NewExp += Exp;
 		PS->OnRep_Exp();
 	}
+}
+
+void ABattleCharacter::SetTag_Implementation(const FName & PlayerTag)
+{
+	Tags.Add(PlayerTag);
 }
 
