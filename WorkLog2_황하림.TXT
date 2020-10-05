@@ -35,3 +35,7 @@
 
 1004
   Fix about fairy instancedMesh (remove, add, etc)
+
+1005
+  Fix LobbyPC (Chatting)
+  

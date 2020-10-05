@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+
+#include "../../LOBGGameInstance.h"
+
 #include "FairyPawn.generated.h"
 
 UENUM()
@@ -13,12 +16,6 @@ enum class EFairyState : uint8 {
 	Death = 2 UMETA(Display = Death),
 };
 
-UENUM()
-enum class ETeam : uint8 {
-	TeamBlue = 0 UMETA(Display = TeamBlue),
-	TeamRed = 1 UMETA(Display = TeamRed),
-	Neutral = 2 UMETA(Display = Neutral),
-};
 
 UCLASS()
 class LOBG_API AFairyPawn : public APawn
@@ -68,9 +65,9 @@ public:
 	void OnRepCurrentHP();
 
 
-	// State & AI ref
+	// State & AI ref - 변할 수 있는 상태
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
-	ETeam CurrentTeam;
+	ETeamColor TeamColor=ETeamColor::None;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 	EFairyState CurrentState;
