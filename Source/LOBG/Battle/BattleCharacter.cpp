@@ -510,8 +510,9 @@ void ABattleCharacter::SetBooty(int Money, float Exp)
 	}
 }
 
-void ABattleCharacter::SetTag_Implementation(const FName & PlayerTag)
+void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTag)
 {
 	Tags.Add(PlayerTag);
+	TeamName = PlayerTag;
 }
 

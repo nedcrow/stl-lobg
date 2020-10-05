@@ -94,11 +94,11 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 #pragma endregion
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_CurrentHP", Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_CurrentHP", Category = "Status")
 		float CurrentHP = 100.f;
 
 	UFUNCTION()
-	void OnRep_CurrentHP();
+		void OnRep_CurrentHP();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float MaxHP = 100.f;
@@ -181,7 +181,7 @@ public:
 	//리스폰 시 UI 갱신
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_ReSpawnUI();
-		void NetMulticast_ReSpawnUI_Implementation();
+	void NetMulticast_ReSpawnUI_Implementation();
 
 	//죽을 때의 설정들
 	void DeathSetting();
@@ -189,12 +189,14 @@ public:
 
 	//미니언을 죽이고 얻은 전리품 세팅
 	UFUNCTION(Server, Reliable)
-	void Server_SetBooty(int Money, float Exp);
+		void Server_SetBooty(int Money, float Exp);
 	void Server_SetBooty_Implementation(int Money, float Exp);
 
 	void SetBooty(int Money, float Exp);
 
 	UFUNCTION(NetMulticast, Reliable)
-		void SetTag(const FName& PlayerTag);
-		void SetTag_Implementation(const FName& PlayerTag);
+		void NetMulticast_AddTag(const FName& PlayerTag);
+	void NetMulticast_AddTag_Implementation(const FName& PlayerTag);
+
+	FName TeamName;
 };

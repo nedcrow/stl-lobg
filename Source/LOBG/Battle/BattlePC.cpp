@@ -64,21 +64,18 @@ void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor
 		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 		if (GI)
 		{
-			UE_LOG(LogClass, Warning, TEXT("%s GITeamColor is %d"), *GI->GetUserID(), TeamColor);
-			UE_LOG(LogClass, Warning, TEXT("%s PSTeamColor is %d"), *GI->GetUserID(), PS->TeamColor);
 			PS->TeamColor = TeamColor;
-			UE_LOG(LogClass, Warning, TEXT("%s PSTeamColor is %d"), *GI->GetUserID(), PS->TeamColor);
 
 			ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
 			if(PlayerPawn)
 			{
 				if (PS->TeamColor == ETeamColor::Red)
 				{
-					PlayerPawn->SetTag(TEXT("Red"));
+					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
-					PlayerPawn->SetTag(TEXT("Blue"));
+					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
 				}
 			}
 		}

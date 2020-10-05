@@ -41,8 +41,6 @@ void ABattleGM::PostLogin(APlayerController* NewPlayer)
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
 	TowerCount = OutTowers.Num();
 	UE_LOG(LogClass, Warning, TEXT("TowerCount is %d"), TowerCount);
-
-	//SplitTeam();
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
@@ -85,42 +83,5 @@ void ABattleGM::CountTower()
 void ABattleGM::GoLobby()
 {
 	GetWorld()->ServerTravel(TEXT("Step02_Lobby"));
-}
-
-void ABattleGM::SplitTeam()
-{
-	//RedPlayerNumber = 0;
-	//BluePlayerNumber = 0;
-	//for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
-	//{
-	//	UE_LOG(LogClass, Warning, TEXT("GetPlayerControllerNumber"));
-	//	ABattlePC* PC = Cast<ABattlePC>(*Iter);
-	//	if (PC)
-	//	{
-	//		ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
-	//		if (Pawn)
-	//		{
-	//
-	//			ABattlePS* PS = Pawn->GetPlayerState<ABattlePS>();
-	//			if (PS)
-	//			{
-	//				if (PS && RedPlayerNumber != 2)
-	//				{
-	//					PS->TeamColor = ETeamColor::Red;
-	//					RedPlayerNumber++;
-	//					UE_LOG(LogClass, Warning, TEXT("RedPlayerNumber is %d"), RedPlayerNumber);
-	//				}
-	//				else if(PS)
-	//				{
-	//					PS->TeamColor = ETeamColor::Blue;
-	//					BluePlayerNumber++;
-	//					UE_LOG(LogClass, Warning, TEXT("BluePlayerNumber is %d"), BluePlayerNumber);
-	//				}
-	//			}
-	//		}
-	//		
-	//	}
-	//	
-	//}
 }
 

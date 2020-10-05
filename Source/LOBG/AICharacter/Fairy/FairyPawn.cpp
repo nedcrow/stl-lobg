@@ -8,6 +8,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#include "../../Battle/BattleCharacter.h"
+#include "../../Battle/BattlePC.h"
 #include "MeshesRing.h"
 #include "MeshesRingComponent.h"
 #include "FairyAIController.h"
@@ -34,6 +36,7 @@ AFairyPawn::AFairyPawn()
 	PawnSensingComponent->bHearNoises = false;
 
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeam"), true);
+	Tags.Add(TEXT("Tower"));
 }
 
 // Called when the game starts or when spawned
@@ -74,23 +77,34 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 		return 0.0f;
 	}
 
-	float TempHP = 0;
-	// if (DamageCauser Tag == 수리도구) {
-	//TempHP = CurrentHP + Damage;
-	//}
-	// else if (DamageCauser Tag == Bullet && EventInstigator 내가 아니면) {
-	TempHP = CurrentHP - Damage;
-	// 누가 나 때렸어 알림
-	// 피격 애니메이션
-	//}
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) {
+		float TempHP = 0;
+		// if (DamageCauser Tag == 수리도구) {
+		//TempHP = CurrentHP + Damage;
+		//}
+		// else if (DamageCauser Tag == Bullet && EventInstigator 내가 아니면) {
+		TempHP = CurrentHP - Damage;
+		UE_LOG(LogClass, Warning, TEXT("누가 나 때림!"));
+		// 피격 애니메이션
+		//}
 
-	CurrentHP = FMath::Clamp(CurrentHP, 0.0f, 100.0f);
+		CurrentHP = FMath::Clamp(CurrentHP, 0.0f, 100.0f);
 
-	if (CurrentHP <= 0)
-	{
-		// 죽음 애니메이션
+		if (CurrentHP <= 0 && EventInstigator != NULL)
+		{
+			// 죽음 애니메이션
+			// 막타 팀으로 TeamColor 변경
+			if (EventInstigator->GetPawn()->ActorHasTag(TEXT("Player"))) {
+				//ABattlePC* PC = Cast<ABattlePC*>(EventInstigator->GetPawn());
+				UE_LOG(LogClass, Warning, TEXT("from Player"));
+			}
+			else if (EventInstigator->GetPawn()->ActorHasTag(TEXT("Minion"))) {
+				UE_LOG(LogClass, Warning, TEXT("from Minion"));
+			}
+		}
 	}
 
+	
 	return 0.0f;
 }
 
