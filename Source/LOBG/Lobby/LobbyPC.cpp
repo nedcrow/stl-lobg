@@ -8,7 +8,6 @@
 #include "LobbyGM.h"
 #include "Kismet/GameplayStatics.h"
 
-
 void ALobbyPC::BeginPlay() {
 	Super::BeginPlay();
 	if (LobbyWidgetClass && IsLocalPlayerController()) {
@@ -27,21 +26,22 @@ void ALobbyPC::BeginPlay() {
 	}
 }
 
+// From all client to server
 void ALobbyPC::Server_SendMessage_Implementation(const FText& Message)
-{
-	if (LobbyWidgetObject) {
-
-		LobbyWidgetObject->ChattingWidget->AddMessage(Message);
-	}
-}
-
-void ALobbyPC::Client_SendMessage_Implementation(const FText& Message)
 {
 	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++) {
 		ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
 		if (PC) {
-			PC->Server_SendMessage(Message);
+			PC->Client_SendMessage(Message);
 		}
+	}
+}
+
+// Control client widget
+void ALobbyPC::Client_SendMessage_Implementation(const FText& Message)
+{
+	if (LobbyWidgetObject) {
+		LobbyWidgetObject->ChattingWidget->AddMessage(Message);
 	}
 }
 
@@ -50,7 +50,7 @@ void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& NewArray)
 	if (IsLocalPlayerController() && LobbyWidgetObject)
 	{
 		LobbyWidgetObject->SplitTeam(NewArray);
-		
+
 	}
 }
 
