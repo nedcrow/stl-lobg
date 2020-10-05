@@ -9,6 +9,7 @@
 #include "../Weapon/BulletDamageType.h"
 #include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABulletBase::ABulletBase()
@@ -74,25 +75,19 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	ABattlePC* PC = Cast<ABattlePC>(PlayerController);
-	if (PC)
+
+	if (OtherActor->ActorHasTag(TeamName))
 	{
-		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(PC->GetPawn());
-		if (PlayerPawn)
-		{
-			if (OtherActor->ActorHasTag(PlayerPawn->TeamName))
-			{
-				return;
-			}
-		}
+		return;
 	}
+	
 
 	//플레이어에 충돌하면
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
 		CurrentDamageType = EApplyDamageType::Player;
-		//데미지 전달
-		ApplyDamageProcess(CurrentDamageType);
+			//데미지 전달
+			ApplyDamageProcess(CurrentDamageType);
 	}
 	else if (OtherActor->ActorHasTag(TEXT("Minion")))
 	{
@@ -107,10 +102,17 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
 	//스스로 사라지지 않도록 Bullet태그를 검사한다.
-	else if(!OtherActor->ActorHasTag(TEXT("Bullet")))
+	else if (!OtherActor->ActorHasTag(TEXT("Bullet")))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
 		Destroy();
 	}
+}
+
+void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABulletBase, TeamName);
 }
 

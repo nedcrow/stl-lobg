@@ -192,7 +192,6 @@ void ABattleCharacter::StartFire()
 		if (GI)
 		{
 			UE_LOG(LogClass, Warning, TEXT("MyTeamColor is %d"), PS->TeamColor);
-			UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
 		}
 	}
 }
@@ -256,6 +255,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		{
 			Bullet->SetDamageInfo(OutHit, GetController());
 			//Bullet->Tags.Add(TEXT("Red"));
+			Bullet->TeamName = TeamName;
 		}
 	}
 	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
