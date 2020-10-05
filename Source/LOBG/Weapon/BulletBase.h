@@ -60,4 +60,8 @@ public:
 			bool bFromSweep,
 			const FHitResult& SweepResult);
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
+	FName TeamName;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
