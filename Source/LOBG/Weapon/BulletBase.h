@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EApplyDamageType : uint8
 {
-	Player		= 0 UMETA(Display = "Player"),
-	Minion		= 1 UMETA(Display = "Minion"),
-	Tower		= 2 UMETA(Display = "Tower"),
+	Player		= 0 UMETA(DisplayName = "Player"),
+	Minion		= 1 UMETA(DisplayName = "Minion"),
+	Tower		= 2 UMETA(DisplayName = "Tower"),
 };
 
 UCLASS()

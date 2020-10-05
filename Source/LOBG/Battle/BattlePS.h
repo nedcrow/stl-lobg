@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "../LOBGGameInstance.h"
 #include "BattlePS.generated.h"
-
-
 
 /**
  * 
@@ -45,5 +44,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//ETeamColor TeamColor;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+	ETeamColor TeamColor = ETeamColor::None;
 };

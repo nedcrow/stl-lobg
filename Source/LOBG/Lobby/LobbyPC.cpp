@@ -8,6 +8,7 @@
 #include "LobbyGM.h"
 #include "Kismet/GameplayStatics.h"
 
+
 void ALobbyPC::BeginPlay() {
 	Super::BeginPlay();
 	if (LobbyWidgetClass && IsLocalPlayerController()) {
