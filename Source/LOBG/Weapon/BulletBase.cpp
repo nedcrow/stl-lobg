@@ -75,19 +75,19 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	//같은팀이라면 return
 	if (OtherActor->ActorHasTag(TeamName))
 	{
+		Destroy();
 		return;
 	}
-	
 
 	//플레이어에 충돌하면
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
 		CurrentDamageType = EApplyDamageType::Player;
-			//데미지 전달
-			ApplyDamageProcess(CurrentDamageType);
+		//데미지 전달
+		ApplyDamageProcess(CurrentDamageType);
 	}
 	else if (OtherActor->ActorHasTag(TEXT("Minion")))
 	{
@@ -102,7 +102,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
 	//스스로 사라지지 않도록 Bullet태그를 검사한다.
-	else if (!OtherActor->ActorHasTag(TEXT("Bullet")))
+	else if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
 		Destroy();

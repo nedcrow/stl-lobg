@@ -12,13 +12,14 @@
 #include "Net/UnrealNetwork.h"
 #include "BattlePC.h"
 #include "BattleGM.h"
+#include "BattlePS.h"
+#include "BattleWidgetBase.h"
 #include "CharacterAnimInstance.h"
 #include "../Weapon/BulletBase.h"
 #include "../ReSpawn/ReSpawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "BattlePS.h"
-#include "BattleWidgetBase.h"
 #include "../LOBGGameInstance.h"
+#include "../Weapon/WeaponComponent.h"
 
 
 // Sets default values
@@ -46,8 +47,8 @@ ABattleCharacter::ABattleCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
-	Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
-	Muzzle->SetupAttachment(RootComponent);
+	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
 
 	Tags.Add(TEXT("Player"));
 }
@@ -111,6 +112,7 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABattleCharacter, bIsIronsight);
 	DOREPLIFETIME(ABattleCharacter, bIsFire);
+	DOREPLIFETIME(ABattleCharacter, bIsReload);
 	DOREPLIFETIME(ABattleCharacter, CurrentHP);
 	DOREPLIFETIME(ABattleCharacter, MaxHP);
 	DOREPLIFETIME(ABattleCharacter, CurrentState);
@@ -246,16 +248,16 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
 
 		//Muzzle에서 트레이스 Point까지의 회전값
-		FRotator BulletRoation = (OutHit.ImpactPoint - Muzzle->GetComponentLocation()).Rotation();
+		FRotator BulletRoation = (OutHit.ImpactPoint - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation();
 
 		//Muzzle위치에서 조준점까지의 회전값을 가지고 총알 스폰
-		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), BulletRoation);
+		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), BulletRoation);
 			
 		if (Bullet)
 		{
 			Bullet->SetDamageInfo(OutHit, GetController());
-			//Bullet->Tags.Add(TEXT("Red"));
 			Bullet->TeamName = TeamName;
+			UE_LOG(LogClass, Warning, TEXT("BulletSpawned"));
 		}
 	}
 	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
@@ -263,7 +265,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	else if (OutHit.GetActor() == nullptr)
 	{
 		UE_LOG(LogClass, Warning, TEXT("맞은 액터가 없습니다"));
-		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Muzzle->GetComponentLocation(), (EndLine - Muzzle->GetComponentLocation()).Rotation());
+		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), (EndLine - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation());
 			
 		if (Bullet)
 		{
@@ -310,7 +312,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 					UE_LOG(LogClass, Warning, TEXT("%s PSTeamColor is %d"), *GI->GetUserID(), PS->TeamColor);
 				}
 			}
-			UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
+			//UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
 		}
 
 		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
@@ -432,18 +434,16 @@ void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
 void ABattleCharacter::Server_SetReload_Implementation(bool NewState)
 {
 	bIsReload = NewState;
+	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	
 }
 
 void ABattleCharacter::StartReload()
 {
-	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	
 	bIsReload = true;
 	Server_SetReload(true);
-	if (ReloadMontage && bIsReload) {
-		if (!AnimInstance->Montage_IsPlaying(ReloadMontage)) {
-			PlayAnimMontage(ReloadMontage);
-		}
-	}
+	
 }
 
 void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
