@@ -31,5 +31,5 @@ public:
 
 	// BB
 	void SetValueState(EMinioonState NewState);
-
+	void SetValueTargetPawn(APawn* NewPawn);
 };

@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "../LOBGGameInstance.h"
+
 #include "AIMinionChar.generated.h"
 
 UENUM(BlueprintType)
@@ -32,7 +35,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	// AI
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+		class UBehaviorTree* BTMinion;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+		class UPawnSensingComponent* PawnSensing;
+
+	UFUNCTION()
+		void ProcessSeenPawn(APawn* Pawn);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -41,15 +53,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	float WalkSpeed = 150.f;
-
-	// AI
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-		class UBehaviorTree* BTMinion;
 
 	// State
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float WalkSpeed = 150.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float MaxHP = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float CurrentHP = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float AttackDamage = 10.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		FName TeamName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		EMinioonState CurrentState;
 
 	UFUNCTION(BlueprintCallable)

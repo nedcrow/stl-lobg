@@ -79,6 +79,7 @@ void AAIManager::SeachCoursePoints()
 	}
 
 
+	// 타겟 포인트 라인 만들기
 	//FVector StartLast;
 	//FVector GoalFirst;
 
@@ -248,6 +249,10 @@ void AAIManager::RepeatSpawnMinions()
 	{
 		ActiveMinions.Add(NewMinion);
 		LeftSpawnNumber--;
+
+		// 팀 배정
+		NewMinion->TeamName = TEXT("Red");
+		NewMinion->Tags.Emplace(TEXT("Red"));
 
 		// 스폰한 액터들의 이동 목표 설정
 		AAIController* AIC = NewMinion->GetController<AAIController>();
