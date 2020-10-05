@@ -79,6 +79,7 @@ void AAIManager::SeachCoursePoints()
 	}
 
 
+	// 타겟 포인트 라인 만들기
 	//FVector StartLast;
 	//FVector GoalFirst;
 

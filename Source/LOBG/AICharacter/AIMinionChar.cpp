@@ -6,12 +6,15 @@
 #include "MinionAIC.h"
 #include "../Weapon/WeaponComponent.h"
 #include "../Weapon/EmissiveBullet.h"
+#include "../Battle/BattleCharacter.h"
+#include "Fairy/FairyPawn.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/PawnSensingComponent.h"
 
 // Sets default values
 AAIMinionChar::AAIMinionChar()
@@ -35,13 +38,62 @@ AAIMinionChar::AAIMinionChar()
 	// ETC
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	// AI
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+
+	// ETC
+	Tags.Add(TEXT("Minion"));
 }
 
 // Called when the game starts or when spawned
 void AAIMinionChar::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetState(EMinioonState::Normal);
+
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AAIMinionChar::ProcessSeenPawn);
+	}
 	
+}
+
+void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
+{
+	if (CurrentState != EMinioonState::Normal)
+	{
+		return;
+	}
+
+	if (Pawn->ActorHasTag("Minion"))
+	{
+
+	}
+	else if (Pawn->ActorHasTag("Player"))
+	{
+		Pawn->GetPlayerState();
+		//ABattleCharacter * PlayerPawn = Cast<ABattleCharacter>(Pawn);
+		//if (PlayerPawn->TeamColor == TeamColor)
+		//{
+
+		//}
+	}
+	else if (Pawn->ActorHasTag("Tower"))
+	{
+		AFairyPawn * FAiryPawn = Cast<AFairyPawn>(Pawn);
+		//if (FAiryPawn->TeamColor == TeamColor)
+		//{
+
+		//}
+	}
+
+	AMinionAIC* MinionAIC = GetController<AMinionAIC>();
+	if (MinionAIC)
+	{
+	}
+
+	SetState(EMinioonState::Battle);
 }
 
 // Called every frame
