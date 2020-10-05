@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class ETeamColor : uint8
 {
-	None = 0 UMETA(Display = "None"),
-	Red = 1 UMETA(Display = "Red"),
-	Blue = 2 UMETA(Display = "Blue"),
+	None =	0 UMETA(Display = "None"),
+	Red =	1 UMETA(Display = "Red"),
+	Blue =	2 UMETA(Display = "Blue"),
 };
 
 /**
