@@ -46,12 +46,4 @@ public:
 
 	//·Îºñ·Î µ¹¾Æ°¡±â
 	void GoLobby();
-
-	//ÆÀ ³ª´©±â
-	void SplitTeam();
-
-	//Red, Blue ÆÀ¸É¹ö¼ö
-	int RedPlayerNumber = 0;
-
-	int BluePlayerNumber = 0;
 };

@@ -80,8 +80,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(PC->GetPawn());
 		if (PlayerPawn)
 		{
-			if ((OtherActor->ActorHasTag(TEXT("Red")) && PlayerPawn->ActorHasTag(TEXT("Red")))
-				|| (OtherActor->ActorHasTag(TEXT("Blue")) && PlayerPawn->ActorHasTag(TEXT("Blue"))))
+			if (OtherActor->ActorHasTag(PlayerPawn->TeamName))
 			{
 				return;
 			}
