@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EBattleCharacterState : uint8
 {
-	Normal = 0		UMETA(Display = "Normal"),
-	Battle = 1		UMETA(Display = "Battle"),
-	Dead = 2		UMETA(Display = "Dead"),
+	Normal = 0		UMETA(DisplayName = "Normal"),
+	Battle = 1		UMETA(DisplayName = "Battle"),
+	Dead = 2		UMETA(DisplayName = "Dead"),
 };
 
 
@@ -193,4 +193,8 @@ public:
 	void Server_SetBooty_Implementation(int Money, float Exp);
 
 	void SetBooty(int Money, float Exp);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SetTag(const FName& PlayerTag);
+		void SetTag_Implementation(const FName& PlayerTag);
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "../LOBGGameInstance.h"
 #include "BattlePC.generated.h"
 
 /**
@@ -26,4 +27,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UBattleWidgetBase* BattleWidgetObject;
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
+		void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
 };

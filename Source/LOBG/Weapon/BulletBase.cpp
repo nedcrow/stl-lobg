@@ -7,6 +7,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Weapon/BulletDamageType.h"
+#include "../Battle/BattlePC.h"
+#include "../Battle/BattleCharacter.h"
 
 // Sets default values
 ABulletBase::ABulletBase()
@@ -72,6 +74,20 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
+	ABattlePC* PC = Cast<ABattlePC>(PlayerController);
+	if (PC)
+	{
+		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(PC->GetPawn());
+		if (PlayerPawn)
+		{
+			if ((OtherActor->ActorHasTag(TEXT("Red")) && PlayerPawn->ActorHasTag(TEXT("Red")))
+				|| (OtherActor->ActorHasTag(TEXT("Blue")) && PlayerPawn->ActorHasTag(TEXT("Blue"))))
+			{
+				return;
+			}
+		}
+	}
+
 	//플레이어에 충돌하면
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
