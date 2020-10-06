@@ -60,6 +60,7 @@ ABattleCharacter::ABattleCharacter()
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	Widget->SetupAttachment(HPBarHUD);
 	Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
+	
 
 	Tags.Add(TEXT("Player"));
 }
@@ -79,6 +80,10 @@ void ABattleCharacter::BeginPlay()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
+	}
+	if (IsLocallyControlled())
+	{
+		Widget->SetVisibility(false);
 	}
 }
 
