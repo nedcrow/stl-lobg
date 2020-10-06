@@ -59,6 +59,7 @@ void AAIMinionChar::BeginPlay()
 	
 }
 
+// PawnSensing
 void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 {
 	if (CurrentState != EMinioonState::Normal || Pawn->ActorHasTag(TeamName))
@@ -102,7 +103,7 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 		MinionAIC->SetValueTargetPawn(Pawn);
 	}
 
-	SetState(EMinioonState::Battle);
+	SetState(EMinioonState::Chase);
 }
 
 // Called every frame

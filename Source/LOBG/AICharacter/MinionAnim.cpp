@@ -3,6 +3,8 @@
 
 #include "MinionAnim.h"
 
+#include "AIMinionChar.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UMinionAnim::NativeUpdateAnimation(float DeltaSeconds)
@@ -20,6 +22,7 @@ void UMinionAnim::NativeUpdateAnimation(float DeltaSeconds)
 		bIsFire = MinionPawn->bIsFire;
 
 		// AimPitch
-		//AimPitch = MinionPawn
+		AimPitch = MinionPawn->AimPitch;
+
 	}
 }

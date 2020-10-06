@@ -3,6 +3,8 @@
 
 #include "BTService_TurnToTarget.h"
 
+#include "../AIMinionChar.h"
+
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -14,7 +16,7 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	{
 		//AActor* tmpPawn = Cast<AActor>(AIC->BBComponent->GetValueAsObject(TEXT("Player")));
 		AActor* TargetPawn = Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
-		APawn* Minion = AIC->GetPawn();
+		AAIMinionChar* Minion = AIC->GetPawn<AAIMinionChar>();
 		if (TargetPawn || Minion)
 		{
 			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Minion->GetActorLocation(), TargetPawn->GetActorLocation());
@@ -22,10 +24,18 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			//Zombie->SetActorRotation(LookAt);
 			//float YawDiff = ((TargetPawn->GetActorLocation() - Minion->GetActorLocation()).Rotation() - Minion->GetActorRotation()).Clamp().Yaw;
 
+			// 액터 요 보간.
 			if (!FMath::IsNearlyEqual(Minion->GetActorRotation().Yaw, LookAt.Yaw, 1.f))
 			{
 				Minion->SetActorRotation(FMath::RInterpTo(Minion->GetActorRotation(), FRotator(0.f, LookAt.Yaw, 0.f), DeltaSeconds, 5.f));
 			}
+
+			// 컨트롤러 핏치 보간. 에임오프셋에 사용.
+			if (LookAt.Pitch >= -89.f && LookAt.Pitch <= 89.f && !FMath::IsNearlyEqual(AIC->GetControlRotation().Pitch, LookAt.Pitch, 1.f))
+			{
+				Minion->AimPitch = FMath::ClampAngle(LookAt.Pitch, -89.f, 89.f);
+			}
+			
 
 			//if (YawDiff > 5.f)
 			//{

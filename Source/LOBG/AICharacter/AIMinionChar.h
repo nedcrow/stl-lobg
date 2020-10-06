@@ -41,7 +41,7 @@ public:
 		class UBehaviorTree* BTMinion;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 		class UPawnSensingComponent* PawnSensing;
-
+		
 	UFUNCTION()
 		void ProcessSeenPawn(APawn* Pawn);
 
@@ -70,6 +70,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetState(EMinioonState NewState);
+
+	// Aim
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		float AimPitch = 0.f;
 
 	// MoveTarget
 	class AWaveCoursePoint* CurrentMoveTarget;

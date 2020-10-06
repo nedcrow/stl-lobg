@@ -21,7 +21,12 @@ void AMinionAIC::OnPossess(APawn * InPawn)
 	if (MinionPawn && MinionPawn->BTMinion && MinionPawn->BTMinion->BlackboardAsset)
 	{
 			BBComponent->InitializeBlackboard(*MinionPawn->BTMinion->BlackboardAsset);
-			BTComponent->StartTree(*MinionPawn->BTMinion);		
+			BTComponent->StartTree(*MinionPawn->BTMinion);
+
+			if (BBComponent)
+			{
+				BBComponent->SetValueAsObject(TEXT("SelfActor"), MinionPawn);
+			}
 	}
 }
 
