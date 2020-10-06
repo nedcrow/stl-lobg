@@ -56,3 +56,17 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, NewExp);
 	DOREPLIFETIME(ABattlePS, TeamColor);
 }
+
+void ABattlePS::OnRep_TeamColor()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
+	if (PC)
+	{
+		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(PC->GetPawn());
+		if (PlayerPawn)
+		{
+			UE_LOG(LogClass, Warning, TEXT("Insert OnRep_TeamColor"));
+			PlayerPawn->InitHPBarWithEnum(TeamColor);
+		}
+	}
+}

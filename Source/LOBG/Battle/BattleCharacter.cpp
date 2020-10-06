@@ -88,7 +88,7 @@ void ABattleCharacter::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		Widget->SetVisibility(false);
+		//Widget->SetVisibility(false);
 	}
 
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
@@ -547,6 +547,24 @@ void ABattleCharacter::InitHPBar()
 			}
 		}
 	}
+}
+
+void ABattleCharacter::InitHPBarWithEnum(ETeamColor color)
+{
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		if (color == ETeamColor::Red)
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
+		}
+		else if (color == ETeamColor::Blue)
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
+		}
+		
+	}
+	
 }
 
 void ABattleCharacter::InitHPBarWithTag(const FName & PlayerTag)

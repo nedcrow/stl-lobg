@@ -8,7 +8,7 @@
 #include "BattlePC.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class LOBG_API ABattlePC : public APlayerController
@@ -30,7 +30,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
-		void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
+	void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
 
-		void TestUIColor();
+	void TestUIColor();
+
+	void InitTeamColor();
 };

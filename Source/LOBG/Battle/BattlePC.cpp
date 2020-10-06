@@ -28,13 +28,8 @@ void ABattlePC::BeginPlay()
 			}
 			SetInputMode(FInputModeGameOnly());
 		}
-		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-		if (GI)
-		{
-			Server_SetPSTeamColor(GI->TeamColor);
-
-		}
-		
+		FTimerHandle ColorTimer;
+		GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
 	}
 }
 
@@ -121,6 +116,20 @@ void ABattlePC::TestUIColor()
 					//PlayerPawn->OnRep_SetUIColor();
 				}
 			}
+		}
+	}
+}
+
+void ABattlePC::InitTeamColor()
+{
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			PS->TeamColor = GI->TeamColor;
+			PS->OnRep_TeamColor();
 		}
 	}
 }

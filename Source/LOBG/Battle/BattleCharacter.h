@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../LOBGGameInstance.h"
 #include "BattleCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -202,6 +203,7 @@ public:
 	FName TeamName;
 
 	void InitHPBar();
+	void InitHPBarWithEnum(ETeamColor color);
 	void InitHPBarWithTag(const FName& PlayerTag);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_SetUIColor")
