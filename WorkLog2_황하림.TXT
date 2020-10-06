@@ -40,4 +40,11 @@
   Fix LobbyPC (Chatting)
   Fix fairy tags
   Test fairy damage
+
+1006
+  Fix TakeDamage & ResetTags
+  Add HUD(FairyPawn)
+  Add GetTeamName function(FairyPawn)
+  Add BTTasks(SetStateIf, CallFire)
+  Test StartFireTo function & SetState(FairyPawn, FairyAIController)
   

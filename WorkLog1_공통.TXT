@@ -217,6 +217,14 @@ UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject(
 5. 원하는 결과가 나오지 않을 때는 CurrentHP와 MaxHP가 있는지 확인해보고 CurrentHP가 MaxHP로 초기화되어있는지,
 BeginPlay에서 UpdateHPBar()를 호출하고 있는지 확인한다.
 
+%%%%%%%%%%%
+
+황하림
+  Fix TakeDamage & ResetTags
+  Add HUD(FairyPawn)
+  Add GetTeamName function(FairyPawn)
+  Add BTTasks(SetStateIf, CallFire)
+  Test StartFireTo function & SetState(FairyPawn, FairyAIController)
 
 조혁
 상대 체력이 보여야하기에 HUDHPBar를 만들어서 띄우고 카메라의 회전에 맞춰서 허드도 회전하도록 했다.

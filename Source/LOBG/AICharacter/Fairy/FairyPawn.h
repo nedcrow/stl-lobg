@@ -55,11 +55,11 @@ public:
 
 
 	// Base property
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 	float MaxHP;
 
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere)
-	float CurrentHP=100;
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
+	float CurrentHP;
 
 	UFUNCTION()
 	void OnRepCurrentHP();
@@ -88,7 +88,10 @@ public:
 
 
 	// fire
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire")
+	TSubclassOf<class ABulletBase> BulletClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire")
 	uint8 bIsEndFire : 1;
 
 	UFUNCTION()
@@ -97,8 +100,22 @@ public:
 	UFUNCTION()
 	void EndFire();
 
-	// Reset Tag (최초에는 BP에서 선택한 값으로 세팅)
+	// HUD
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UHUDBarSceneComponent* HPBarHUD;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UWidgetComponent* Widget;
+
+	UFUNCTION()
+	void UpdateHPBar();
+
+	// Reset Tag (최초에는 BP에서 선택한 값으로 세팅) & Team
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_ResetTags(const FName& TowerTag);
-	void NetMulticast_ResetTags_Implementation(const FName& TowerTag);
+	void NetMulticast_ResetTags(const FName& TeamTag);
+	void NetMulticast_ResetTags_Implementation(const FName& TeamTag);
+	
+	UFUNCTION()
+	FName GetTeamName(APawn * Pawn);
+	FName TeamName;
 };

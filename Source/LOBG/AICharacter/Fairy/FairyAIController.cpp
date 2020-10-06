@@ -35,5 +35,6 @@ void AFairyAIController::SetEnemy(AActor * Enemy)
 	if (BBComponent)
 	{
 		BBComponent->SetValueAsObject(TEXT("Enemy"), Enemy);
+		CurrentEnermy = Enemy;
 	}
 }
