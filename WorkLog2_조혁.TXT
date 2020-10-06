@@ -143,5 +143,5 @@ UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject(
 의 기능을 가진 함수를 만들어서 CurrentHP가 변할 때 호출해준다.
 
 4. 블루프린트에디터에서 Widget 컴포넌트를 클릭하고 디테일에 UserInterface에 Widget Class를 
-원하는 위젯블루프린트로 설정한다.
+원하는 위젯블루프린트로 설정한다. 이미 HPBarUI라는 위젯 블루프린트가 있으니 그거로 설정해도 된다.
 
