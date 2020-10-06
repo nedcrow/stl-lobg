@@ -169,7 +169,31 @@ AI캐릭터에 폰센싱 컴포넌트 추가.
 타겟을 향해 회전하는 서비스 추가.
 
 
+1006
+%%%%%%% HUD띄우는 법 %%%%%%%%%
+1. 헤더에 컴포넌트로 HUDBarSceneComponent와 UWidgetComponent를 설정한다.
 
+UPROPERTY(BlueprintReadWrite, EditAnywhere)
+class UHUDBarSceneComponent* HPBarHUD;
+
+UPROPERTY(BlueprintReadWrite, EditAnywhere)
+class UWidgetComponent* Widget;
+
+2. UI폴더의 HUDBarSceneComponent와 UHPBarWidgetBase, 그리고 Components/UWidgetComponent 를 include 하고 
+컴포넌트인 HPBarHUD와 Widget을 CreateDefaultSubobject한다.
+HPBarHUD는 RootCompoennt의 자식으로, Widget은 HPBarHUD의 자식으로 설정한다.
+HPBarHUD의 위치를 적절히 설정하고 Widget은 SetRelativeRotation()으로 회전값을 Yaw방향으로 180을 설정한다(중요)
+
+3. 
+UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
+의 기능을 가진 함수를 만들어서 CurrentHP가 변할 때 호출해준다.
+
+4. 블루프린트에디터에서 Widget 컴포넌트를 클릭하고 디테일에 UserInterface에 Widget Class를 
+원하는 위젯블루프린트로 설정한다.
 
 
 
