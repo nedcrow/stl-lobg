@@ -10,11 +10,13 @@
 
 #include "../../Battle/BattleCharacter.h"
 #include "../../Battle/BattlePC.h"
-#include "MeshesRing.h"
+#include "../../Weapon/BulletBase.h"
+#include "../AIMinionChar.h"
 #include "MeshesRingComponent.h"
 #include "FairyAIController.h"
-#include "Engine/StaticMeshActor.h"
-#include "UObject/Class.h"
+#include "../../UI/HUDBarSceneComponent.h"
+#include "../../UI/HPBarWidgetBase.h"
+#include "Components/WidgetComponent.h"
 //#include "../../Weapon/BulletBase.h"
 
 // Sets default values
@@ -35,6 +37,16 @@ AFairyPawn::AFairyPawn()
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
+
+	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
+	HPBarHUD->SetupAttachment(RootComponent);
+
+	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	Widget->SetupAttachment(HPBarHUD);
+
+	Widget->SetRelativeRotation(FRotator(0,180,0));
+
+	CurrentHP = MaxHP = 100;
 }
 
 // Called when the game starts or when spawned
@@ -43,14 +55,14 @@ void AFairyPawn::BeginPlay()
 	Super::BeginPlay();	
 
 	NetMulticast_ResetTags(TEXT("None"));
-
-	CurrentHP = MaxHP;
+	UpdateHPBar();
 
 	SetCurrentState(EFairyState::Idle);
 
 	if (PawnSensingComponent)
 	{
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
+		bIsEndFire = true;
 	}
 }
 
@@ -67,6 +79,7 @@ void AFairyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+// 타워를 막타 팀으로 이전
 float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
@@ -74,32 +87,22 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 	{
 		return 0.0f;
 	}
-	UE_LOG(LogClass, Warning, TEXT("누가 나 때림! (HP : %f)"), Damage);
 	//if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) {
 		float TempHP = 0;
-		// if (DamageCauser Tag == 수리도구) {
-		//TempHP = CurrentHP + Damage;
-		//}
-		// else if (DamageCauser Tag == Bullet && EventInstigator 내가 아니면) {
 		TempHP = CurrentHP - Damage;
-		UE_LOG(LogClass, Warning, TEXT("누가 나 때림! (HP : %f)"), TempHP);
-
+		UE_LOG(LogTemp, Warning, TEXT("누가 나 때림! (HP : %f)"), TempHP);
 		// 피격 애니메이션
-		//}
 
-		CurrentHP = FMath::Clamp(CurrentHP, 0.0f, 100.0f);
+		CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
+		UpdateHPBar();
 
 		if (CurrentHP <= 0 && EventInstigator != NULL)
 		{
-			// 죽음 애니메이션
-			// 막타 팀으로 TeamColor 변경
-			if (EventInstigator->GetPawn()->ActorHasTag(TEXT("Player"))) {
-				//ABattlePC* PC = Cast<ABattlePC*>(EventInstigator->GetPawn());
-				UE_LOG(LogClass, Warning, TEXT("from Player"));
-			}
-			else if (EventInstigator->GetPawn()->ActorHasTag(TEXT("Minion"))) {
-				UE_LOG(LogClass, Warning, TEXT("from Minion"));
-			}
+			// 죽음 애니메이션(?)
+			FName NewTeamName = "None";
+			NewTeamName = GetTeamName(EventInstigator->GetPawn());
+			UE_LOG(LogTemp, Warning, TEXT("from_(%s Team)"), *NewTeamName.ToString());
+			NetMulticast_ResetTags(NewTeamName);
 		}
 	//}
 
@@ -130,31 +133,33 @@ void AFairyPawn::SetCurrentState(EFairyState NewState)
 	}
 }
 
-// Sensing
+// Sensing (StateChecking, TeamNameChecking, EnemySetting)
 void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 {
 	if (CurrentState == EFairyState::Idle) {
-		SetCurrentState(EFairyState::Fight);
-		//Set Blackboard Value
-		AFairyAIController* AIC = GetController<AFairyAIController>();
-		if (AIC) // CurrentTeam 체크 필요
-		{
-			AIC->SetEnemy(Pawn);
-			StartFireTo(Pawn->GetActorLocation());
-		}
+		FName EnemyTeamName = GetTeamName(Pawn);
+		if (EnemyTeamName != TeamName) {
+			//SetCurrentState(EFairyState::Fight);
+			AFairyAIController* AIC = GetController<AFairyAIController>();
+			if (AIC && AIC->CurrentEnermy != Pawn)
+			{
+				AIC->SetEnemy(Pawn);
+				UE_LOG(LogTemp, Warning, TEXT("I found you [%s] :-)"), *EnemyTeamName.ToString());
+			}
+		}		
 	}
-
-
 }
 
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
-	if (!bIsEndFire) {
+	if (bIsEndFire) {
+		bIsEndFire = false;
 		FVector StartLocation = MeshesRingComponent->InstanceBodies[MeshesRingComponent->GetInstanceCount() - 1]->GetUnrealWorldTransform().GetLocation();
 		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 		MeshesRingComponent->RemoveOne();
-		AStaticMeshActor* Missile = GetWorld()->SpawnActor<AStaticMeshActor>(MeshesRingComponent->GetStaticMesh()->GetClass(), StartLocation, StartDirection);
+		UE_LOG(LogTemp, Warning, TEXT("Fire!"));
+		//ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 		// Missile 발사
 	}
 }
@@ -164,20 +169,48 @@ void AFairyPawn::EndFire()
 	bIsEndFire = true;
 }
 
-
-void AFairyPawn::NetMulticast_ResetTags_Implementation(const FName & TowerTag)
+void AFairyPawn::UpdateHPBar()
 {
-	if (Tags.Num() <= 0) {
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
+}
+
+void AFairyPawn::NetMulticast_ResetTags_Implementation(const FName & TeamTag)
+{
+	if (Tags.Num() <= 1) {
 		const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeamColor"), true);
 
-		Tags.Add(TEXT("Tower"));	
+		Tags.Add(TEXT("Tower"));
 		if (enumPtr) Tags.Add(FName(enumPtr->GetNameStringByIndex((int32)TeamColor)));
+		TeamName = FName(enumPtr->GetNameStringByIndex((int32)TeamColor));
+		UE_LOG(LogTemp, Warning, TEXT("AAA:%s"), *TeamName.ToString());
 	}
 	else {
 		Tags.Empty();
 		Tags.Add(TEXT("Tower"));
-		Tags.Add(TowerTag);
+		Tags.Add(TeamTag);
+		TeamName = TeamTag;
+		UE_LOG(LogTemp, Warning, TEXT("BBB:%s"), *TeamName.ToString());
 	}
+
+}
+
+FName AFairyPawn::GetTeamName(APawn * Pawn)
+{
+	FName NewTeamName = "None";
+	if (Pawn->ActorHasTag(TEXT("Player"))) {
+		NewTeamName = Cast<ABattleCharacter>(Pawn)->TeamName;
+	}
+	else if(Pawn->ActorHasTag(TEXT("Minion"))) {
+		NewTeamName = Cast<ABattleCharacter>(Pawn)->TeamName;
+	}
+	else if (Pawn->ActorHasTag(TEXT("Tower"))) {
+		NewTeamName = Cast<AFairyPawn>(Pawn)->TeamName;
+	}
+	return NewTeamName;
 }
 
 

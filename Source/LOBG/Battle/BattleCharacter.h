@@ -31,6 +31,10 @@ public:
 		class UCameraComponent* Camera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)		// 公扁 备泅 规过
 		class UWeaponComponent* Weapon;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UHUDBarSceneComponent* HPBarHUD;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UWidgetComponent* Widget;
 
 protected:
 	// Called when the game starts or when spawned
@@ -196,4 +200,16 @@ public:
 	void NetMulticast_AddTag_Implementation(const FName& PlayerTag);
 
 	FName TeamName;
+
+	void InitHPBar();
+	void InitHPBarWithTag(const FName& PlayerTag);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_SetUIColor")
+		FLinearColor UIColor;
+
+	UFUNCTION()
+	void OnRep_SetUIColor();
+
+	//HPHUD 诀单捞飘
+	void UpdateHPBar();
 };

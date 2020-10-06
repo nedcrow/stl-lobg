@@ -25,6 +25,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UBlackboardComponent* BBComponent;
 
+	class AActor* CurrentEnermy;
+
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void OnUnPossess() override;
