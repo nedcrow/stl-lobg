@@ -19,7 +19,7 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		AAIMinionChar* Minion = AIC->GetPawn<AAIMinionChar>();
 		if (TargetPawn || Minion)
 		{
-			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Minion->GetActorLocation(), TargetPawn->GetActorLocation());
+			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Minion->GetActorLocation(), TargetPawn->GetActorLocation()).Clamp();
 			
 			//Zombie->SetActorRotation(LookAt);
 			//float YawDiff = ((TargetPawn->GetActorLocation() - Minion->GetActorLocation()).Rotation() - Minion->GetActorRotation()).Clamp().Yaw;
@@ -31,7 +31,7 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			}
 
 			// 컨트롤러 핏치 보간. 에임오프셋에 사용.
-			if (LookAt.Pitch >= -89.f && LookAt.Pitch <= 89.f && !FMath::IsNearlyEqual(AIC->GetControlRotation().Pitch, LookAt.Pitch, 1.f))
+			if (!(LookAt.Pitch > 89.f && LookAt.Pitch < 271.f) && !FMath::IsNearlyEqual(AIC->GetControlRotation().Pitch, LookAt.Pitch, 1.f))
 			{
 				Minion->AimPitch = FMath::ClampAngle(LookAt.Pitch, -89.f, 89.f);
 			}
