@@ -4,6 +4,8 @@
 #include "FairyAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "FairyPawn.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 AFairyAIController::AFairyAIController() {
 	BTComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BTComponent"));
@@ -14,6 +16,13 @@ void AFairyAIController::OnPossess(APawn * InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	AFairyPawn* FairyPawn = Cast<AFairyPawn>(InPawn);
+	if (FairyPawn) {
+		if (FairyPawn->BTFairy && FairyPawn->BTFairy->BlackboardAsset) {
+			BBComponent->InitializeBlackboard(*(FairyPawn->BTFairy->BlackboardAsset));
+			BTComponent->StartTree(*(FairyPawn->BTFairy));
+		}
+	}
 }
 
 void AFairyAIController::OnUnPossess()

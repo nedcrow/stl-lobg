@@ -47,4 +47,7 @@
   Add GetTeamName function(FairyPawn)
   Add BTTasks(SetStateIf, CallFire)
   Test StartFireTo function & SetState(FairyPawn, FairyAIController)
+  Connect BehaviorTree with FairyPawn
+
+1007
   

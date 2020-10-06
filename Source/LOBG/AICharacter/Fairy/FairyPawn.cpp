@@ -153,20 +153,31 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
-	if (bIsEndFire) {
+	//if (bIsEndFire) {
 		bIsEndFire = false;
-		FVector StartLocation = MeshesRingComponent->InstanceBodies[MeshesRingComponent->GetInstanceCount() - 1]->GetUnrealWorldTransform().GetLocation();
-		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
-		MeshesRingComponent->RemoveOne();
-		UE_LOG(LogTemp, Warning, TEXT("Fire!"));
-		//ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
-		// Missile 발사
-	}
+		UE_LOG(LogTemp, Warning, TEXT("BulletCount:%d"), MeshesRingComponent->GetInstanceCount());
+		if (MeshesRingComponent->GetInstanceCount() > 0) {
+			//FVector StartLocation = MeshesRingComponent->InstanceBodies[MeshesRingComponent->GetInstanceCount() - 1]->GetUnrealWorldTransform().GetLocation();
+			//FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+			MeshesRingComponent->RemoveOne();
+			UE_LOG(LogTemp, Warning, TEXT("Fire!"));
+			//ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
+			// Missile 발사
+		}
+	//}
 }
 
 void AFairyPawn::EndFire()
 {
 	bIsEndFire = true;
+}
+
+void AFairyPawn::Reload()
+{
+	// 총알이 N개 미만일 때,
+	if (MeshesRingComponent->GetInstanceCount() < MeshesRingComponent->MeshCount) {
+		MeshesRingComponent->AddOne();
+	}
 }
 
 void AFairyPawn::UpdateHPBar()

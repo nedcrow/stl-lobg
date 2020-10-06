@@ -225,6 +225,7 @@ BeginPlay에서 UpdateHPBar()를 호출하고 있는지 확인한다.
   Add GetTeamName function(FairyPawn)
   Add BTTasks(SetStateIf, CallFire)
   Test StartFireTo function & SetState(FairyPawn, FairyAIController)
+  Connect BehaviorTree with FairyPawn
 
 조혁
 상대 체력이 보여야하기에 HUDHPBar를 만들어서 띄우고 카메라의 회전에 맞춰서 허드도 회전하도록 했다.
