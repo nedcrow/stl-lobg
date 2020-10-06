@@ -47,14 +47,6 @@ void ABattlePS::OnRep_Money()
 	}
 }
 
-void ABattlePS::SetExp(float AddExp)
-{
-	PlayerExp += AddExp;
-	NewExp = AddExp;
-	UE_LOG(LogClass, Warning, TEXT("New Exp : %f, PlayerExp : %f"), NewExp, PlayerExp);
-	OnRep_Exp();
-}
-
 void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

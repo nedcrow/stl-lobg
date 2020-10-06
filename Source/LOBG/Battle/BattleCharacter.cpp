@@ -20,6 +20,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "../LOBGGameInstance.h"
 #include "../Weapon/WeaponComponent.h"
+#include "Components/WidgetComponent.h"
+#include "../UI/HPBarWidgetBase.h"
+#include "../UI/HUDBarSceneComponent.h"
 
 
 // Sets default values
@@ -49,6 +52,14 @@ ABattleCharacter::ABattleCharacter()
 
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
+
+	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
+	HPBarHUD->SetupAttachment(RootComponent);
+	HPBarHUD->SetRelativeLocation(FVector(0, 0, 110));
+
+	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	Widget->SetupAttachment(HPBarHUD);
+	Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
 
 	Tags.Add(TEXT("Player"));
 }
@@ -357,6 +368,9 @@ void ABattleCharacter::OnRep_CurrentHP()
 			PC->BattleWidgetObject->SetHPBar(CurrentHP / MaxHP);
 		}
 	}
+
+	//HPHUD업데이트
+	UpdateHPBar();
 }
 
 void ABattleCharacter::Server_SetIronsight_Implementation(bool State)
@@ -491,7 +505,7 @@ void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 		PS->OnRep_Money();
 
 		//PS->PlayerExp += Exp;
-		PS->SetExp(Exp);
+		//PS->SetExp(Exp);
 		PS->OnRep_Exp();
 	}
 }
@@ -514,5 +528,15 @@ void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTa
 {
 	Tags.Add(PlayerTag);
 	TeamName = PlayerTag;
+}
+
+void ABattleCharacter::UpdateHPBar()
+{
+	
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
 }
 

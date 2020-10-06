@@ -37,7 +37,6 @@ public:
 	float NextExp = 200;
 	float TempExp = 0;
 
-	void SetExp(float AddExp);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 	float NewExp = 0;
