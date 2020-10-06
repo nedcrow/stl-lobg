@@ -80,11 +80,24 @@ void ABattleCharacter::BeginPlay()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
+		if (PS->TeamColor != ETeamColor::None)
+		{
+			//InitHPBar();
+		}
 	}
+
 	if (IsLocallyControlled())
 	{
 		Widget->SetVisibility(false);
 	}
+
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		//HPWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 0.f, 1.f));
+	}
+
+	//InitHPBar();
 }
 
 // Called every frame
@@ -132,6 +145,7 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, CurrentHP);
 	DOREPLIFETIME(ABattleCharacter, MaxHP);
 	DOREPLIFETIME(ABattleCharacter, CurrentState);
+	DOREPLIFETIME(ABattleCharacter, UIColor);
 }
 
 // Move
@@ -203,15 +217,7 @@ void ABattleCharacter::StartFire()
 {
 	bIsFire = true;
 	OnFire();
-	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
-	if (PS)
-	{
-		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-		if (GI)
-		{
-			UE_LOG(LogClass, Warning, TEXT("MyTeamColor is %d"), PS->TeamColor);
-		}
-	}
+	//UE_LOG(LogClass, Warning, TEXT("UIColor is %s"), *UIColor.ToString());
 }
 
 void ABattleCharacter::StopFire()
@@ -273,7 +279,6 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		{
 			Bullet->SetDamageInfo(OutHit, GetController());
 			Bullet->TeamName = TeamName;
-			UE_LOG(LogClass, Warning, TEXT("BulletSpawned"));
 		}
 	}
 	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
@@ -317,18 +322,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		else
 		{
 			TempHP -= DamageAmount;
-			UE_LOG(LogClass, Warning, TEXT("CurrentHP : %f"), CurrentHP);
-			ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
-			if (PS)
-			{
-				UE_LOG(LogClass, Warning, TEXT("Money : %d, Exp : %f"), PS->PlayerMoney, PS->PlayerExp);
-				ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-				if (GI)
-				{
-					UE_LOG(LogClass, Warning, TEXT("%s PSTeamColor is %d"), *GI->GetUserID(), PS->TeamColor);
-				}
-			}
-			//UE_LOG(LogClass, Warning, TEXT("My Tag is %s"), *Tags[1].ToString());
 		}
 
 		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
@@ -533,11 +526,58 @@ void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTa
 {
 	Tags.Add(PlayerTag);
 	TeamName = PlayerTag;
+	InitHPBarWithTag(PlayerTag);
+}
+
+void ABattleCharacter::InitHPBar()
+{
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			if (PS->TeamColor == ETeamColor::Red)
+			{
+				HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
+			}
+			else if (PS->TeamColor == ETeamColor::Blue)
+			{
+				HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
+			}
+		}
+	}
+}
+
+void ABattleCharacter::InitHPBarWithTag(const FName & PlayerTag)
+{
+	UE_LOG(LogClass, Warning, TEXT("InitHPBarWithTag"));
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		if (PlayerTag == TEXT("Red"))
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
+		}
+		else if (PlayerTag == TEXT("Blue"))
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
+		}
+	}
+	
+}
+
+void ABattleCharacter::OnRep_SetUIColor()
+{
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		//HPWidget->SetColorAndOpacity(UIColor);
+	}
 }
 
 void ABattleCharacter::UpdateHPBar()
 {
-	
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{

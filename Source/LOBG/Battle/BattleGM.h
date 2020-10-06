@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "../LOBGGameInstance.h"
 #include "BattleGM.generated.h"
 
 /**
@@ -46,4 +47,6 @@ public:
 
 	//로비로 돌아가기
 	void GoLobby();
+
+	void TestUIColor();
 };

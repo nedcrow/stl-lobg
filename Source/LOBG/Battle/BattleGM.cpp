@@ -40,7 +40,8 @@ void ABattleGM::PostLogin(APlayerController* NewPlayer)
 	TArray<AActor*> OutTowers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
 	TowerCount = OutTowers.Num();
-	UE_LOG(LogClass, Warning, TEXT("TowerCount is %d"), TowerCount);
+
+	//TestUIColor();
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
@@ -83,5 +84,17 @@ void ABattleGM::CountTower()
 void ABattleGM::GoLobby()
 {
 	GetWorld()->ServerTravel(TEXT("Step02_Lobby"));
+}
+
+void ABattleGM::TestUIColor()
+{
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			PC->TestUIColor();
+		}
+	}
 }
 

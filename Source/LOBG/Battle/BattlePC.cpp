@@ -32,6 +32,7 @@ void ABattlePC::BeginPlay()
 		if (GI)
 		{
 			Server_SetPSTeamColor(GI->TeamColor);
+
 		}
 		
 	}
@@ -71,11 +72,53 @@ void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor
 			{
 				if (PS->TeamColor == ETeamColor::Red)
 				{
+					UE_LOG(LogClass, Warning, TEXT("In PC UI Color is Red"));
 					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
+					//PlayerPawn->InitHPBar();
+					//PlayerPawn->UIColor = FLinearColor(1, 0, 0, 1);
+					//PlayerPawn->OnRep_SetUIColor();
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
+					UE_LOG(LogClass, Warning, TEXT("In PC UI Color is Blue"));
 					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
+					//PlayerPawn->InitHPBar();
+					//PlayerPawn->UIColor = FLinearColor(0, 0, 1, 1);
+					//PlayerPawn->OnRep_SetUIColor();
+				}
+			}
+		}
+	}
+}
+
+void ABattlePC::TestUIColor()
+{
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
+	if (PS)
+	{
+		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+		if (GI)
+		{
+			//PS->TeamColor = TeamColor;
+
+			ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
+			if (PlayerPawn)
+			{
+				if (PS->TeamColor == ETeamColor::Red)
+				{
+					UE_LOG(LogClass, Warning, TEXT("In PC UI Color is Red"));
+					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
+					//PlayerPawn->InitHPBar();
+					//PlayerPawn->UIColor = FLinearColor(1, 0, 0, 1);
+					//PlayerPawn->OnRep_SetUIColor();
+				}
+				else if (PS->TeamColor == ETeamColor::Blue)
+				{
+					UE_LOG(LogClass, Warning, TEXT("In PC UI Color is Blue"));
+					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
+					//PlayerPawn->InitHPBar();
+					//PlayerPawn->UIColor = FLinearColor(0, 0, 1, 1);
+					//PlayerPawn->OnRep_SetUIColor();
 				}
 			}
 		}

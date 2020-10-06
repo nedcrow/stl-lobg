@@ -101,6 +101,7 @@ NetMulticast로 설정?
 1006 한것
 상대 체력이 보여야하기에 HUDHPBar를 만들어서 띄우고 카메라의 회전에 맞춰서 허드도 회전하도록 했다.
 IsLocallyControlled()로 로컬에서 제어한다면 HUD를 안보이게 했다.
+팀에 따라 HUD의 색깔을 다르게 하고 싶었지만 아직 완성하지 못함
 
 %%%%%%% HUD띄우는 법 %%%%%%%%%
 1. 헤더에 컴포넌트로 HUDBarSceneComponent와 UWidgetComponent를 설정한다.

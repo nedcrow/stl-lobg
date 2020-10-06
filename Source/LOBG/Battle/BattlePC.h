@@ -31,4 +31,6 @@ public:
 	UFUNCTION(Server, Reliable)
 		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
 		void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
+
+		void TestUIColor();
 };
