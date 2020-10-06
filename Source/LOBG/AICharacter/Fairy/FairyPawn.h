@@ -100,6 +100,9 @@ public:
 	UFUNCTION()
 	void EndFire();
 
+	UFUNCTION()
+	void Reload();
+
 	// HUD
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UHUDBarSceneComponent* HPBarHUD;
