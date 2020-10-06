@@ -104,6 +104,7 @@ IsLocallyControlled()로 로컬에서 제어한다면 HUD를 안보이게 했다
 
 %%%%%%% HUD띄우는 법 %%%%%%%%%
 1. 헤더에 컴포넌트로 HUDBarSceneComponent와 UWidgetComponent를 설정한다.
+밑에랑 같이 쓰면 됨
 
 UPROPERTY(BlueprintReadWrite, EditAnywhere)
 class UHUDBarSceneComponent* HPBarHUD;
@@ -111,12 +112,29 @@ class UHUDBarSceneComponent* HPBarHUD;
 UPROPERTY(BlueprintReadWrite, EditAnywhere)
 class UWidgetComponent* Widget;
 
-2. UI폴더의 HUDBarSceneComponent와 UHPBarWidgetBase, 그리고 Components/UWidgetComponent 를 include 하고 
+2. cpp에 인클루드 한다
+UI폴더(블루프린트 폴더 아님)의 HUDBarSceneComponent와 UHPBarWidgetBase
+그리고 Components/UWidgetComponent 를 include 하고
+
+#include "../UI/HPBarWidgetBase.h"
+#include "../UI/HUDBarSceneComponent.h"
+#include "Components/WidgetComponent.h"
+UI폴더는 알아서 잘 찾아가야한다.
+
 컴포넌트인 HPBarHUD와 Widget을 CreateDefaultSubobject한다.
 HPBarHUD는 RootCompoennt의 자식으로, Widget은 HPBarHUD의 자식으로 설정한다.
 HPBarHUD의 위치를 적절히 설정하고 Widget은 SetRelativeRotation()으로 회전값을 Yaw방향으로 180을 설정한다(중요)
 
-3. 
+ex)
+HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
+HPBarHUD->SetupAttachment(RootComponent);
+HPBarHUD->SetRelativeLocation(FVector(0, 0, 110));
+
+Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+Widget->SetupAttachment(HPBarHUD);
+Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
+
+3. 함수를 만든다.
 UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{
