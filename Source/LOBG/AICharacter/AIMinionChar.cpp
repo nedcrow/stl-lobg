@@ -8,9 +8,12 @@
 #include "../Weapon/EmissiveBullet.h"
 #include "../Battle/BattleCharacter.h"
 #include "Fairy/FairyPawn.h"
+#include "../UI/HUDBarSceneComponent.h"
+#include "../UI/HPBarWidgetBase.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,13 +38,20 @@ AAIMinionChar::AAIMinionChar()
 	// Movement
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
-	// ETC
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 	// AI
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 
+	// UI
+	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
+	HPBarHUD->SetupAttachment(RootComponent);
+	HPBarHUD->SetRelativeLocation(FVector(0, 0, 110));
+
+	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	Widget->SetupAttachment(HPBarHUD);
+	Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
+
 	// ETC
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	Tags.Add(TEXT("Minion"));
 }
 
@@ -50,13 +60,15 @@ void AAIMinionChar::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentHP = MaxHP;
+
 	SetState(EMinioonState::Normal);
 
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AAIMinionChar::ProcessSeenPawn);
-	}
-	
+	}	
+
 }
 
 // PawnSensing
@@ -118,7 +130,11 @@ void AAIMinionChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	//DOREPLIFETIME_CONDITION(ATPSCharacter, bIsFire, COND_SimulatedOnly);
+	DOREPLIFETIME(AAIMinionChar, MaxHP);
+	DOREPLIFETIME(AAIMinionChar, CurrentHP);
+	DOREPLIFETIME(AAIMinionChar, CurrentState);
 	DOREPLIFETIME(AAIMinionChar, bIsFire);
+
 }
 
 // Called to bind functionality to input
@@ -126,6 +142,15 @@ void AAIMinionChar::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AAIMinionChar::OnRep_CurrentHP()
+{
+	UpdateHPBar();
+}
+
+void AAIMinionChar::OnRep_CurrentState()
+{
 }
 
 void AAIMinionChar::SetState(EMinioonState NewState)
@@ -140,7 +165,7 @@ void AAIMinionChar::SetState(EMinioonState NewState)
 }
 
 // Fire
-void AAIMinionChar::OnFire()
+void AAIMinionChar::OnFire(FVector TargetLocation)
 {
 	// 액터 방향 구하기
 	// 총알 스폰
@@ -150,7 +175,7 @@ void AAIMinionChar::OnFire()
 		if (World != NULL)
 		{
 			//const FRotator SpawnRotation = GetControlRotation();
-			const FRotator SpawnRotation = (GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation()).Rotation();
+			const FRotator SpawnRotation = (TargetLocation - GetActorLocation()).Rotation();
 			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + SpawnRotation.RotateVector(FVector(100.0f, 0.0f, 10.0f));
 
@@ -160,7 +185,6 @@ void AAIMinionChar::OnFire()
 
 			// spawn the projectile at the muzzle
 			World->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-
 		}
 	}
 	else
@@ -168,6 +192,13 @@ void AAIMinionChar::OnFire()
 		return;
 	}
 
+	
+	// 사격 후속 이펙트
+	NetMulticast_ProcessFire();
+}
+
+void AAIMinionChar::NetMulticast_ProcessFire_Implementation()
+{
 	// 소리 스폰
 
 	// 사격 몽타주 재생
@@ -177,5 +208,16 @@ void AAIMinionChar::OnFire()
 	}
 
 
+
+
+}
+
+void AAIMinionChar::UpdateHPBar()
+{
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget && MaxHP > 0)
+	{
+		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
 }
 
