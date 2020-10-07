@@ -202,15 +202,7 @@ public:
 
 	FName TeamName;
 
-	void InitHPBar();
 	void InitHPBarWithEnum(ETeamColor color);
-	void InitHPBarWithTag(const FName& PlayerTag);
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_SetUIColor")
-		FLinearColor UIColor;
-
-	UFUNCTION()
-	void OnRep_SetUIColor();
 
 	//HPHUD 업데이트
 	void UpdateHPBar();
