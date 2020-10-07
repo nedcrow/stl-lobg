@@ -2,9 +2,10 @@
 
 
 #include "FairyPawn.h"
-#include "Net/UnrealNetwork.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -16,7 +17,7 @@
 #include "FairyAIController.h"
 #include "../../UI/HUDBarSceneComponent.h"
 #include "../../UI/HPBarWidgetBase.h"
-#include "Components/WidgetComponent.h"
+
 //#include "../../Weapon/BulletBase.h"
 
 // Sets default values
@@ -155,13 +156,15 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
 	//if (bIsEndFire) {
 		bIsEndFire = false;
-		UE_LOG(LogTemp, Warning, TEXT("BulletCount:%d"), MeshesRingComponent->GetInstanceCount());
-		if (MeshesRingComponent->GetInstanceCount() > 0) {
-			//FVector StartLocation = MeshesRingComponent->InstanceBodies[MeshesRingComponent->GetInstanceCount() - 1]->GetUnrealWorldTransform().GetLocation();
-			//FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+		int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
+		if (currentInstanceCount > 0) {
+			FTransform TempTransform;
+			MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
+			FVector StartLocation = TempTransform.GetLocation();
+			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 			MeshesRingComponent->RemoveOne();
 			UE_LOG(LogTemp, Warning, TEXT("Fire!"));
-			//ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
+			ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 			// Missile 발사
 		}
 	//}
@@ -174,7 +177,7 @@ void AFairyPawn::EndFire()
 
 void AFairyPawn::Reload()
 {
-	// 총알이 N개 미만일 때,
+	// 총알이 몇 개 미만일 때,
 	if (MeshesRingComponent->GetInstanceCount() < MeshesRingComponent->MeshCount) {
 		MeshesRingComponent->AddOne();
 	}
