@@ -61,6 +61,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
 	float CurrentHP;
 
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
+	float AttackPoint;
+
 	UFUNCTION()
 	void OnRepCurrentHP();
 
@@ -96,6 +99,10 @@ public:
 
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
+
+	UFUNCTION(Server, Reliable)
+	void Server_ProcessFire(FVector StartLocation, FVector TargetLocation);
+	void Server_ProcessFire_Implementation(FVector StartLocation, FVector TargetLocation);
 
 	UFUNCTION()
 	void EndFire();

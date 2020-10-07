@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "../../Battle/BattleCharacter.h"
 #include "../../Battle/BattlePC.h"
@@ -17,6 +19,7 @@
 #include "FairyAIController.h"
 #include "../../UI/HUDBarSceneComponent.h"
 #include "../../UI/HPBarWidgetBase.h"
+#include "../../Weapon/BulletDamageType.h"
 
 //#include "../../Weapon/BulletBase.h"
 
@@ -166,8 +169,53 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 			UE_LOG(LogTemp, Warning, TEXT("Fire!"));
 			ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 			// Missile 발사
+			//Server_ProcessFire(StartLocation,TargetLocation);
 		}
 	//}
+}
+
+void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FVector TargetLocation)
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> Objects;
+	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+
+	TArray<AActor*> ActorToIgnore;
+
+	FHitResult OutHit;
+
+	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		StartLocation,
+		TargetLocation,
+		Objects,
+		true,
+		ActorToIgnore,
+		EDrawDebugTrace::None,
+		OutHit,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		5.0f
+	);
+
+	
+	//all client spawn Hit effect and Decal
+	//Multicast_SpawnHitEffectAndDecal(OutHit);
+
+	//Point Damage
+	UGameplayStatics::ApplyPointDamage(OutHit.GetActor(), //맞은놈
+		AttackPoint,	//데미지
+		-OutHit.ImpactNormal,	//데미지 방향
+		OutHit,	//데미지 충돌 정보
+		GetController(),	//때린 플레이어
+		this,	//때린놈
+		UBulletDamageType::StaticClass() //데미지 타입
+	);
+
+	MakeNoise(1.0f, this, OutHit.ImpactPoint);
+	
 }
 
 void AFairyPawn::EndFire()
