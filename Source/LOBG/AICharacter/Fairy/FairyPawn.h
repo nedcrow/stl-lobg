@@ -62,7 +62,7 @@ public:
 	float CurrentHP;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
-	float AttackPoint;
+	float AttackPoint = 11;
 
 	UFUNCTION()
 	void OnRepCurrentHP();
@@ -91,21 +91,18 @@ public:
 
 
 	// fire
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire")
-	TSubclassOf<class ABulletBase> BulletClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire")
-	uint8 bIsEndFire : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	TSubclassOf<class ABulletBase> BulletClass;
 
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
 
 	UFUNCTION(Server, Reliable)
-	void Server_ProcessFire(FVector StartLocation, FVector TargetLocation);
-	void Server_ProcessFire_Implementation(FVector StartLocation, FVector TargetLocation);
-
-	UFUNCTION()
-	void EndFire();
+	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
+	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 
 	UFUNCTION()
 	void Reload();

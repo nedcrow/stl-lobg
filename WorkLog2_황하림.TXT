@@ -55,4 +55,7 @@
   Add object channel (see through)
   Clean up blueprints (player, bullets)
   Test AttackPoint (BulletBase)
+  Add function & Clean up(FairyPawn, BulletBase, BattleCharacter)
+    * BP_BattleCharacter - ObjectTypes - SeeThrough 추가
+    * BulletBase - OutHit, Controller 이름 변경, 함수 위치 변경, 총을 쏜 폰의 공격력 확인 및 적용
   

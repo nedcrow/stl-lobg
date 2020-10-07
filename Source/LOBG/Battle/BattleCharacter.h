@@ -72,13 +72,13 @@ public:
 
 #pragma region FireAndTakeDamage
 	//충돌할 오브젝트 타입 에디터에서 설정
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class ABulletBase> BulletClass;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Bullet")
 		uint8 bIsFire : 1;
 
 	FTimerHandle BulletTimer;
@@ -104,6 +104,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float MaxHP = 100.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+		float AttackPoint = 5.f;
 
 	// Ironsight
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")

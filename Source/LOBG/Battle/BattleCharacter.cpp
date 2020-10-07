@@ -277,7 +277,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		if (Bullet)
 		{
 			Bullet->SetDamageInfo(OutHit, GetController());
-
+			Bullet->TeamName = TeamName;
 		}
 	}
 }
@@ -293,7 +293,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		//Destroy();
 
 		// 피격 시 HitAnimation
-		// NetMulticast_StartHitMontage(FMath::RandRange(1, 4))
+		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 
 		//네트워크상에서 CurrentHP동기화를 한번한 하기 위한 장치
 		float TempHP = CurrentHP;
@@ -315,23 +315,21 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		CurrentHP = TempHP;
 		//서버도 실행되게
 		OnRep_CurrentHP();
-
-		//죽었을때
-		if (CurrentHP <= 0)
-		{
-			NetMulticast_StartDeath(FMath::RandRange(1, 3));
-			CurrentState = EBattleCharacterState::Dead;
-			FTimerHandle DeadTimer;
-			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
-		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
-
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
+	}
 
+	//죽었을때
+	if (CurrentHP <= 0)
+	{
+		NetMulticast_StartDeath(FMath::RandRange(1, 3));
+		CurrentState = EBattleCharacterState::Dead;
+		FTimerHandle DeadTimer;
+		GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
 	}
 
 	return 0.0f;
@@ -442,7 +440,7 @@ void ABattleCharacter::StartReload()
 void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 {
 	if (HitActionMontage) {
-		FString HitSectionName = FString::Printf(TEXT("Hit_%d"), Number);
+		FString HitSectionName = FString::Printf(TEXT("Hit%d"), Number);
 		PlayAnimMontage(HitActionMontage, 1.f, FName(HitSectionName));
 	}
 }

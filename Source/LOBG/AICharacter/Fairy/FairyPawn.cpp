@@ -66,7 +66,6 @@ void AFairyPawn::BeginPlay()
 	if (PawnSensingComponent)
 	{
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
-		bIsEndFire = true;
 	}
 }
 
@@ -91,25 +90,22 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 	{
 		return 0.0f;
 	}
-	//if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) {
-		float TempHP = 0;
-		TempHP = CurrentHP - Damage;
-		UE_LOG(LogTemp, Warning, TEXT("누가 나 때림! (HP : %f)"), TempHP);
-		// 피격 애니메이션
 
-		CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
-		UpdateHPBar();
+	float TempHP = 0;
+	TempHP = CurrentHP - Damage;
+	// 피격 애니메이션 추가 필요
 
-		if (CurrentHP <= 0 && EventInstigator != NULL)
-		{
-			// 죽음 애니메이션(?)
-			FName NewTeamName = "None";
-			NewTeamName = GetTeamName(EventInstigator->GetPawn());
-			UE_LOG(LogTemp, Warning, TEXT("from_(%s Team)"), *NewTeamName.ToString());
-			NetMulticast_ResetTags(NewTeamName);
-		}
-	//}
+	CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
+	UpdateHPBar();
 
+	if (CurrentHP <= 0 && EventInstigator != NULL)
+	{
+		// 죽음 애니메이션(?) 추가 필요
+		FName NewTeamName = "None";
+		NewTeamName = GetTeamName(EventInstigator->GetPawn());
+		UE_LOG(LogTemp, Warning, TEXT("Base is under attack (%s Team)"), *NewTeamName.ToString());
+		NetMulticast_ResetTags(NewTeamName);
+	}
 	
 	return 0.0f;
 }
@@ -143,7 +139,6 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 	if (CurrentState == EFairyState::Idle) {
 		FName EnemyTeamName = GetTeamName(Pawn);
 		if (EnemyTeamName != TeamName) {
-			//SetCurrentState(EFairyState::Fight);
 			AFairyAIController* AIC = GetController<AFairyAIController>();
 			if (AIC && AIC->CurrentEnermy != Pawn)
 			{
@@ -157,30 +152,21 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
-	//if (bIsEndFire) {
-		bIsEndFire = false;
-		int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
-		if (currentInstanceCount > 0) {
-			FTransform TempTransform;
-			MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
-			FVector StartLocation = TempTransform.GetLocation();
-			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
-			MeshesRingComponent->RemoveOne();
-			UE_LOG(LogTemp, Warning, TEXT("Fire!"));
-			ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
-			// Missile 발사
-			//Server_ProcessFire(StartLocation,TargetLocation);
-		}
-	//}
+	int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
+	if (currentInstanceCount > 0) {
+		FTransform TempTransform;
+		MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
+		FVector StartLocation = TempTransform.GetLocation();
+		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+		MeshesRingComponent->RemoveOne();
+			
+		// Missile 발사
+		Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
+	}
 }
 
-void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FVector TargetLocation)
+void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation)
 {
-	TArray<TEnumAsByte<EObjectTypeQuery>> Objects;
-	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
-	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
-	Objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
-
 	TArray<AActor*> ActorToIgnore;
 
 	FHitResult OutHit;
@@ -189,7 +175,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FVecto
 		GetWorld(),
 		StartLocation,
 		TargetLocation,
-		Objects,
+		ObjectTypes,
 		true,
 		ActorToIgnore,
 		EDrawDebugTrace::None,
@@ -200,27 +186,12 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FVecto
 		5.0f
 	);
 
-	
-	//all client spawn Hit effect and Decal
-	//Multicast_SpawnHitEffectAndDecal(OutHit);
-
-	//Point Damage
-	UGameplayStatics::ApplyPointDamage(OutHit.GetActor(), //맞은놈
-		AttackPoint,	//데미지
-		-OutHit.ImpactNormal,	//데미지 방향
-		OutHit,	//데미지 충돌 정보
-		GetController(),	//때린 플레이어
-		this,	//때린놈
-		UBulletDamageType::StaticClass() //데미지 타입
-	);
-
-	MakeNoise(1.0f, this, OutHit.ImpactPoint);
-	
-}
-
-void AFairyPawn::EndFire()
-{
-	bIsEndFire = true;
+	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
+	if (Bullet)
+	{
+		Bullet->SetDamageInfo(OutHit, GetController());
+		Bullet->TeamName = TeamName;
+	}	
 }
 
 void AFairyPawn::Reload()

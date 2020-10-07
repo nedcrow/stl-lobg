@@ -256,6 +256,9 @@ AI 테이크데미지, 사망 몽타주.
   Add object channel (see through)
   Clean up blueprints (player, bullets)
   Test AttackPoint (BulletBase)
+  Add function & Clean up(FairyPawn, BulletBase, BattleCharacter)
+    * BP_BattleCharacter - ObjectTypes - SeeThrough 추가
+    * BulletBase - OutHit, Controller 이름 변경, 함수 위치 변경, 총을 쏜 폰의 공격력 확인 및 적용
 
 조혁
 팀에 따라서 HPHUD의 색이 변하는 네트워크 동기화 동작

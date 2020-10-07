@@ -23,35 +23,36 @@ public:
 	// Sets default values for this actor's properties
 	ABulletBase();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class USphereComponent* Sphere;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UProjectileMovementComponent* Movement;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class USphereComponent* Sphere;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UProjectileMovementComponent* Movement;
-
+	// Damage
 	EApplyDamageType CurrentDamageType;
-
-	void ApplyDamageProcess(EApplyDamageType ApplyDamageType);
+	FHitResult TraceHit;
+	AController* SummonerController;
 	void SetDamageInfo(FHitResult OutHit, AController* Controller);
-
+	void ApplyDamageProcess(EApplyDamageType ApplyDamageType);
+	float GetAttackPoint();
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class UBulletDamageType> DamageType;
 
-	FHitResult PlayerOutHit;
-	AController* PlayerController;
-
+	// OverlapEvent
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			AActor* OtherActor,
@@ -60,10 +61,7 @@ public:
 			bool bFromSweep,
 			const FHitResult& SweepResult);
 
+	// Team
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	FName TeamName;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	float GetAttackPoint();
 };

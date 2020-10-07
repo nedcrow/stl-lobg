@@ -10,6 +10,7 @@
 #include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
 #include "../AICharacter/Fairy/FairyPawn.h"
+#include "../AICharacter/AIMinionChar.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -43,35 +44,59 @@ void ABulletBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABulletBase, TeamName);
+}
+
+void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller)
+{
+	TraceHit = OutHit;
+	SummonerController = Controller;
+}
+
 void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 {
 	switch (ApplyDamageType)
 	{
 	case EApplyDamageType::Player:
-		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), GetAttackPoint(), -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(TraceHit.GetActor(), GetAttackPoint(), -TraceHit.ImpactNormal, TraceHit, SummonerController, this, UBulletDamageType::StaticClass());
 		break;
 	case EApplyDamageType::Minion:
-		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), GetAttackPoint(), PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(TraceHit.GetActor(), GetAttackPoint(), SummonerController, this, UBulletDamageType::StaticClass());
 		break;
 	case EApplyDamageType::Tower:
-		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), GetAttackPoint(), PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(TraceHit.GetActor(), GetAttackPoint(), SummonerController, this, UBulletDamageType::StaticClass());
 		break;
 	default:
 		break;
 	}
 
-
 	//사운드
 
-	//이펙트
+	//이펙트 Multicast_SpawnHitEffectAndDecal(OutHit);
 
 	Destroy();
 }
 
-void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller)
+float ABulletBase::GetAttackPoint()
 {
-	PlayerOutHit = OutHit;
-	PlayerController = Controller;
+	float AP = 0.f;
+	AActor* Pawn = SummonerController->GetViewTarget();
+	if (Pawn) {
+		if (Pawn->ActorHasTag(TEXT("Player"))) {
+			AP = Cast<ABattleCharacter>(Pawn)->AttackPoint ? Cast<ABattleCharacter>(Pawn)->AttackPoint : 0.f;
+		}
+		else if (Pawn->ActorHasTag(TEXT("Minion"))) {
+			AP = Cast<AAIMinionChar>(Pawn)->AttackDamage ? Cast<AAIMinionChar>(Pawn)->AttackDamage : 0.f;
+		}
+		else if (Pawn->ActorHasTag(TEXT("Tower"))) {
+			AP = Cast<AFairyPawn>(Pawn)->AttackPoint ? Cast<AFairyPawn>(Pawn)->AttackPoint : 0.f;
+		}
+	}
+	return AP;
 }
 
 void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -104,35 +129,11 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
-	//스스로 사라지지 않도록 Bullet태그를 검사한다.
+	//스스로 사라지지 않도록 Bullet 태그를 검사한다.
 	else if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
 		Destroy();
 	}
-}
-
-void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ABulletBase, TeamName);
-}
-
-float ABulletBase::GetAttackPoint()
-{
-	float AP = 1.f;
-	AActor* Pawn = GetParentActor();
-	if (GetParentActor()->ActorHasTag(TEXT("Player"))) {
-		//AP = Cast<ABattleCharacter>(Pawn);
-	}
-	else if (GetParentActor()->ActorHasTag(TEXT("Minion"))) {
-		//AP = Cast<ABattleCharacter>(Pawn)->AttackPoint;
-	}
-	else if (GetParentActor()->ActorHasTag(TEXT("Tower"))) {
-		//AP = Cast<AFairyPawn>(Pawn).AttackPoint;
-	}
-
-	return AP;
 }
 
