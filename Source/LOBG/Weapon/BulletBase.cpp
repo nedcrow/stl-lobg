@@ -22,7 +22,6 @@ ABulletBase::ABulletBase()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
-	StaticMesh->SetMobility(EComponentMobility::Static);
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
