@@ -60,7 +60,7 @@ ABattleCharacter::ABattleCharacter()
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	Widget->SetupAttachment(HPBarHUD);
 	Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
-	
+	//Widget->SetIsReplicated(true);
 
 	Tags.Add(TEXT("Player"));
 }
@@ -80,24 +80,12 @@ void ABattleCharacter::BeginPlay()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
-		if (PS->TeamColor != ETeamColor::None)
-		{
-			//InitHPBar();
-		}
 	}
 
 	if (IsLocallyControlled())
 	{
-		//Widget->SetVisibility(false);
+		Widget->SetVisibility(false);
 	}
-
-	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
-	if (HPWidget)
-	{
-		//HPWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 0.f, 1.f));
-	}
-
-	//InitHPBar();
 }
 
 // Called every frame
@@ -145,7 +133,6 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, CurrentHP);
 	DOREPLIFETIME(ABattleCharacter, MaxHP);
 	DOREPLIFETIME(ABattleCharacter, CurrentState);
-	DOREPLIFETIME(ABattleCharacter, UIColor);
 }
 
 // Move
@@ -217,7 +204,6 @@ void ABattleCharacter::StartFire()
 {
 	bIsFire = true;
 	OnFire();
-	//UE_LOG(LogClass, Warning, TEXT("UIColor is %s"), *UIColor.ToString());
 }
 
 void ABattleCharacter::StopFire()
@@ -526,27 +512,6 @@ void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTa
 {
 	Tags.Add(PlayerTag);
 	TeamName = PlayerTag;
-	InitHPBarWithTag(PlayerTag);
-}
-
-void ABattleCharacter::InitHPBar()
-{
-	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
-	if (HPWidget)
-	{
-		ABattlePS* PS = GetPlayerState<ABattlePS>();
-		if (PS)
-		{
-			if (PS->TeamColor == ETeamColor::Red)
-			{
-				HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
-			}
-			else if (PS->TeamColor == ETeamColor::Blue)
-			{
-				HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
-			}
-		}
-	}
 }
 
 void ABattleCharacter::InitHPBarWithEnum(ETeamColor color)
@@ -554,6 +519,7 @@ void ABattleCharacter::InitHPBarWithEnum(ETeamColor color)
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{
+		
 		if (color == ETeamColor::Red)
 		{
 			HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
@@ -562,35 +528,6 @@ void ABattleCharacter::InitHPBarWithEnum(ETeamColor color)
 		{
 			HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
 		}
-		
-	}
-	
-}
-
-void ABattleCharacter::InitHPBarWithTag(const FName & PlayerTag)
-{
-	UE_LOG(LogClass, Warning, TEXT("InitHPBarWithTag"));
-	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
-	if (HPWidget)
-	{
-		if (PlayerTag == TEXT("Red"))
-		{
-			HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
-		}
-		else if (PlayerTag == TEXT("Blue"))
-		{
-			HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
-		}
-	}
-	
-}
-
-void ABattleCharacter::OnRep_SetUIColor()
-{
-	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
-	if (HPWidget)
-	{
-		//HPWidget->SetColorAndOpacity(UIColor);
 	}
 }
 

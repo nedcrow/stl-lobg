@@ -47,6 +47,4 @@ public:
 
 	//로비로 돌아가기
 	void GoLobby();
-
-	void TestUIColor();
 };
