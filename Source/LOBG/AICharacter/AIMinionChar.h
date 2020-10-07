@@ -98,6 +98,22 @@ public:
 		void NetMulticast_ProcessFire();
 	void NetMulticast_ProcessFire_Implementation();
 
+	// TakeDamage
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	// Death
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* DeathMontage;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_StartDeath(int Index);
+	void NetMulticast_StartDeath_Implementation(int Index);
+	
+	void DeathSetting();		// 죽을 때의 설정들
+
+	UFUNCTION(BlueprintCallable)
+		bool Montage_IsPlaying(class UAnimMontage* AnimMontage);
+
 	// UI
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UHUDBarSceneComponent* HPBarHUD;

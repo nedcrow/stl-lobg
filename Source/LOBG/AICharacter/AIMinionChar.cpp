@@ -6,6 +6,7 @@
 #include "MinionAIC.h"
 #include "../Weapon/WeaponComponent.h"
 #include "../Weapon/EmissiveBullet.h"
+#include "../Battle/BattleGM.h"
 #include "../Battle/BattleCharacter.h"
 #include "Fairy/FairyPawn.h"
 #include "../UI/HUDBarSceneComponent.h"
@@ -30,6 +31,7 @@ AAIMinionChar::AAIMinionChar()
 
 	// Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), FRotator(0.f, -90.f, 0.f));
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 
 	// Weapon
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
@@ -40,6 +42,10 @@ AAIMinionChar::AAIMinionChar()
 
 	// AI
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 2000.f;
+	PawnSensing->bOnlySensePlayers = false;
+	PawnSensing->bHearNoises = false;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
 
 	// UI
 	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
@@ -53,6 +59,7 @@ AAIMinionChar::AAIMinionChar()
 	// ETC
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	Tags.Add(TEXT("Minion"));
+
 }
 
 // Called when the game starts or when spawned
@@ -210,6 +217,96 @@ void AAIMinionChar::NetMulticast_ProcessFire_Implementation()
 
 
 
+}
+
+// TakeDamage
+float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (CurrentHP <= 0) return 0.f;
+	
+	float TempHP = CurrentHP;
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+
+		//Destroy();
+
+		// 피격 시 HitAnimation
+		// NetMulticast_StartHitMontage(FMath::RandRange(1, 4))
+
+		//네트워크상에서 CurrentHP동기화를 한번한 하기 위한 장치
+		
+
+		FPointDamageEvent* PointDamageEvent = (FPointDamageEvent*)(&DamageEvent);
+		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)
+		{
+			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
+
+			TempHP = 0;
+		}
+		else
+		{
+			TempHP -= DamageAmount;
+		}
+
+
+	}
+	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+
+	}
+	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
+	{
+
+	}
+
+	TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
+	CurrentHP = TempHP;	
+	OnRep_CurrentHP();		// 서버 위젯 갱신
+
+	//죽었을때
+	if (CurrentHP <= 0)
+	{
+		NetMulticast_StartDeath(FMath::RandRange(1, 3));
+		SetState(EMinioonState::Dead);
+		SetLifeSpan(5.f);
+	}
+
+
+	return DamageAmount;
+}
+
+void AAIMinionChar::NetMulticast_StartDeath_Implementation(int Index)
+{
+	if (DeathMontage && !Montage_IsPlaying(DeathMontage))
+	{
+		FString DeathSectionName = FString::Printf(TEXT("Death%d"), Index);
+		PlayAnimMontage(DeathMontage, 1.f, FName(DeathSectionName));
+
+	}
+
+	DeathSetting();
+}
+
+void AAIMinionChar::DeathSetting()
+{
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+
+	// 머티리얼 효과
+}
+
+bool AAIMinionChar::Montage_IsPlaying(UAnimMontage * AnimMontage)
+{
+	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	if (AnimMontage && AnimInstance)
+	{
+		return AnimInstance->Montage_IsPlaying(AnimMontage);
+	}
+
+
+	return false;
 }
 
 void AAIMinionChar::UpdateHPBar()
