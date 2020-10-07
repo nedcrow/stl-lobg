@@ -145,8 +145,6 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 					return true;
 				}
 			}
-
-			AIChar->OnFire();
 		}
 	}
 

@@ -50,4 +50,8 @@
   Connect BehaviorTree with FairyPawn
 
 1007
+  Clean up concept design file
+  Test instancedMesh (fire bullet)
+  Add object channel (see through)
+  Clean up blueprints (player, bullets)
   

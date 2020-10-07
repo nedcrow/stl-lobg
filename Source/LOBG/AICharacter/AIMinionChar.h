@@ -57,22 +57,28 @@ public:
 	// State
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float WalkSpeed = 150.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Data")
 		float MaxHP = 100.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = "OnRep_CurrentHP", Category = "Data")
 		float CurrentHP = 100.f;
+	UFUNCTION()
+		void OnRep_CurrentHP();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float AttackDamage = 10.f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		FName TeamName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = "OnRep_CurrentState", Category = "Data")
 		EMinioonState CurrentState;
-
+	UFUNCTION()
+		void OnRep_CurrentState();
 	UFUNCTION(BlueprintCallable)
 		void SetState(EMinioonState NewState);
 
 	// Aim
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float AimPitch = 0.f;
 
 	// MoveTarget
@@ -86,11 +92,17 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* FireMontage;
 
-	void OnFire();
+	void OnFire(FVector TargetLocation);
 
-	//UFUNCTION(Server, Reliable)
-	//	void Server_ProcessFire(FVector StartLine, FVector EndLine);
-	//void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_ProcessFire();
+	void NetMulticast_ProcessFire_Implementation();
 
+	// UI
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UHUDBarSceneComponent* HPBarHUD;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UWidgetComponent* Widget;
 
+	void UpdateHPBar();
 };
