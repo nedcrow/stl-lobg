@@ -19,8 +19,8 @@ void ABattleGM::BeginPlay()
 
 	FindPlayerStart();
 
-	//FTimerHandle PlayerTimer;
-	//GetWorldTimerManager().SetTimer(PlayerTimer, this, &ABattleGM::PlayerSpawn, 5.0f, false);
+	FTimerHandle PlayerTimer;
+	GetWorldTimerManager().SetTimer(PlayerTimer, this, &ABattleGM::PlayerSpawn, 2.0f, false);
 	//PlayerSpawn();
 
 	// AIManager Spawn.
@@ -46,7 +46,6 @@ void ABattleGM::PostLogin(APlayerController* NewPlayer)
 	TArray<AActor*> OutTowers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
 	TowerCount = OutTowers.Num();
-	//PlayerSpawn();
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
@@ -102,68 +101,33 @@ void ABattleGM::PlayerSpawn()
 	int PlayerNumber = 0;
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
 	{
-		//PlayerNumber = 0;
 		PlayerNumber++;
 	}
-		UE_LOG(LogClass, Warning, TEXT("PlayerNumber is %d"), PlayerNumber);
+
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
 	{
-		
-
 		ABattlePC* PC = Cast<ABattlePC>(*Iter);
 		if (PC)
 		{
-			PC->SetTeamColorInPC();
-			//UE_LOG(LogClass, Warning, TEXT("TeamColor is "));
-			for (int j = 0; j < OutputPlayerStart.Num(); ++j)
-			{
-				if (OutputPlayerStart[j]->ActorHasTag(TEXT("Red")))
-				{
-					if (PC->TestColor == ETeamColor::Red)
-					{
-						UE_LOG(LogClass, Warning, TEXT("Player Respawn in Red"));
-						UGameplayStatics::CreatePlayer(GetWorld());
-						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
-							PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
-						PC->Possess(PlayerPawn);
-						PC->InitTeamColor();
-						PC->TestWidget();
-					}
-				}
-				else if (OutputPlayerStart[j]->ActorHasTag(TEXT("Blue")))
-				{
-					if (PC->TestColor == ETeamColor::Blue)
-					{
-						UE_LOG(LogClass, Warning, TEXT("Player Respawn in Blue"));
-						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
-							PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
-						PC->Possess(PlayerPawn);
-						PC->InitTeamColor();
-						PC->TestWidget();
-					}
-				}
-			}
-			
+			PC->Clinet_SetTeamColorInPC();
 		}
-
 	}
+}
 
-	//for (int i = 0; i < PlayerNumber; ++i)
-	//{
-	//	for (int j = 0; j < OutputPlayerStart.Num(); ++j)
-	//	{
-	//		if(OutputPlayerStart[j]->ActorHasTag(TEXT("Red")))
-	//		{
-	//			UGameplayStatics::CreatePlayer(GetWorld(), i);
-	//			ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
-	//				PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
-	//			ABattlePC* PC = Cast<ABattlePC>(UGameplayStatics::GetPlayerController(GetWorld(), i));
-	//			if (PC)
-	//			{
-	//				PC->Possess(PlayerPawn);
-	//			}
-	//		}
-	//	}
-	//}
+void ABattleGM::TestPlayerSpawn(ETeamColor newcolor, ABattlePC* NewPC)
+{
+	ABattlePC* PC = Cast<ABattlePC>(NewPC);
+	if (PC)
+	{
+		for (int i = 0; i < OutputPlayerStart.Num(); ++i)
+		{
+			PC->Client_TestWidget();
+			float Random = FMath::RandRange(10.f, 20.f);
+			FVector Location = FVector(OutputPlayerStart[i]->GetActorLocation().X + Random, OutputPlayerStart[i]->GetActorLocation().Y + Random, OutputPlayerStart[i]->GetActorLocation().Z);
+			ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, Location, OutputPlayerStart[i]->GetActorRotation());
+			PC->Possess(PlayerPawn);
+			return;
+		}
+	}
 }
 

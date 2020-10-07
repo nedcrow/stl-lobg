@@ -20,7 +20,7 @@ void ABattlePS::OnRep_Exp()
 	}
 
 	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
-	if (PC && PC->IsLocalController())
+	if (PC && PC->IsLocalController() && PC->BattleWidgetObject)
 	{
 		float totalExp = NextExp - TempExp;
 		PC->BattleWidgetObject->SetExpBar(NewExp / totalExp);
@@ -32,7 +32,7 @@ void ABattlePS::OnRep_Exp()
 void ABattlePS::OnRep_Level()
 {
 	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
-	if (PC && PC->IsLocalController())
+	if (PC && PC->IsLocalController() && PC->BattleWidgetObject)
 	{
 		PC->BattleWidgetObject->SetLevel(PlayerLevel);
 	}

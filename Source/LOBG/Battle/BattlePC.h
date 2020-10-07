@@ -35,17 +35,18 @@ public:
 	void InitTeamColor();
 
 	UFUNCTION(Client, Reliable)
-	void SetTeamColorInPC();
-	void SetTeamColorInPC_Implementation();
+		void Clinet_SetTeamColorInPC();
+	void Clinet_SetTeamColorInPC_Implementation();
 
 	ETeamColor TestColor = ETeamColor::None;
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetTestColor(const ETeamColor& color);
-		void Server_SetTestColor_Implementation(const ETeamColor& color);
+	void Server_SetTestColor_Implementation(const ETeamColor& color);
 
-		UFUNCTION(Client, Reliable)
-			void TestWidget();
-			void TestWidget_Implementation();
+	UFUNCTION(Client, Reliable)
+		void Client_TestWidget();
+	void Client_TestWidget_Implementation();
+
 
 };

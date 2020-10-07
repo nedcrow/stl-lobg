@@ -6,6 +6,8 @@
 #include "BattleWidgetBase.h"
 #include "../LOBGGameInstance.h"
 #include "BattlePS.h"
+#include "BattleGM.h"
+#include "Kismet/GameplayStatics.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -18,25 +20,25 @@ void ABattlePC::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (IsLocalPlayerController())
-	{
-		if (BattleWidgetClass)
-		{
-			BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
-			if (BattleWidgetObject)
-			{
-				BattleWidgetObject->AddToViewport();
-			}
-			SetInputMode(FInputModeGameOnly());
-		}
-		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-		if (GI)
-		{
-			//Server_SetPSTeamColor(GI->TeamColor);
-		}
-		//FTimerHandle ColorTimer;
-		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
-	}
+	//if (IsLocalPlayerController())
+	//{
+	//	if (BattleWidgetClass)
+	//	{
+	//		BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
+	//		if (BattleWidgetObject)
+	//		{
+	//			BattleWidgetObject->AddToViewport();
+	//		}
+	//		SetInputMode(FInputModeGameOnly());
+	//	}
+	//	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	//	if (GI)
+	//	{
+	//		//Server_SetPSTeamColor(GI->TeamColor);
+	//	}
+	//	//FTimerHandle ColorTimer;
+	//	//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
+	//}
 }
 
 void ABattlePC::ClickFire()
@@ -94,7 +96,7 @@ void ABattlePC::InitTeamColor()
 	
 }
 
-void ABattlePC::SetTeamColorInPC_Implementation()
+void ABattlePC::Clinet_SetTeamColorInPC_Implementation()
 {
 	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 	if (GI)
@@ -107,10 +109,15 @@ void ABattlePC::SetTeamColorInPC_Implementation()
 
 void ABattlePC::Server_SetTestColor_Implementation(const ETeamColor & color)
 {
-	TestColor = color;
+	
+	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->TestPlayerSpawn(color, this);
+	}
 }
 
-void ABattlePC::TestWidget_Implementation()
+void ABattlePC::Client_TestWidget_Implementation()
 {
 	if (IsLocalPlayerController())
 	{
@@ -126,7 +133,7 @@ void ABattlePC::TestWidget_Implementation()
 		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 		if (GI)
 		{
-			//Server_SetPSTeamColor(GI->TeamColor);
+			Server_SetPSTeamColor(GI->TeamColor);
 		}
 		//FTimerHandle ColorTimer;
 		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);

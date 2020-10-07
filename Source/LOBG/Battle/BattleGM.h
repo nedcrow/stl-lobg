@@ -53,4 +53,6 @@ public:
 	void PlayerSpawn();
 
 	TArray<AActor*> OutputPlayerStart;
+
+	void TestPlayerSpawn(ETeamColor newcolor, class ABattlePC* NewPC);
 };
