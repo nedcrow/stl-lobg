@@ -17,6 +17,7 @@ void ABattlePC::SetupInputComponent()
 void ABattlePC::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	if (IsLocalPlayerController())
 	{
 		if (BattleWidgetClass)
@@ -33,8 +34,8 @@ void ABattlePC::BeginPlay()
 		{
 			//Server_SetPSTeamColor(GI->TeamColor);
 		}
-		FTimerHandle ColorTimer;
-		GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
+		//FTimerHandle ColorTimer;
+		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
 	}
 }
 
@@ -83,17 +84,6 @@ void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor
 	}
 }
 
-void ABattlePC::Server_TestSetPSTeamColor_Implementation(const ETeamColor & TeamColor)
-{
-	ABattlePS* PS = GetPlayerState<ABattlePS>();
-	if (PS)
-	{
-		PS->TeamColor = TeamColor;
-		PS->OnRep_TeamColor();
-	}
-
-}
-
 void ABattlePC::InitTeamColor()
 {
 	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
@@ -102,4 +92,43 @@ void ABattlePC::InitTeamColor()
 		Server_SetPSTeamColor(GI->TeamColor);
 	}
 	
+}
+
+void ABattlePC::SetTeamColorInPC_Implementation()
+{
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		TestColor = GI->TeamColor;
+		Server_SetTestColor(TestColor);
+	}
+	
+}
+
+void ABattlePC::Server_SetTestColor_Implementation(const ETeamColor & color)
+{
+	TestColor = color;
+}
+
+void ABattlePC::TestWidget_Implementation()
+{
+	if (IsLocalPlayerController())
+	{
+		if (BattleWidgetClass)
+		{
+			BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
+			if (BattleWidgetObject)
+			{
+				BattleWidgetObject->AddToViewport();
+			}
+			SetInputMode(FInputModeGameOnly());
+		}
+		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+		if (GI)
+		{
+			//Server_SetPSTeamColor(GI->TeamColor);
+		}
+		//FTimerHandle ColorTimer;
+		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
+	}
 }

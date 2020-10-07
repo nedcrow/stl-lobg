@@ -47,4 +47,10 @@ public:
 
 	//로비로 돌아가기
 	void GoLobby();
+
+	void FindPlayerStart();
+
+	void PlayerSpawn();
+
+	TArray<AActor*> OutputPlayerStart;
 };

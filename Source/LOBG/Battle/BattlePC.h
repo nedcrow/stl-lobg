@@ -31,10 +31,21 @@ public:
 	UFUNCTION(Server, Reliable)
 		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
 	void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
-	
-	UFUNCTION(Server, Reliable)
-		void Server_TestSetPSTeamColor(const ETeamColor& TeamColor);
-	void Server_TestSetPSTeamColor_Implementation(const ETeamColor& TeamColor);
 
 	void InitTeamColor();
+
+	UFUNCTION(Client, Reliable)
+	void SetTeamColorInPC();
+	void SetTeamColorInPC_Implementation();
+
+	ETeamColor TestColor = ETeamColor::None;
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetTestColor(const ETeamColor& color);
+		void Server_SetTestColor_Implementation(const ETeamColor& color);
+
+		UFUNCTION(Client, Reliable)
+			void TestWidget();
+			void TestWidget_Implementation();
+
 };

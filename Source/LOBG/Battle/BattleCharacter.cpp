@@ -323,11 +323,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			CurrentState = EBattleCharacterState::Dead;
 			FTimerHandle DeadTimer;
 			GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
-
-			ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
-			if (GM)
-			{
-			}
 		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
@@ -423,7 +418,7 @@ void ABattleCharacter::StopLeanRight()
 void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
 {
 	if (DeathMontage) {
-		FString DeathSectionName = FString::Printf(TEXT("Death_%d"), Index);
+		FString DeathSectionName = FString::Printf(TEXT("Death%d"), Index);
 		PlayAnimMontage(DeathMontage, 1.f, FName(DeathSectionName));
 		DeathSetting();
 	}

@@ -11,11 +11,17 @@
 #include "../AICharacter/AIManager.h"
 #include "../Temp/TempTower.h"
 #include "../LOBGGameInstance.h"
+#include "GameFramework/PlayerStart.h"
 
 void ABattleGM::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FindPlayerStart();
+
+	//FTimerHandle PlayerTimer;
+	//GetWorldTimerManager().SetTimer(PlayerTimer, this, &ABattleGM::PlayerSpawn, 5.0f, false);
+	//PlayerSpawn();
 
 	// AIManager Spawn.
 	if (AIManagerClass)
@@ -40,6 +46,7 @@ void ABattleGM::PostLogin(APlayerController* NewPlayer)
 	TArray<AActor*> OutTowers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
 	TowerCount = OutTowers.Num();
+	//PlayerSpawn();
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
@@ -63,6 +70,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 
 			//컨트롤러 연결 후 리셋할 목록들
 			BattlePlayer->NetMulticast_ReSpawnUI();
+			
 		}
 	}
 }
@@ -82,5 +90,80 @@ void ABattleGM::CountTower()
 void ABattleGM::GoLobby()
 {
 	GetWorld()->ServerTravel(TEXT("Step02_Lobby"));
+}
+
+void ABattleGM::FindPlayerStart()
+{
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), OutputPlayerStart);
+}
+
+void ABattleGM::PlayerSpawn()
+{
+	int PlayerNumber = 0;
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		//PlayerNumber = 0;
+		PlayerNumber++;
+	}
+		UE_LOG(LogClass, Warning, TEXT("PlayerNumber is %d"), PlayerNumber);
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		
+
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			PC->SetTeamColorInPC();
+			//UE_LOG(LogClass, Warning, TEXT("TeamColor is "));
+			for (int j = 0; j < OutputPlayerStart.Num(); ++j)
+			{
+				if (OutputPlayerStart[j]->ActorHasTag(TEXT("Red")))
+				{
+					if (PC->TestColor == ETeamColor::Red)
+					{
+						UE_LOG(LogClass, Warning, TEXT("Player Respawn in Red"));
+						UGameplayStatics::CreatePlayer(GetWorld());
+						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+							PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
+						PC->Possess(PlayerPawn);
+						PC->InitTeamColor();
+						PC->TestWidget();
+					}
+				}
+				else if (OutputPlayerStart[j]->ActorHasTag(TEXT("Blue")))
+				{
+					if (PC->TestColor == ETeamColor::Blue)
+					{
+						UE_LOG(LogClass, Warning, TEXT("Player Respawn in Blue"));
+						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+							PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
+						PC->Possess(PlayerPawn);
+						PC->InitTeamColor();
+						PC->TestWidget();
+					}
+				}
+			}
+			
+		}
+
+	}
+
+	//for (int i = 0; i < PlayerNumber; ++i)
+	//{
+	//	for (int j = 0; j < OutputPlayerStart.Num(); ++j)
+	//	{
+	//		if(OutputPlayerStart[j]->ActorHasTag(TEXT("Red")))
+	//		{
+	//			UGameplayStatics::CreatePlayer(GetWorld(), i);
+	//			ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+	//				PlayerClass, OutputPlayerStart[j]->GetActorLocation(), OutputPlayerStart[j]->GetActorRotation());
+	//			ABattlePC* PC = Cast<ABattlePC>(UGameplayStatics::GetPlayerController(GetWorld(), i));
+	//			if (PC)
+	//			{
+	//				PC->Possess(PlayerPawn);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
