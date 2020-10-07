@@ -256,8 +256,9 @@ BeginPlay에서 UpdateHPBar()를 호출하고 있는지 확인한다.
   Clean up blueprints (player, bullets)
   Test AttackPoint (BulletBase)
 
-
-
+조혁
+팀에 따라서 HPHUD의 색이 변하는 네트워크 동기화 동작
+팀에 따라 스폰진영 설정 작업중
 
 
 
