@@ -64,4 +64,6 @@ public:
 	FName TeamName;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	float GetAttackPoint();
 };

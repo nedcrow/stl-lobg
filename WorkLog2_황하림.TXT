@@ -54,4 +54,5 @@
   Test instancedMesh (fire bullet)
   Add object channel (see through)
   Clean up blueprints (player, bullets)
+  Test AttackPoint (BulletBase)
   

@@ -9,6 +9,7 @@
 #include "../Weapon/BulletDamageType.h"
 #include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
+#include "../AICharacter/Fairy/FairyPawn.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -47,11 +48,13 @@ void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 	switch (ApplyDamageType)
 	{
 	case EApplyDamageType::Player:
-		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), 1.0f, -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(PlayerOutHit.GetActor(), GetAttackPoint(), -PlayerOutHit.ImpactNormal, PlayerOutHit, PlayerController, this, UBulletDamageType::StaticClass());
 		break;
 	case EApplyDamageType::Minion:
+		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), GetAttackPoint(), PlayerController, this, UBulletDamageType::StaticClass());
+		break;
 	case EApplyDamageType::Tower:
-		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), 10.0f, PlayerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(PlayerOutHit.GetActor(), GetAttackPoint(), PlayerController, this, UBulletDamageType::StaticClass());
 		break;
 	default:
 		break;
@@ -114,5 +117,22 @@ void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABulletBase, TeamName);
+}
+
+float ABulletBase::GetAttackPoint()
+{
+	float AP = 1.f;
+	AActor* Pawn = GetParentActor();
+	if (GetParentActor()->ActorHasTag(TEXT("Player"))) {
+		//AP = Cast<ABattleCharacter>(Pawn);
+	}
+	else if (GetParentActor()->ActorHasTag(TEXT("Minion"))) {
+		//AP = Cast<ABattleCharacter>(Pawn)->AttackPoint;
+	}
+	else if (GetParentActor()->ActorHasTag(TEXT("Tower"))) {
+		//AP = Cast<AFairyPawn>(Pawn).AttackPoint;
+	}
+
+	return AP;
 }
 
