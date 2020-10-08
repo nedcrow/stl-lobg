@@ -6,13 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "BulletBase.generated.h"
 
-UENUM(BlueprintType)
-enum class EApplyDamageType : uint8
-{
-	Player		= 0 UMETA(DisplayName = "Player"),
-	Minion		= 1 UMETA(DisplayName = "Minion"),
-	Tower		= 2 UMETA(DisplayName = "Tower"),
-};
+//UENUM(BlueprintType)
+//enum class EApplyDamageType : uint8
+//{
+//	Player		= 0 UMETA(DisplayName = "Player"),
+//	Minion		= 1 UMETA(DisplayName = "Minion"),
+//	Tower		= 2 UMETA(DisplayName = "Tower"),
+//};
 
 UCLASS()
 class LOBG_API ABulletBase : public AActor
@@ -42,12 +42,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Damage
-	EApplyDamageType CurrentDamageType;
+	//EApplyDamageType CurrentDamageType;
 	FHitResult TraceHit;
 	AController* SummonerController;
-	void SetDamageInfo(FHitResult OutHit, AController* Controller);
-	void ApplyDamageProcess(EApplyDamageType ApplyDamageType);
-	float GetAttackPoint();
+	float AttackPoint = 0.f;
+	void SetDamageInfo(FHitResult OutHit, AController* Controller, float NewAttackPoint);
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class UBulletDamageType> DamageType;
@@ -60,6 +59,10 @@ public:
 			int32 OtherBodyIndex,
 			bool bFromSweep,
 			const FHitResult& SweepResult);
+
+	// HitEvent
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	// Team
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)

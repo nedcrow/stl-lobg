@@ -262,7 +262,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 			
 		if (Bullet)
 		{
-			Bullet->SetDamageInfo(OutHit, GetController());
+			Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
 			Bullet->TeamName = TeamName;
 		}
 	}
@@ -274,7 +274,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 			
 		if (Bullet)
 		{
-			Bullet->SetDamageInfo(OutHit, GetController());
+			Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
 			Bullet->TeamName = TeamName;
 		}
 	}
@@ -300,7 +300,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)
 		{
 			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
-
+			UE_LOG(LogTemp, Warning, TEXT("Head shot!"));
 			TempHP = 0;
 		}
 		else
