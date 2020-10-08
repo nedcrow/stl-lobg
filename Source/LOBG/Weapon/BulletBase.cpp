@@ -106,9 +106,13 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogClass, Warning, TEXT("OnBeginOverlap  : %s"), *OtherActor->GetName());
+
+
 	//같은팀이라면 return
 	if (OtherActor->ActorHasTag(TeamName))
 	{
+	UE_LOG(LogTemp,Warning,TEXT("TeamKill? Really?"));
 		Destroy();
 		return;
 	}
