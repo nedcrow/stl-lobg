@@ -159,3 +159,6 @@ BeginPlay에서 UpdateHPBar()를 호출하고 있는지 확인한다.
 Possess한다
 
 월드세팅에서 DefaultPlayer를 None으로 설정해서 사용하고 있으므로 주의
+
+1008
+오늘 할 것 : 팀을 구별해서 서로 다른장소에 스폰하기
