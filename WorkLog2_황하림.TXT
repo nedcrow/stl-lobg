@@ -64,4 +64,4 @@
   Fix Buleprint collosion (Pawn, Bullet)
   Add function(BeginHit)&Clean up in BulletBase
   Fix BulletBase & Connected codes(FairyPawn, BattleCharacter)
-  
+  Test UpdateHPBar at FairyPawn
