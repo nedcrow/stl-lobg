@@ -32,6 +32,8 @@ public:
 		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
 	void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
 
+	void SetPSTeamColorAndSetPlayerTag(ETeamColor newColor);
+
 	void InitTeamColor();
 
 	UFUNCTION(Client, Reliable)

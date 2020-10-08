@@ -61,6 +61,7 @@ void ABattlePS::OnRep_TeamColor()
 {	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
 	if (PlayerPawn)
 	{
+		UE_LOG(LogClass, Warning, TEXT("OnRep_TeamColor"));
 		PlayerPawn->InitHPBarWithEnum(TeamColor);
 	}
 }

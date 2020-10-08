@@ -162,3 +162,16 @@ Possess한다
 
 1008
 오늘 할 것 : 팀을 구별해서 서로 다른장소에 스폰하기
+
+모든 액터에 다 할 순 없어서 overlap OnHit
+
+허드의 SetVisibility()를 플레이어의 BeginPlay에서 실행하면 생성자에서 허드를 만드는 과정인 CreateWidget이
+WidgetComponent의 BeginPlay에서 실행되므로 플레이어와 위젯간의 BeginPlay의 실행 순서의 애매함이 있다.
+그래서 위젯 클래스 안에서 NativeConstruct에서 SetVisibility를 하면 생성 후에 실행하므로 순서를 지키게 된다.
+
+HUD의 색 변경을 플레이어 자체적으로 설정
+왜? 
+플레이어를 생성하고 Possess하는 과정이 서버와 클라이언트들의 순서대로 진행되기 때문에
+가장 마지막 클라이언트에서는 폰을 생성하기 전에 서버에서 PS의 TeamColor를 설정하는 코드가 진행돼서
+PS의 OnRep_TeamColor가 폰을 가져오는 구간에서 디폴트 폰을 가져와 버린다.
+플레이어 자체적으로 혹은 허드 자체적으로 색을 변경하도록 수정하면 플레이어가 생성된 후에 바뀌므로 그럴일이 없다.

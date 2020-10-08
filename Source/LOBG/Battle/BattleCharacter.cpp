@@ -82,9 +82,10 @@ void ABattleCharacter::BeginPlay()
 		PS->OnRep_Money();
 	}
 
+	UE_LOG(LogClass, Warning, TEXT("Character BeginPlay"));
 	if (IsLocallyControlled())
 	{
-		Widget->SetVisibility(false);
+		//Widget->SetVisibility(false);
 	}
 }
 
@@ -253,8 +254,6 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 
 	if (Result && OutHit.GetActor() != nullptr)
 	{
-		UE_LOG(LogClass, Warning, TEXT("맞은놈은 %s"), *OutHit.GetActor()->GetName());
-
 		//Muzzle에서 트레이스 Point까지의 회전값
 		FRotator BulletRoation = (OutHit.ImpactPoint - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation();
 
@@ -271,7 +270,6 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	//하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.
 	else if (OutHit.GetActor() == nullptr)
 	{
-		UE_LOG(LogClass, Warning, TEXT("맞은 액터가 없습니다"));
 		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), (EndLine - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation());
 			
 		if (Bullet)
@@ -530,6 +528,17 @@ void ABattleCharacter::UpdateHPBar()
 	if (HPWidget)
 	{
 		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
+}
+
+void ABattleCharacter::SetHUDVisible()
+{
+	if (Widget)
+	{
+		if (IsLocallyControlled())
+		{
+			Widget->SetVisibility(false);
+		}
 	}
 }
 
