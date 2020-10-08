@@ -61,7 +61,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
 	float CurrentHP;
 
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 	float AttackPoint = 11;
 
 	UFUNCTION()
