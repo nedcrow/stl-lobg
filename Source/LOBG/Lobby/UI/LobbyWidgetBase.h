@@ -47,7 +47,9 @@ public:
 	int IsEmptySlot();
 
 	//ÆÀ³ª´©±â
-	void SplitTeam(const TArray<FString>& NewNames);
+	void SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
+
+	void SplitTeamTest(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
 
 	//½½·Ô¼³Á¤
 	ETeamColor SetSlot(FString UserName, int Index);

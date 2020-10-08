@@ -16,6 +16,12 @@
 void ABattleGM::BeginPlay()
 {
 	Super::BeginPlay();
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), GI->TeamRedUsers.Num(), GI->TeamBlueUsers.Num());
+	}
+	
 
 	FindPlayerStart();
 
@@ -98,12 +104,6 @@ void ABattleGM::FindPlayerStart()
 
 void ABattleGM::PlayerSpawn()
 {
-	int PlayerNumber = 0;
-	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
-	{
-		PlayerNumber++;
-	}
-
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
 	{
 		ABattlePC* PC = Cast<ABattlePC>(*Iter);
@@ -116,17 +116,33 @@ void ABattleGM::PlayerSpawn()
 
 void ABattleGM::TestPlayerSpawn(ETeamColor newcolor, ABattlePC* NewPC)
 {
+	FName TagText;
+	if (newcolor == ETeamColor::Red)
+	{
+		TagText = TEXT("Red");
+	}
+	else if (newcolor == ETeamColor::Blue)
+	{
+		TagText = TEXT("Blue");
+	}
+
 	ABattlePC* PC = Cast<ABattlePC>(NewPC);
 	if (PC)
 	{
 		for (int i = 0; i < OutputPlayerStart.Num(); ++i)
 		{
-			PC->Client_TestWidget();
-			float Random = FMath::RandRange(10.f, 20.f);
-			FVector Location = FVector(OutputPlayerStart[i]->GetActorLocation().X + Random, OutputPlayerStart[i]->GetActorLocation().Y + Random, OutputPlayerStart[i]->GetActorLocation().Z);
-			ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, Location, OutputPlayerStart[i]->GetActorRotation());
-			PC->Possess(PlayerPawn);
-			return;
+			if (OutputPlayerStart[i]->ActorHasTag(TagText))
+			{
+				PC->Client_TestWidget();
+				//float Random = FMath::RandRange(10.f, 30.f);
+				//FVector Location = FVector(OutputPlayerStart[i]->GetActorLocation().X + Random, OutputPlayerStart[i]->GetActorLocation().Y + Random, OutputPlayerStart[i]->GetActorLocation().Z);
+				ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+					PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
+				PC->Possess(PlayerPawn);
+				PC->SetPSTeamColorAndSetPlayerTag(newcolor);
+				OutputPlayerStart.RemoveAt(i);
+				return;
+			}
 		}
 	}
 }

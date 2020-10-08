@@ -23,5 +23,6 @@ public:
 	void CountConnect();
 	void MakeTeam(const FString& UserName);
 
-	TArray<FString> UserNameArray;
+	TArray<FString> TeamRedNameArray;
+	TArray<FString> TeamBlueNameArray;
 };

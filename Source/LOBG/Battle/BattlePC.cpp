@@ -19,7 +19,7 @@ void ABattlePC::SetupInputComponent()
 void ABattlePC::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	//if (IsLocalPlayerController())
 	//{
 	//	if (BattleWidgetClass)
@@ -48,7 +48,7 @@ void ABattlePC::ClickFire()
 	{
 		BattlePlayer->StartFire();
 	}
-	
+
 }
 
 void ABattlePC::ReleaseFire()
@@ -71,7 +71,7 @@ void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor
 			PS->TeamColor = TeamColor;
 			PS->OnRep_TeamColor();
 			ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
-			if(PlayerPawn)
+			if (PlayerPawn)
 			{
 				if (PS->TeamColor == ETeamColor::Red)
 				{
@@ -86,6 +86,30 @@ void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor
 	}
 }
 
+void ABattlePC::SetPSTeamColorAndSetPlayerTag(ETeamColor newColor)
+{
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
+	if (PS)
+	{
+		UE_LOG(LogClass, Warning, TEXT("SetPSTeamColorAndSetPlayerTag"));
+		PS->TeamColor = newColor;
+		PS->OnRep_TeamColor();
+		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
+		if (PlayerPawn)
+		{
+			if (PS->TeamColor == ETeamColor::Red)
+			{
+				PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
+			}
+			else if (PS->TeamColor == ETeamColor::Blue)
+			{
+				PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
+			}
+		}
+
+	}
+}
+
 void ABattlePC::InitTeamColor()
 {
 	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
@@ -93,7 +117,7 @@ void ABattlePC::InitTeamColor()
 	{
 		Server_SetPSTeamColor(GI->TeamColor);
 	}
-	
+
 }
 
 void ABattlePC::Clinet_SetTeamColorInPC_Implementation()
@@ -104,12 +128,12 @@ void ABattlePC::Clinet_SetTeamColorInPC_Implementation()
 		TestColor = GI->TeamColor;
 		Server_SetTestColor(TestColor);
 	}
-	
+
 }
 
 void ABattlePC::Server_SetTestColor_Implementation(const ETeamColor & color)
 {
-	
+
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
@@ -133,7 +157,7 @@ void ABattlePC::Client_TestWidget_Implementation()
 		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 		if (GI)
 		{
-			Server_SetPSTeamColor(GI->TeamColor);
+			//Server_SetPSTeamColor(GI->TeamColor);
 		}
 		//FTimerHandle ColorTimer;
 		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);

@@ -209,4 +209,8 @@ public:
 
 	//HPHUD 업데이트
 	void UpdateHPBar();
+
+	void SetHUDVisible();
+
+	void SetPSTeamColorAndSetTag();
 };

@@ -115,6 +115,7 @@ void AFairyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFairyPawn, MaxHP);
 	DOREPLIFETIME(AFairyPawn, CurrentHP);
+	DOREPLIFETIME(AFairyPawn, AttackPoint);
 }
 
 void AFairyPawn::OnRepCurrentHP()

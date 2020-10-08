@@ -82,9 +82,10 @@ void ABattleCharacter::BeginPlay()
 		PS->OnRep_Money();
 	}
 
+	UE_LOG(LogClass, Warning, TEXT("Character BeginPlay"));
 	if (IsLocallyControlled())
 	{
-		Widget->SetVisibility(false);
+		//Widget->SetVisibility(false);
 	}
 }
 
@@ -527,6 +528,30 @@ void ABattleCharacter::UpdateHPBar()
 	if (HPWidget)
 	{
 		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
+}
+
+void ABattleCharacter::SetHUDVisible()
+{
+	if (Widget)
+	{
+		if (IsLocallyControlled())
+		{
+			Widget->SetVisibility(false);
+		}
+	}
+}
+
+void ABattleCharacter::SetPSTeamColorAndSetTag()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			//PS->TeamColor = PC->
+		}
 	}
 }
 

@@ -31,4 +31,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		ETeamColor TeamColor = ETeamColor::None;
+
+	TArray<FString> TeamRedUsers;
+	TArray<FString> TeamBlueUsers;
 };
