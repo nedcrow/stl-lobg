@@ -542,3 +542,16 @@ void ABattleCharacter::SetHUDVisible()
 	}
 }
 
+void ABattleCharacter::SetPSTeamColorAndSetTag()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			//PS->TeamColor = PC->
+		}
+	}
+}
+

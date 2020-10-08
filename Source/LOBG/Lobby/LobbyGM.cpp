@@ -27,6 +27,12 @@ void ALobbyGM::BeginPlay()
 
 void ALobbyGM::StartGame()
 {
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		GI->TeamRedUsers = TeamRedNameArray;
+		GI->TeamBlueUsers = TeamBlueNameArray;
+	}
 	GetWorld()->ServerTravel(TEXT("Step03_LOBG"));
 }
 
@@ -47,7 +53,16 @@ void ALobbyGM::CountConnect()
 void ALobbyGM::MakeTeam(const FString& UserName)
 {
 	//추가된 플레이어의 이름을 배열에 추가
-	UserNameArray.Emplace(UserName);
+	if (TeamRedNameArray.Num() <= TeamBlueNameArray.Num())
+	{
+		// Red에 넣기
+		TeamRedNameArray.Emplace(UserName);
+	}
+	else
+	{
+		// Blue에 넣기
+		TeamBlueNameArray.Emplace(UserName);
+	}
 
 	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
 	{
@@ -58,7 +73,7 @@ void ALobbyGM::MakeTeam(const FString& UserName)
 			//서버에 있는 PC라서 LobbyWidgetObject가 없기 때문에
 
 			//각 PC에 슬롯 동기화
-			PC->Client_SplitTeam(UserNameArray);
+			PC->Client_SplitTeam(TeamRedNameArray, TeamBlueNameArray);
 		}
 	}
 

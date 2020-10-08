@@ -45,11 +45,11 @@ void ALobbyPC::Client_SendMessage_Implementation(const FText& Message)
 	}
 }
 
-void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& NewArray)
+void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& RedArray, const TArray<FString>& BlueArray)
 {
 	if (IsLocalPlayerController() && LobbyWidgetObject)
 	{
-		LobbyWidgetObject->SplitTeam(NewArray);
+		LobbyWidgetObject->SplitTeamTest(RedArray, BlueArray);
 
 	}
 }

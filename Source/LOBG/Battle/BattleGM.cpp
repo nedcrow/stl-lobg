@@ -16,6 +16,12 @@
 void ABattleGM::BeginPlay()
 {
 	Super::BeginPlay();
+	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+	if (GI)
+	{
+		UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), GI->TeamRedUsers.Num(), GI->TeamBlueUsers.Num());
+	}
+	
 
 	FindPlayerStart();
 

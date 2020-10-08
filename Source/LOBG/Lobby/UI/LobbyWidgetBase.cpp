@@ -106,36 +106,59 @@ int ULobbyWidgetBase::IsEmptySlot()
 	return -1;
 }
 
-void ULobbyWidgetBase::SplitTeam(const TArray<FString>& NewNames)
+void ULobbyWidgetBase::SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray)
 {
-	//플레이어의 아이디들이 들어가 있는 배열을 가져와서 슬롯에 할당
+	////플레이어의 아이디들이 들어가 있는 배열을 가져와서 슬롯에 할당
+	//
+	//ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
+	//if (GI)
+	//{
+	//	int FindIndex = IsEmptySlot();
+	//	//FindIndex가 0이라는 뜻은 이제 막 들어온 플레이어라는 뜻이다
+	//	//지금까지 접속해있는 플레이어들을 먼저 슬롯에 넣어야하므로
+	//	//NewNames를 순회하며 슬롯에 넣어준다.
+	//	if (FindIndex == 0)
+	//	{
+	//		for (int i = 0; i < NewNames.Num() - 1; ++i)
+	//		{
+	//			SetSlot(NewNames[i], FindIndex);
+	//			FindIndex = IsEmptySlot();
+	//		}
+	//	}
+	//
+	//	//슬롯에 기존의 플레이어들을 넣고 자기 자신을 넣어준다.
+	//	//GI의 TeamColor도 변경
+	//	ETeamColor SlotColor = SetSlot(NewNames.Last(), FindIndex);
+	//
+	//	//다른 클라이언트에서 추가된 플레이어 슬롯을 동기화하면서 TeamColor를
+	//	//변경시키지 않게 None인지 검사
+	//	if (GI->TeamColor == ETeamColor::None)
+	//	{
+	//		SetGITeamColor(SlotColor);
+	//	}
+	//}
+}
 
-	ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
-	if (GI)
+void ULobbyWidgetBase::SplitTeamTest(const TArray<FString>& RedArray, const TArray<FString>& BlueArray)
+{
+	InitSlot();
+
+	for (int i = 0; i < RedArray.Num(); ++i)
 	{
-		int FindIndex = IsEmptySlot();
-		//FindIndex가 0이라는 뜻은 이제 막 들어온 플레이어라는 뜻이다
-		//지금까지 접속해있는 플레이어들을 먼저 슬롯에 넣어야하므로
-		//NewNames를 순회하며 슬롯에 넣어준다.
-		if (FindIndex == 0)
-		{
-			for (int i = 0; i < NewNames.Num() - 1; ++i)
-			{
-				SetSlot(NewNames[i], FindIndex);
-				FindIndex = IsEmptySlot();
-			}
-		}
+		UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(i));
+		RedSlot->bUse = true;
+		RedSlot->SetColor(FLinearColor::Red);
+		RedSlot->SetUserName(RedArray[i]);
+		RedSlot->SetVisibility(ESlateVisibility::Visible);
+	}
 
-		//슬롯에 기존의 플레이어들을 넣고 자기 자신을 넣어준다.
-		//GI의 TeamColor도 변경
-		ETeamColor SlotColor = SetSlot(NewNames.Last(), FindIndex);
-
-		//다른 클라이언트에서 추가된 플레이어 슬롯을 동기화하면서 TeamColor를
-		//변경시키지 않게 None인지 검사
-		if (GI->TeamColor == ETeamColor::None)
-		{
-			SetGITeamColor(SlotColor);
-		}
+	for (int i = 0; i < BlueArray.Num(); ++i)
+	{
+		UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(i));
+		BlueSlot->bUse = true;
+		BlueSlot->SetColor(FLinearColor::Blue);
+		BlueSlot->SetUserName(BlueArray[i]);
+		BlueSlot->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

@@ -211,4 +211,6 @@ public:
 	void UpdateHPBar();
 
 	void SetHUDVisible();
+
+	void SetPSTeamColorAndSetTag();
 };

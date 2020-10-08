@@ -30,10 +30,11 @@ public:
 	void Client_SendMessage_Implementation(const FText& Message);
 
 	UFUNCTION(Client, Reliable)
-		void Client_SplitTeam(const TArray<FString>& NewArray);
-	void Client_SplitTeam_Implementation(const TArray<FString>& NewArray);
+		void Client_SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
+	void Client_SplitTeam_Implementation(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
 
 	UFUNCTION(Server, Reliable)
 		void Server_BeginPC(const FString& UserName);
 		void Server_BeginPC_Implementation(const FString& UserName);
+
 };
