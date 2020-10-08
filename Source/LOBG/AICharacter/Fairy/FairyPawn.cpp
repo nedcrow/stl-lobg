@@ -96,7 +96,7 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 	// 피격 애니메이션 추가 필요
 
 	CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
-	UpdateHPBar();
+	OnRepCurrentHP();
 
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
@@ -119,7 +119,11 @@ void AFairyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 void AFairyPawn::OnRepCurrentHP()
 {
-	// HP UI 변경
+	AFairyAIController* AIC = Cast<AFairyAIController>(GetController());
+	if (AIC && AIC->IsLocalController())
+	{
+		UpdateHPBar();
+	}
 }
 
 // Blackboard 포함한 State 변경
@@ -189,7 +193,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
 	{
-		Bullet->SetDamageInfo(OutHit, GetController());
+		Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
 		Bullet->TeamName = TeamName;
 	}	
 }
