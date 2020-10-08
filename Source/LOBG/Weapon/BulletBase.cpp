@@ -84,18 +84,21 @@ void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
 float ABulletBase::GetAttackPoint()
 {
 	float AP = 0.f;
-	AActor* Pawn = SummonerController->GetViewTarget();
-	if (Pawn) {
-		if (Pawn->ActorHasTag(TEXT("Player"))) {
-			AP = Cast<ABattleCharacter>(Pawn)->AttackPoint ? Cast<ABattleCharacter>(Pawn)->AttackPoint : 0.f;
-		}
-		else if (Pawn->ActorHasTag(TEXT("Minion"))) {
-			AP = Cast<AAIMinionChar>(Pawn)->AttackDamage ? Cast<AAIMinionChar>(Pawn)->AttackDamage : 0.f;
-		}
-		else if (Pawn->ActorHasTag(TEXT("Tower"))) {
-			AP = Cast<AFairyPawn>(Pawn)->AttackPoint ? Cast<AFairyPawn>(Pawn)->AttackPoint : 0.f;
+	if (SummonerController) {
+		AActor* Pawn = SummonerController->GetViewTarget();
+		if (Pawn) {
+			if (Pawn->ActorHasTag(TEXT("Player"))) {
+				AP = Cast<ABattleCharacter>(Pawn)->AttackPoint ? Cast<ABattleCharacter>(Pawn)->AttackPoint : 0.f;
+			}
+			else if (Pawn->ActorHasTag(TEXT("Minion"))) {
+				AP = Cast<AAIMinionChar>(Pawn)->AttackDamage ? Cast<AAIMinionChar>(Pawn)->AttackDamage : 0.f;
+			}
+			else if (Pawn->ActorHasTag(TEXT("Tower"))) {
+				AP = Cast<AFairyPawn>(Pawn)->AttackPoint ? Cast<AFairyPawn>(Pawn)->AttackPoint : 0.f;
+			}
 		}
 	}
+
 	return AP;
 }
 
