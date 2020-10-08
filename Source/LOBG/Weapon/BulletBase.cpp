@@ -36,6 +36,7 @@ void ABulletBase::BeginPlay()
 	Super::BeginPlay();
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
+	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
 }
 
 // Called every frame
@@ -51,84 +52,43 @@ void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(ABulletBase, TeamName);
 }
 
-void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller)
+void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller, float NewAttackPoint)
 {
 	TraceHit = OutHit;
 	SummonerController = Controller;
+	AttackPoint = NewAttackPoint;
 }
 
-void ABulletBase::ApplyDamageProcess(EApplyDamageType ApplyDamageType)
-{
-	switch (ApplyDamageType)
-	{
-	case EApplyDamageType::Player:
-		UGameplayStatics::ApplyPointDamage(TraceHit.GetActor(), GetAttackPoint(), -TraceHit.ImpactNormal, TraceHit, SummonerController, this, UBulletDamageType::StaticClass());
-		break;
-	case EApplyDamageType::Minion:
-		UGameplayStatics::ApplyDamage(TraceHit.GetActor(), GetAttackPoint(), SummonerController, this, UBulletDamageType::StaticClass());
-		break;
-	case EApplyDamageType::Tower:
-		UGameplayStatics::ApplyDamage(TraceHit.GetActor(), GetAttackPoint(), SummonerController, this, UBulletDamageType::StaticClass());
-		break;
-	default:
-		break;
-	}
-
-	//사운드
-
-	//이펙트 Multicast_SpawnHitEffectAndDecal(OutHit);
-
-	Destroy();
-}
-
-float ABulletBase::GetAttackPoint()
-{
-	float AP = 0.f;
-	if (SummonerController) {
-		AActor* Pawn = SummonerController->GetViewTarget();
-		if (Pawn) {
-			if (Pawn->ActorHasTag(TEXT("Player"))) {
-				AP = Cast<ABattleCharacter>(Pawn)->AttackPoint ? Cast<ABattleCharacter>(Pawn)->AttackPoint : 0.f;
-			}
-			else if (Pawn->ActorHasTag(TEXT("Minion"))) {
-				AP = Cast<AAIMinionChar>(Pawn)->AttackDamage ? Cast<AAIMinionChar>(Pawn)->AttackDamage : 0.f;
-			}
-			else if (Pawn->ActorHasTag(TEXT("Tower"))) {
-				AP = Cast<AFairyPawn>(Pawn)->AttackPoint ? Cast<AFairyPawn>(Pawn)->AttackPoint : 0.f;
-			}
-		}
-	}
-
-	return AP;
-}
-
+//플레이어에 충돌하면
 void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	//같은팀이라면 return
+	UE_LOG(LogClass, Warning, TEXT("OnBeginOverlap  : %s"), *OtherActor->GetName());
+
+
+	// 같은팀이라면 return
 	if (OtherActor->ActorHasTag(TeamName))
 	{
 		Destroy();
 		return;
 	}
 
-	//플레이어에 충돌하면
+	// ApplyDamage
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
-		CurrentDamageType = EApplyDamageType::Player;
-		//데미지 전달
-		ApplyDamageProcess(CurrentDamageType);
+		UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+		Destroy();
 	}
 	else if (OtherActor->ActorHasTag(TEXT("Minion")))
 	{
-		CurrentDamageType = EApplyDamageType::Minion;
-		ApplyDamageProcess(CurrentDamageType);
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		Destroy();
 	}
 	else if (OtherActor->ActorHasTag(TEXT("Tower")))
 	{
-		CurrentDamageType = EApplyDamageType::Tower;
-		ApplyDamageProcess(CurrentDamageType);
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		Destroy();
 	}
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
@@ -137,6 +97,13 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
 		Destroy();
-	}
+	}	
+}
+
+void ABulletBase::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
+{
+	// Sound
+	// Effect Multicast_SpawnHitEffectAndDecal(OutHit);
+	Destroy();
 }
 
