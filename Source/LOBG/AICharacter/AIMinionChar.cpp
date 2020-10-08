@@ -31,7 +31,8 @@ AAIMinionChar::AAIMinionChar()
 
 	// Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), FRotator(0.f, -90.f, 0.f));
-	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);		// Player 채널. 콘피그 파일 수정시 확인 필요.
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	// Weapon
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
@@ -191,7 +192,11 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 			// spawn the projectile at the muzzle
-			World->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			AEmissiveBullet* SpawnedBullet = World->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			if (SpawnedBullet)
+			{
+				SpawnedBullet->SetDamageInfo(GetController(), AttackDamage, TeamName);
+			}
 		}
 	}
 	else
@@ -309,6 +314,7 @@ bool AAIMinionChar::Montage_IsPlaying(UAnimMontage * AnimMontage)
 	return false;
 }
 
+// UI
 void AAIMinionChar::UpdateHPBar()
 {
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());

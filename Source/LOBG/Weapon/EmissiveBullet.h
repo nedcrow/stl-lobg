@@ -35,9 +35,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// Team
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Data")
+		FName TeamName;
+
+	// Damage
+	AController* SummonerController;
+	float AttackPoint = 0.f;
 
 	/** called when projectile hits something */
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	void SetDamageInfo(AController* Controller, float NewAttackPoint, FName NewTeamName);
 
 };

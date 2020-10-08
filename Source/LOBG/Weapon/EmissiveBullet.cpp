@@ -3,9 +3,13 @@
 
 #include "EmissiveBullet.h"
 
+#include "../Weapon/BulletDamageType.h"
+
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEmissiveBullet::AEmissiveBullet()
@@ -49,6 +53,8 @@ AEmissiveBullet::AEmissiveBullet()
 	// Network
 	bReplicates = true;
 
+	// ETC
+	Tags.Add(TEXT("Bullet"));
 }
 
 // Called when the game starts or when spawned
@@ -65,16 +71,48 @@ void AEmissiveBullet::Tick(float DeltaTime)
 
 }
 
+// Network
+void AEmissiveBullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEmissiveBullet, TeamName);
+}
+
+// Hit
 void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	//같은팀이라면 return
+	if (OtherActor != NULL || OtherActor->ActorHasTag(TeamName))
 	{
-		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		//Destroy();
+		Destroy();
+		return;
 	}
 
-	SetLifeSpan(0.2f);
+	//플레이어에 충돌하면
+	if (OtherActor->ActorHasTag(TEXT("Player")))
+	{
+		//UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -Hit.ImpactNormal, Hit, SummonerController, this, UBulletDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+	}
+	else if (OtherActor->ActorHasTag(TEXT("Minion")))
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+	}
+	else if (OtherActor->ActorHasTag(TEXT("Tower")))
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+	}
+
+
+	Destroy();
+}
+
+void AEmissiveBullet::SetDamageInfo(AController * Controller, float NewAttackPoint, FName NewTeamName)
+{
+	SummonerController = Controller;
+	AttackPoint = NewAttackPoint;
+	TeamName = NewTeamName;
+	Tags.Add(NewTeamName);
 }
 
