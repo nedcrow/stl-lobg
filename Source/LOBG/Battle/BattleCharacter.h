@@ -93,7 +93,7 @@ public:
 		void Server_ProcessFire(FVector StartLine, FVector EndLine);
 	void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_CurrentHP", Category = "Status")
@@ -203,7 +203,8 @@ public:
 		void NetMulticast_AddTag(const FName& PlayerTag);
 	void NetMulticast_AddTag_Implementation(const FName& PlayerTag);
 
-	FName TeamName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		FName TeamName;
 
 	void InitHPBarWithEnum(ETeamColor color);
 

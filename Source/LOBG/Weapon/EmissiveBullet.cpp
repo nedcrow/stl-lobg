@@ -22,6 +22,7 @@ AEmissiveBullet::AEmissiveBullet()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionComp->OnComponentHit.AddDynamic(this, &AEmissiveBullet::OnHit);		// set up a notification for when this component hits something blocking
 
 	// Players can't walk on it
@@ -76,14 +77,23 @@ void AEmissiveBullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AEmissiveBullet, TeamName);
+	//DOREPLIFETIME(AEmissiveBullet, TeamName);
+}
+
+// InitBulletInfo
+void AEmissiveBullet::SetDamageInfo(AController* Controller, float NewAttackPoint, FName NewTeamName)
+{
+	SummonerController = Controller;
+	AttackPoint = NewAttackPoint;
+	TeamName = NewTeamName;
+	Tags.Add(NewTeamName);
 }
 
 // Hit
 void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
 	//같은팀이라면 return
-	if (OtherActor != NULL || OtherActor->ActorHasTag(TeamName))
+	if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
 	{
 		Destroy();
 		return;
@@ -103,16 +113,8 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 	{
 		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 	}
-
+	UE_LOG(LogClass, Warning, TEXT("AEmissiveBullet::OnHit : OtherComp->GetName() %s"), *OtherComp->GetName());
 
 	Destroy();
-}
-
-void AEmissiveBullet::SetDamageInfo(AController * Controller, float NewAttackPoint, FName NewTeamName)
-{
-	SummonerController = Controller;
-	AttackPoint = NewAttackPoint;
-	TeamName = NewTeamName;
-	Tags.Add(NewTeamName);
 }
 

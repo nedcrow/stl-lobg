@@ -99,7 +99,7 @@ public:
 	void NetMulticast_ProcessFire_Implementation();
 
 	// TakeDamage
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Death
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")

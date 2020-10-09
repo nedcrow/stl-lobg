@@ -22,29 +22,19 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			// 방향 계산
 			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Minion->GetActorLocation(), TargetPawn->GetActorLocation()).Clamp();
 			
-			//Zombie->SetActorRotation(LookAt);
-			//float YawDiff = ((TargetPawn->GetActorLocation() - Minion->GetActorLocation()).Rotation() - Minion->GetActorRotation()).Clamp().Yaw;
-			
 			// 액터 요 보간.
 			if (!FMath::IsNearlyEqual(FRotator::ClampAxis(Minion->GetActorRotation().Yaw), LookAt.Yaw, 1.f))
 			{
 				Minion->SetActorRotation(FMath::RInterpTo(Minion->GetActorRotation(), FRotator(0.f, LookAt.Yaw, 0.f), DeltaSeconds, 5.f));				
 			}
 
-			// 컨트롤러 핏치 보간. 에임오프셋에 사용.
-			LookAt.Pitch = FRotator::ClampAxis(FMath::ClampAngle(LookAt.Pitch, -89.f, 89.f));
-			if (!FMath::IsNearlyEqual(Minion->AimPitch, LookAt.Pitch, 1.f))
+			// 컨트롤러 핏치 보간. 에임오프셋에 사용.			
+			if ((LookAt.Pitch > 270.5f || LookAt.Pitch < 89.5f) && !FMath::IsNearlyEqual(Minion->AimPitch, LookAt.Pitch, 1.f))
 			{
+				if (LookAt.Pitch > 270.5f) LookAt.Pitch -= 360.f;
+
 				Minion->AimPitch = FMath::FInterpTo(Minion->AimPitch, LookAt.Pitch, DeltaSeconds, 2.f);
 			}
-			
-
-			//if (YawDiff > 5.f)
-			//{
-			//	Minion->AddControllerYawInput(1.f*DeltaSeconds);
-			//}
-			//AIC->SetControlRotation(FMath::RInterpTo(Minion->GetActorRotation(), LookAt, DeltaSeconds, 1.f));
 		}
 	}
-
 }

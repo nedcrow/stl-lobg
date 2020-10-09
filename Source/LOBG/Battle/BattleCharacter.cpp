@@ -285,6 +285,8 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP <= 0) return 0.f;
 
+
+	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
 
@@ -294,7 +296,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 
 		//네트워크상에서 CurrentHP동기화를 한번한 하기 위한 장치
-		float TempHP = CurrentHP;
+		
 
 		FPointDamageEvent* PointDamageEvent = (FPointDamageEvent*)(&DamageEvent);
 		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)
@@ -308,18 +310,27 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 			TempHP -= DamageAmount;
 		}
 
-		TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
 
+	}
+	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		TempHP -= DamageAmount;
+
+	}
+	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
+	{
+		TempHP -= DamageAmount;
+
+	}
+
+	TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
+	if (CurrentHP != TempHP)
+	{
 		CurrentHP = TempHP;
 		//서버도 실행되게
 		OnRep_CurrentHP();
 	}
-	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-	{
-	}
-	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
-	{
-	}
+	
 
 	//죽었을때
 	if (CurrentHP <= 0)
