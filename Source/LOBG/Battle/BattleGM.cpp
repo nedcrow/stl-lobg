@@ -192,6 +192,8 @@ void ABattleGM::PlayerSpawn()
 
 void ABattleGM::CheckAllControllerHasName()
 {
+	//나중에 PC를 직접 검사해서 이름이 저장되어있다면으로 수정가능
+
 	UE_LOG(LogClass, Warning, TEXT("SetPSTeamColor"));
 	CheckControllerHasName.Add(true);
 	int AllPlayerNum = TeamRedUsers.Num() + TeamBlueUsers.Num();
