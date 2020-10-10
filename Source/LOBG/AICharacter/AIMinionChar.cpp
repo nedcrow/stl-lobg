@@ -229,7 +229,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CurrentHP <= 0) return 0.f;
+	if (CurrentHP <= 0) return DamageAmount;
 	
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
@@ -259,16 +259,25 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
+		TempHP -= DamageAmount;
 
+
+		UE_LOG(LogClass, Warning, TEXT("FRadialDamageEvent::ClassID %d"), DamageEvent.GetTypeID());
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
+		TempHP -= DamageAmount;
+
+		UE_LOG(LogClass, Warning, TEXT("FDamageEvent::ClassID %d"), DamageEvent.GetTypeID());
 
 	}
 
-	TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
-	CurrentHP = TempHP;	
-	OnRep_CurrentHP();		// ¼­¹ö À§Á¬ °»½Å
+	TempHP = FMath::Clamp(TempHP, 0.f, MaxHP);
+	if (CurrentHP != TempHP)
+	{
+		CurrentHP = TempHP;
+		OnRep_CurrentHP();		// ¼­¹ö À§Á¬ °»½Å
+	}
 
 	//Á×¾úÀ»¶§
 	if (CurrentHP <= 0)
@@ -277,6 +286,8 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		SetState(EMinioonState::Dead);
 		SetLifeSpan(5.f);
 	}
+
+	UE_LOG(LogClass, Warning, TEXT("AAIMinionChar::TakeDamage::OnHit : DamageEvent %d"), DamageEvent.GetTypeID());
 
 
 	return DamageAmount;
