@@ -43,9 +43,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_TeamColor", Category = "State")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 	ETeamColor TeamColor = ETeamColor::None;
-
-	UFUNCTION()
-		void OnRep_TeamColor();
 };

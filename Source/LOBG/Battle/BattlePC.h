@@ -28,27 +28,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UBattleWidgetBase* BattleWidgetObject;
 
-	UFUNCTION(Server, Reliable)
-		void Server_SetPSTeamColor(const ETeamColor& TeamColor);
-	void Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor);
-
-	void SetPSTeamColorAndSetPlayerTag(ETeamColor newColor);
-
-	void InitTeamColor();
-
-	UFUNCTION(Client, Reliable)
-		void Clinet_SetTeamColorInPC();
-	void Clinet_SetTeamColorInPC_Implementation();
-
-	ETeamColor TestColor = ETeamColor::None;
-
-	UFUNCTION(Server, Reliable)
-		void Server_SetTestColor(const ETeamColor& color);
-	void Server_SetTestColor_Implementation(const ETeamColor& color);
+	void InitPlayerWithTeam();
 
 	UFUNCTION(Client, Reliable)
 		void Client_TestWidget();
 	void Client_TestWidget_Implementation();
 
+	UFUNCTION(Server, Reliable)
+		void Server_SetMyUserName(const FString& MyName);
+	void Server_SetMyUserName_Implementation(const FString& MyName);
 
+	FString MyUserName;
 };

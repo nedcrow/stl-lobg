@@ -19,17 +19,17 @@ void ABattleGM::BeginPlay()
 	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
 	if (GI)
 	{
-		UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), GI->TeamRedUsers.Num(), GI->TeamBlueUsers.Num());
 		TeamRedUsers = GI->TeamRedUsers;
 		TeamBlueUsers = GI->TeamBlueUsers;
+
+		//개발을 위한 코드 팀을 설정하지 않고 Test맵에서 사용할 때 캐릭터를 스폰하기 위함
+		//나중에 지울 예정
+		if (TeamRedUsers.Num() + TeamBlueUsers.Num() == 0)
+		{
+			TestMapVersonSpawn = true;
+		}
 	}
-	UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), TeamRedUsers.Num(), TeamBlueUsers.Num());
-
 	FindPlayerStart();
-
-	FTimerHandle PlayerTimer;
-	GetWorldTimerManager().SetTimer(PlayerTimer, this, &ABattleGM::PlayerSpawn, 2.0f, false);
-	//PlayerSpawn();
 
 	// AIManager Spawn.
 	if (AIManagerClass)
@@ -77,7 +77,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 
 			//컨트롤러 연결 후 리셋할 목록들
 			BattlePlayer->NetMulticast_ReSpawnUI();
-			
+			PC->InitPlayerWithTeam();
 		}
 	}
 }
@@ -104,6 +104,44 @@ void ABattleGM::FindPlayerStart()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), OutputPlayerStart);
 }
 
+void ABattleGM::SetPSTeamColor()
+{
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			for (int i = 0; i < TeamRedUsers.Num(); ++i)
+			{
+				if (PC->MyUserName == TeamRedUsers[i])
+				{
+					ABattlePS* PS = PC->GetPlayerState<ABattlePS>();
+					if (PS)
+					{
+						PS->TeamColor = ETeamColor::Red;
+						break;
+					}
+				}
+			}
+			
+			for (int i = 0; i < TeamBlueUsers.Num(); ++i)
+			{
+				if (PC->MyUserName == TeamBlueUsers[i])
+				{
+					ABattlePS* PS = PC->GetPlayerState<ABattlePS>();
+					if (PS)
+					{
+						PS->TeamColor = ETeamColor::Blue;
+						break;
+					}
+				}
+			}
+		}
+	}
+	//설정한 PS의 TeamColor를 토대로 플레이어 스폰
+	PlayerSpawn();
+}
+
 void ABattleGM::PlayerSpawn()
 {
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
@@ -111,41 +149,56 @@ void ABattleGM::PlayerSpawn()
 		ABattlePC* PC = Cast<ABattlePC>(*Iter);
 		if (PC)
 		{
-			PC->Clinet_SetTeamColorInPC();
+			ABattlePS* PS = PC->GetPlayerState<ABattlePS>();
+			if (PS)
+			{
+				FName TagText;
+				if (PS->TeamColor == ETeamColor::Red)
+				{
+					TagText = TEXT("Red");
+				}
+				else if (PS->TeamColor == ETeamColor::Blue)
+				{
+					TagText = TEXT("Blue");
+				}
+
+				for (int i = 0; i < OutputPlayerStart.Num(); ++i)
+				{
+					if (OutputPlayerStart[i]->ActorHasTag(TagText))
+					{
+						PC->Client_TestWidget();
+						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+							PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
+						PC->Possess(PlayerPawn);
+						PC->InitPlayerWithTeam();
+						OutputPlayerStart.RemoveAt(i);
+						break;
+					}
+					//개발용으로 팀을 설정하지 않을때를 위한 else코드
+					//나중에 지워야함
+					else if(TestMapVersonSpawn)
+					{
+						PC->Client_TestWidget();
+						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+							PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
+						PC->Possess(PlayerPawn);
+						break;
+					}
+				}
+			}
 		}
 	}
 }
 
-void ABattleGM::TestPlayerSpawn(ETeamColor newcolor, ABattlePC* NewPC)
+void ABattleGM::CheckAllControllerHasName()
 {
-	FName TagText;
-	if (newcolor == ETeamColor::Red)
+	UE_LOG(LogClass, Warning, TEXT("SetPSTeamColor"));
+	CheckControllerHasName.Add(true);
+	int AllPlayerNum = TeamRedUsers.Num() + TeamBlueUsers.Num();
+	if (CheckControllerHasName.Num() == AllPlayerNum || TestMapVersonSpawn)
 	{
-		TagText = TEXT("Red");
-	}
-	else if (newcolor == ETeamColor::Blue)
-	{
-		TagText = TEXT("Blue");
-	}
-
-	ABattlePC* PC = Cast<ABattlePC>(NewPC);
-	if (PC)
-	{
-		for (int i = 0; i < OutputPlayerStart.Num(); ++i)
-		{
-			if (OutputPlayerStart[i]->ActorHasTag(TagText))
-			{
-				PC->Client_TestWidget();
-				//float Random = FMath::RandRange(10.f, 30.f);
-				//FVector Location = FVector(OutputPlayerStart[i]->GetActorLocation().X + Random, OutputPlayerStart[i]->GetActorLocation().Y + Random, OutputPlayerStart[i]->GetActorLocation().Z);
-				ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
-					PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
-				PC->Possess(PlayerPawn);
-				PC->SetPSTeamColorAndSetPlayerTag(newcolor);
-				OutputPlayerStart.RemoveAt(i);
-				return;
-			}
-		}
+		//서버의 PC들이 아이디를 다 가지고 있다면 PS에 팀 설정
+		SetPSTeamColor();
 	}
 }
 

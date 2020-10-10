@@ -50,12 +50,17 @@ public:
 
 	void FindPlayerStart();
 
-	void PlayerSpawn();
-
 	TArray<AActor*> OutputPlayerStart;
-
-	void TestPlayerSpawn(ETeamColor newcolor, class ABattlePC* NewPC);
 
 	TArray<FString> TeamRedUsers;
 	TArray<FString> TeamBlueUsers;
+	TArray<bool> CheckControllerHasName;
+
+	void SetPSTeamColor();
+
+	void PlayerSpawn();
+
+	void CheckAllControllerHasName();
+
+	bool TestMapVersonSpawn;
 };

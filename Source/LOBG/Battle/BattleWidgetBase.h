@@ -35,6 +35,8 @@ public:
 
 	void SetHPBar(float Percent);
 
+	void SetHPBarColor(FLinearColor color);
+
 	void SetExpBar(float Percent);
 
 	void SetMoney(int AddMoney);

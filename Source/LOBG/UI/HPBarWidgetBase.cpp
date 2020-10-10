@@ -12,8 +12,7 @@ void UHPBarWidgetBase::NativeConstruct()
 	ABattleCharacter* PlayerPawn = GetOwningPlayerPawn<ABattleCharacter>();
 	if (PlayerPawn)
 	{
-		UE_LOG(LogClass, Warning, TEXT("Widget NativeConstruct"));
-		//PlayerPawn->SetHUDVisible();
+		PlayerPawn->SetHUDVisible();
 	}
 }
 

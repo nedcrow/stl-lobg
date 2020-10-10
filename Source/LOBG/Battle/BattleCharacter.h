@@ -206,12 +206,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		FName TeamName;
 
-	void InitHPBarWithEnum(ETeamColor color);
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_InitHPBar(ETeamColor color);
+	void NetMulticast_InitHPBar_Implementation(ETeamColor color);
 
 	//HPHUD 업데이트
 	void UpdateHPBar();
 
 	void SetHUDVisible();
-
-	void SetPSTeamColorAndSetTag();
 };

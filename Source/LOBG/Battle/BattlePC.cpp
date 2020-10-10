@@ -20,25 +20,15 @@ void ABattlePC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//if (IsLocalPlayerController())
-	//{
-	//	if (BattleWidgetClass)
-	//	{
-	//		BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
-	//		if (BattleWidgetObject)
-	//		{
-	//			BattleWidgetObject->AddToViewport();
-	//		}
-	//		SetInputMode(FInputModeGameOnly());
-	//	}
-	//	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-	//	if (GI)
-	//	{
-	//		//Server_SetPSTeamColor(GI->TeamColor);
-	//	}
-	//	//FTimerHandle ColorTimer;
-	//	//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
-	//}
+	if (IsLocalPlayerController())
+	{
+		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+		if (GI)
+		{
+			//서버에 아이디 보내주기
+			Server_SetMyUserName(GI->GetUserID());
+		}
+	}
 }
 
 void ABattlePC::ClickFire()
@@ -60,40 +50,11 @@ void ABattlePC::ReleaseFire()
 	}
 }
 
-void ABattlePC::Server_SetPSTeamColor_Implementation(const ETeamColor& TeamColor)
+void ABattlePC::InitPlayerWithTeam()
 {
 	ABattlePS* PS = GetPlayerState<ABattlePS>();
 	if (PS)
 	{
-		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-		if (GI)
-		{
-			PS->TeamColor = TeamColor;
-			PS->OnRep_TeamColor();
-			ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
-			if (PlayerPawn)
-			{
-				if (PS->TeamColor == ETeamColor::Red)
-				{
-					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
-				}
-				else if (PS->TeamColor == ETeamColor::Blue)
-				{
-					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
-				}
-			}
-		}
-	}
-}
-
-void ABattlePC::SetPSTeamColorAndSetPlayerTag(ETeamColor newColor)
-{
-	ABattlePS* PS = GetPlayerState<ABattlePS>();
-	if (PS)
-	{
-		UE_LOG(LogClass, Warning, TEXT("SetPSTeamColorAndSetPlayerTag"));
-		PS->TeamColor = newColor;
-		PS->OnRep_TeamColor();
 		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
 		if (PlayerPawn)
 		{
@@ -105,39 +66,8 @@ void ABattlePC::SetPSTeamColorAndSetPlayerTag(ETeamColor newColor)
 			{
 				PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
 			}
+			PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
 		}
-
-	}
-}
-
-void ABattlePC::InitTeamColor()
-{
-	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-	if (GI)
-	{
-		Server_SetPSTeamColor(GI->TeamColor);
-	}
-
-}
-
-void ABattlePC::Clinet_SetTeamColorInPC_Implementation()
-{
-	ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-	if (GI)
-	{
-		TestColor = GI->TeamColor;
-		Server_SetTestColor(TestColor);
-	}
-
-}
-
-void ABattlePC::Server_SetTestColor_Implementation(const ETeamColor & color)
-{
-
-	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GM)
-	{
-		GM->TestPlayerSpawn(color, this);
 	}
 }
 
@@ -154,12 +84,16 @@ void ABattlePC::Client_TestWidget_Implementation()
 			}
 			SetInputMode(FInputModeGameOnly());
 		}
-		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
-		if (GI)
-		{
-			//Server_SetPSTeamColor(GI->TeamColor);
-		}
-		//FTimerHandle ColorTimer;
-		//GetWorldTimerManager().SetTimer(ColorTimer, this, &ABattlePC::InitTeamColor, 2.0f, false);
+	}
+}
+
+void ABattlePC::Server_SetMyUserName_Implementation(const FString& MyName)
+{
+	MyUserName = MyName;
+	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		//서버의 PC들이 아이디를 다 가지고 있는지 검사하는 함수 실행
+		GM->CheckAllControllerHasName();
 	}
 }

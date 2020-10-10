@@ -83,10 +83,6 @@ void ABattleCharacter::BeginPlay()
 	}
 
 	UE_LOG(LogClass, Warning, TEXT("Character BeginPlay"));
-	if (IsLocallyControlled())
-	{
-		//Widget->SetVisibility(false);
-	}
 }
 
 // Called every frame
@@ -516,19 +512,36 @@ void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTa
 	TeamName = PlayerTag;
 }
 
-void ABattleCharacter::InitHPBarWithEnum(ETeamColor color)
+void ABattleCharacter::NetMulticast_InitHPBar_Implementation(ETeamColor color)
 {
+	FLinearColor ColorRed = FLinearColor(1.f, 0, 0, 1.f);
+	FLinearColor ColorBlue = FLinearColor(0, 0, 1.f, 1.f);
+
+	//허드색 변경
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{
-		
 		if (color == ETeamColor::Red)
 		{
-			HPWidget->SetColorAndOpacity(FLinearColor(1.f, 0, 0, 1.f));
+			HPWidget->SetColorAndOpacity(ColorRed);
 		}
 		else if (color == ETeamColor::Blue)
 		{
-			HPWidget->SetColorAndOpacity(FLinearColor(0, 0, 1.f, 1.f));
+			HPWidget->SetColorAndOpacity(ColorBlue);
+		}
+	}
+
+	//위젯색 변경
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC && PC->IsLocalController())
+	{
+		if (color == ETeamColor::Red)
+		{
+			PC->BattleWidgetObject->SetHPBarColor(ColorRed);
+		}
+		else if (color == ETeamColor::Blue)
+		{
+			PC->BattleWidgetObject->SetHPBarColor(ColorBlue);
 		}
 	}
 }
@@ -549,19 +562,6 @@ void ABattleCharacter::SetHUDVisible()
 		if (IsLocallyControlled())
 		{
 			Widget->SetVisibility(false);
-		}
-	}
-}
-
-void ABattleCharacter::SetPSTeamColorAndSetTag()
-{
-	ABattlePC* PC = Cast<ABattlePC>(GetController());
-	if (PC)
-	{
-		ABattlePS* PS = GetPlayerState<ABattlePS>();
-		if (PS)
-		{
-			//PS->TeamColor = PC->
 		}
 	}
 }

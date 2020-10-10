@@ -22,6 +22,11 @@ void UBattleWidgetBase::SetHPBar(float Percent)
 	HPBar->SetPercent(Percent);
 }
 
+void UBattleWidgetBase::SetHPBarColor(FLinearColor color)
+{
+	HPBar->SetFillColorAndOpacity(color);
+}
+
 void UBattleWidgetBase::SetExpBar(float Percent)
 {
 	ExpBar->SetPercent(Percent);
