@@ -55,4 +55,7 @@ public:
 	TArray<AActor*> OutputPlayerStart;
 
 	void TestPlayerSpawn(ETeamColor newcolor, class ABattlePC* NewPC);
+
+	TArray<FString> TeamRedUsers;
+	TArray<FString> TeamBlueUsers;
 };

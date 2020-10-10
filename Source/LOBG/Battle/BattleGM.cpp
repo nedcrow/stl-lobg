@@ -20,8 +20,10 @@ void ABattleGM::BeginPlay()
 	if (GI)
 	{
 		UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), GI->TeamRedUsers.Num(), GI->TeamBlueUsers.Num());
+		TeamRedUsers = GI->TeamRedUsers;
+		TeamBlueUsers = GI->TeamBlueUsers;
 	}
-	
+	UE_LOG(LogClass, Warning, TEXT("BattleGM !!!!!!%d %d"), TeamRedUsers.Num(), TeamBlueUsers.Num());
 
 	FindPlayerStart();
 
