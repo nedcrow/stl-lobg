@@ -66,9 +66,13 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 		if (PC)
 		{
 			//리스폰 위치 가져오기
+			FVector SpawnLocation = FVector(0.f, 0.f, 1000.f);
 			AReSpawn* ReSpawnObj = Cast<AReSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AReSpawn::StaticClass()));
-			FVector SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-			FRotator SpawnRotator = FRotator(0, 0, 0);
+			if (ReSpawnObj)
+			{
+				SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+			}
+			FRotator SpawnRotator = FRotator(0.f, 0.f, 0.f);
 
 			ABattleCharacter* BattlePlayer = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, SpawnLocation, SpawnRotator);
 

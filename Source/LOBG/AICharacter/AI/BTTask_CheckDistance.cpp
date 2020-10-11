@@ -17,7 +17,7 @@ EBTNodeResult::Type UBTTask_CheckDistance::ExecuteTask(UBehaviorTreeComponent & 
 		if (AIPawn)
 		{
 			AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPawn")));
-			if (TargetActor)
+			if (TargetActor && !TargetActor->IsActorBeingDestroyed())
 			{
 				float Distance = FVector::Distance(AIPawn->GetActorLocation(), TargetActor->GetActorLocation());
 
@@ -68,6 +68,11 @@ EBTNodeResult::Type UBTTask_CheckDistance::ExecuteTask(UBehaviorTreeComponent & 
 				default:
 					break;
 				}
+			}
+			else
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("TargetPawn"), nullptr);
+				AIPawn->SetState(EMinioonState::Normal);
 			}
 		}
 	}
