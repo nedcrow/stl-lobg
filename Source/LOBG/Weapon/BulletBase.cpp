@@ -24,6 +24,8 @@ ABulletBase::ABulletBase()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
+	StaticMesh->bCastDynamicShadow = false;		// Disallow mesh to cast dynamic shadows
+	StaticMesh->CastShadow = false;			// Disallow mesh to cast other shadows
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
