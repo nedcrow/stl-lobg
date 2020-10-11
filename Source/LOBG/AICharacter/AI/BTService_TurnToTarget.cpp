@@ -17,7 +17,7 @@ void UBTService_TurnToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		//AActor* tmpPawn = Cast<AActor>(AIC->BBComponent->GetValueAsObject(TEXT("Player")));
 		AActor* TargetPawn = Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
 		AAIMinionChar* Minion = AIC->GetPawn<AAIMinionChar>();
-		if (TargetPawn || Minion)
+		if (TargetPawn && Minion)
 		{
 			// 방향 계산
 			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Minion->GetActorLocation(), TargetPawn->GetActorLocation()).Clamp();
