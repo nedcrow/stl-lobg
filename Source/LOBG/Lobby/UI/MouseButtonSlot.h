@@ -4,19 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TeamSlot.generated.h"
+#include "MouseButtonSlot.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOBG_API UTeamSlot : public UUserWidget
+class LOBG_API UMouseButtonSlot : public UUserWidget
 {
 	GENERATED_BODY()
+	
 public:
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-        class UBorder* TeamColor;
-
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
         class UTextBlock* UserName;
 
@@ -25,12 +23,5 @@ public:
 
     virtual void NativeConstruct() override;
 
-    void SetColor(FLinearColor NewColor);
-    void SetUserName(FString NewName);
-
-    bool bUse = false;
-    bool bHovered = false;
-
-    UFUNCTION()
-    void HoveredSlotButton();
+    void ChangeTeam();
 };

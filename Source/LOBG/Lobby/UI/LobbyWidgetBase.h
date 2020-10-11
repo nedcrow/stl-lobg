@@ -40,6 +40,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UScrollBox* BlueTeamSlot;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UMouseButtonSlot* MouseButtonSlot;
+
 	//Slot√ ±‚»≠
 	void InitSlot();
 

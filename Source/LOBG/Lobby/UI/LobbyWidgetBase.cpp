@@ -11,6 +11,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "TeamSlot.h"
+#include "MouseButtonSlot.h"
 
 void ULobbyWidgetBase::NativeConstruct()
 {
@@ -20,6 +21,8 @@ void ULobbyWidgetBase::NativeConstruct()
 	ChattingWidget = Cast<UChattingWidgetBase>(GetWidgetFromName(TEXT("ChattingWidget")));
 	RedTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("RedTeamSlot")));
 	BlueTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("BlueTeamSlot")));
+	MouseButtonSlot = Cast<UMouseButtonSlot>(GetWidgetFromName(TEXT("MouseButtonSlot")));
+	MouseButtonSlot->SetVisibility(ESlateVisibility::Collapsed);
 
 	if (StartGameButton)
 	{
