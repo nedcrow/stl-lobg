@@ -76,5 +76,43 @@ void ALobbyGM::MakeTeam(const FString& UserName)
 			PC->Client_SplitTeam(TeamRedNameArray, TeamBlueNameArray);
 		}
 	}
+}
 
+void ALobbyGM::ChangeTeam(const FString& UserName)
+{
+	for (int i = 0; i < TeamRedNameArray.Num(); ++i)
+	{
+		if (TeamRedNameArray[i] == UserName)
+		{
+			TeamRedNameArray.RemoveSingle(UserName);
+			TeamBlueNameArray.Emplace(UserName);
+			for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+			{
+				ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
+				if (PC)
+				{
+					PC->Client_SplitTeam(TeamRedNameArray, TeamBlueNameArray);
+				}
+			}
+			return;
+		}
+	}
+
+	for (int i = 0; i < TeamBlueNameArray.Num(); ++i)
+	{
+		if (TeamBlueNameArray[i] == UserName)
+		{
+			TeamBlueNameArray.RemoveSingle(UserName);
+			TeamRedNameArray.Emplace(UserName);
+			for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
+			{
+				ALobbyPC* PC = Cast<ALobbyPC>(*Iter);
+				if (PC)
+				{
+					PC->Client_SplitTeam(TeamRedNameArray, TeamBlueNameArray);
+				}
+			}
+			return;
+		}
+	}
 }

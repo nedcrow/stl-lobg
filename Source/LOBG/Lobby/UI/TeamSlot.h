@@ -23,14 +23,19 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
         class UButton* SlotButton;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        class UMouseButtonSlot* MouseButtonSlot;
+
     virtual void NativeConstruct() override;
 
     void SetColor(FLinearColor NewColor);
     void SetUserName(FString NewName);
 
     bool bUse = false;
-    bool bHovered = false;
 
     UFUNCTION()
     void HoveredSlotButton();
+
+    UFUNCTION()
+        void ClickedChangeTeam();
 };

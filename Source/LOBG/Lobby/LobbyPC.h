@@ -35,6 +35,10 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_BeginPC(const FString& UserName);
-		void Server_BeginPC_Implementation(const FString& UserName);
+	void Server_BeginPC_Implementation(const FString& UserName);
+
+	UFUNCTION(Server, Reliable)
+		void Server_ChangeTeam(const FString& UserName);
+	void Server_ChangeTeam_Implementation(const FString& UserName);
 
 };

@@ -40,23 +40,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UScrollBox* BlueTeamSlot;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UMouseButtonSlot* MouseButtonSlot;
-
 	//SlotÃÊ±âÈ­
 	void InitSlot();
 
 	//ºó½½·Ô È®ÀÎ
 	int IsEmptySlot();
 
-	//ÆÀ³ª´©±â
 	void SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
-
-	void SplitTeamTest(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
-
-	//½½·Ô¼³Á¤
-	ETeamColor SetSlot(FString UserName, int Index);
 
 	//ÇÃ·¹ÀÌ¾îÀÇ ÆÀ»ö±ò ¼³Á¤
 	void SetGITeamColor(ETeamColor Color);
+
 };

@@ -10,8 +10,11 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
+#include "Components/Border.h"
 #include "TeamSlot.h"
 #include "MouseButtonSlot.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanelSlot.h"
 
 void ULobbyWidgetBase::NativeConstruct()
 {
@@ -21,8 +24,7 @@ void ULobbyWidgetBase::NativeConstruct()
 	ChattingWidget = Cast<UChattingWidgetBase>(GetWidgetFromName(TEXT("ChattingWidget")));
 	RedTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("RedTeamSlot")));
 	BlueTeamSlot = Cast<UScrollBox>(GetWidgetFromName(TEXT("BlueTeamSlot")));
-	MouseButtonSlot = Cast<UMouseButtonSlot>(GetWidgetFromName(TEXT("MouseButtonSlot")));
-	MouseButtonSlot->SetVisibility(ESlateVisibility::Collapsed);
+	
 
 	if (StartGameButton)
 	{
@@ -89,6 +91,7 @@ void ULobbyWidgetBase::InitSlot()
 
 int ULobbyWidgetBase::IsEmptySlot()
 {
+	//사용하지 않지만 혹시 몰라서 남겨둠
 	for (int i = 0; i < RedTeamSlot->GetChildrenCount(); ++i)
 	{
 		UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(i));
@@ -111,39 +114,6 @@ int ULobbyWidgetBase::IsEmptySlot()
 
 void ULobbyWidgetBase::SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray)
 {
-	////플레이어의 아이디들이 들어가 있는 배열을 가져와서 슬롯에 할당
-	//
-	//ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
-	//if (GI)
-	//{
-	//	int FindIndex = IsEmptySlot();
-	//	//FindIndex가 0이라는 뜻은 이제 막 들어온 플레이어라는 뜻이다
-	//	//지금까지 접속해있는 플레이어들을 먼저 슬롯에 넣어야하므로
-	//	//NewNames를 순회하며 슬롯에 넣어준다.
-	//	if (FindIndex == 0)
-	//	{
-	//		for (int i = 0; i < NewNames.Num() - 1; ++i)
-	//		{
-	//			SetSlot(NewNames[i], FindIndex);
-	//			FindIndex = IsEmptySlot();
-	//		}
-	//	}
-	//
-	//	//슬롯에 기존의 플레이어들을 넣고 자기 자신을 넣어준다.
-	//	//GI의 TeamColor도 변경
-	//	ETeamColor SlotColor = SetSlot(NewNames.Last(), FindIndex);
-	//
-	//	//다른 클라이언트에서 추가된 플레이어 슬롯을 동기화하면서 TeamColor를
-	//	//변경시키지 않게 None인지 검사
-	//	if (GI->TeamColor == ETeamColor::None)
-	//	{
-	//		SetGITeamColor(SlotColor);
-	//	}
-	//}
-}
-
-void ULobbyWidgetBase::SplitTeamTest(const TArray<FString>& RedArray, const TArray<FString>& BlueArray)
-{
 	InitSlot();
 
 	for (int i = 0; i < RedArray.Num(); ++i)
@@ -153,6 +123,7 @@ void ULobbyWidgetBase::SplitTeamTest(const TArray<FString>& RedArray, const TArr
 		RedSlot->SetColor(FLinearColor::Red);
 		RedSlot->SetUserName(RedArray[i]);
 		RedSlot->SetVisibility(ESlateVisibility::Visible);
+		RedSlot->MouseButtonSlot->SetName(TEXT("Blue"));
 	}
 
 	for (int i = 0; i < BlueArray.Num(); ++i)
@@ -162,43 +133,13 @@ void ULobbyWidgetBase::SplitTeamTest(const TArray<FString>& RedArray, const TArr
 		BlueSlot->SetColor(FLinearColor::Blue);
 		BlueSlot->SetUserName(BlueArray[i]);
 		BlueSlot->SetVisibility(ESlateVisibility::Visible);
+		BlueSlot->MouseButtonSlot->SetName(TEXT("Red"));
 	}
-}
-
-ETeamColor ULobbyWidgetBase::SetSlot(FString UserName, int Index)
-{
-	if (Index > -1)
-	{
-		if (Index > 10)
-		{
-			UTeamSlot* BlueSlot = Cast<UTeamSlot>(BlueTeamSlot->GetChildAt(Index - 11));
-			if (BlueSlot && BlueSlot->bUse == false)
-			{
-				BlueSlot->bUse = true;
-				BlueSlot->SetColor(FLinearColor::Blue);
-				BlueSlot->SetUserName(UserName);
-				BlueSlot->SetVisibility(ESlateVisibility::Visible);
-				return ETeamColor::Blue;
-			}
-		}
-		else
-		{
-			UTeamSlot* RedSlot = Cast<UTeamSlot>(RedTeamSlot->GetChildAt(Index));
-			if (RedSlot && RedSlot->bUse == false)
-			{
-				RedSlot->bUse = true;
-				RedSlot->SetColor(FLinearColor::Red);
-				RedSlot->SetUserName(UserName);
-				RedSlot->SetVisibility(ESlateVisibility::Visible);
-				return ETeamColor::Red;
-			}
-		}
-	}
-	return ETeamColor::None;
 }
 
 void ULobbyWidgetBase::SetGITeamColor(ETeamColor Color)
 {
+	//사용하지 않지만 혹시 몰라서 남겨둠
 	ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(GetGameInstance());
 	if (GI)
 	{

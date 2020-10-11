@@ -4,15 +4,15 @@
 #include "MouseButtonSlot.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "TeamSlot.h"
 
 void UMouseButtonSlot::NativeConstruct()
 {
 	UserName = Cast<UTextBlock>(GetWidgetFromName(TEXT("TeamText")));
-	SlotButton = Cast<UButton>(GetWidgetFromName(TEXT("TeamText")));
-
-	SlotButton->OnClicked.AddDynamic(this, &UMouseButtonSlot::ChangeTeam);
+	SlotButton = Cast<UButton>(GetWidgetFromName(TEXT("MouseSlotButton")));
 }
 
-void UMouseButtonSlot::ChangeTeam()
+void UMouseButtonSlot::SetName(FString NewName)
 {
+	UserName->SetText(FText::FromString(NewName));
 }

@@ -25,4 +25,6 @@ public:
 
 	TArray<FString> TeamRedNameArray;
 	TArray<FString> TeamBlueNameArray;
+
+	void ChangeTeam(const FString& UserName);
 };

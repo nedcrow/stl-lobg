@@ -9,6 +9,8 @@
 #include "LobbyWidgetBase.h"
 #include "../LobbyPC.h"
 #include "MouseButtonSlot.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanelSlot.h"
 
 void UTeamSlot::NativeConstruct()
 {
@@ -17,8 +19,16 @@ void UTeamSlot::NativeConstruct()
 	TeamColor = Cast<UBorder>(GetWidgetFromName(TEXT("TeamColor")));
 	UserName = Cast<UTextBlock>(GetWidgetFromName(TEXT("UserName")));
 	SlotButton = Cast<UButton>(GetWidgetFromName(TEXT("SlotButton")));
+	MouseButtonSlot = Cast<UMouseButtonSlot>(GetWidgetFromName(TEXT("MouseButtonSlot")));
 
 	SlotButton->OnHovered.AddDynamic(this, &UTeamSlot::HoveredSlotButton);
+
+	if (MouseButtonSlot)
+	{
+		MouseButtonSlot->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	MouseButtonSlot->SlotButton->OnClicked.AddDynamic(this, &UTeamSlot::ClickedChangeTeam);
 }
 
 void UTeamSlot::SetColor(FLinearColor NewColor)
@@ -33,21 +43,22 @@ void UTeamSlot::SetUserName(FString NewName)
 
 void UTeamSlot::HoveredSlotButton()
 {
-	bHovered = true;
 	FPointerEvent SlotMouseEvent;
 	
-	ALobbyPC* PC = Cast<ALobbyPC>(GetOwningPlayer());
-	if (PC)
-	{
-		//PC->LobbyWidgetObject->MouseButtonSlot->SetRenderTransform(SlotButton->GetRenderTransformAngle())
-	}
 	//마우스 오른쪽 버튼 클릭 시
 	if (UKismetInputLibrary::PointerEvent_IsMouseButtonDown(SlotMouseEvent, EKeys::RightMouseButton))
 	{
-		ULobbyWidgetBase* LobbyWidget = Cast<ULobbyWidgetBase>(GetWidgetTreeOwningClass());
-		if (LobbyWidget)
-		{
-			//LobbyWidget
-		}
+		MouseButtonSlot->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void UTeamSlot::ClickedChangeTeam()
+{
+	FString SlotUserName = UserName->GetText().ToString();
+	ALobbyPC* PC = Cast<ALobbyPC>(GetOwningPlayer());
+	if (PC)
+	{
+		PC->Server_ChangeTeam(SlotUserName);
+	}
+	MouseButtonSlot->SetVisibility(ESlateVisibility::Collapsed);
 }

@@ -23,5 +23,5 @@ public:
 
     virtual void NativeConstruct() override;
 
-    void ChangeTeam();
+    void SetName(FString NewName);
 };

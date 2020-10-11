@@ -49,7 +49,7 @@ void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& RedArray, 
 {
 	if (IsLocalPlayerController() && LobbyWidgetObject)
 	{
-		LobbyWidgetObject->SplitTeamTest(RedArray, BlueArray);
+		LobbyWidgetObject->SplitTeam(RedArray, BlueArray);
 
 	}
 }
@@ -60,5 +60,14 @@ void ALobbyPC::Server_BeginPC_Implementation(const FString& UserName)
 	if (GM)
 	{
 		GM->MakeTeam(UserName);
+	}
+}
+
+void ALobbyPC::Server_ChangeTeam_Implementation(const FString& UserName)
+{
+	ALobbyGM* GM = Cast<ALobbyGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->ChangeTeam(UserName);
 	}
 }
