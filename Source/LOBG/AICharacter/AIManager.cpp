@@ -167,7 +167,7 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 								NextIndex = i;
 								break;
 							}
-						}
+						}						
 					}
 
 
@@ -235,6 +235,8 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 
 		CurrentRotatingNumber = 0;		// 스폰 회전 위치 초기화
 
+		WaveCourse = FMath::RandRange(1, 3);		// 웨이브 랜덤 할당.
+
 		// 액터 스폰 시작
 		RepeatSpawnMinions();
 	}
@@ -287,6 +289,8 @@ void AAIManager::RepeatSpawnMinions()
 		NewMinion->Tags.Emplace(TeamName);
 
 		// 스폰한 액터들의 이동 목표 설정
+		NewMinion->WaveCourse = WaveCourse;			// 코스 저장.
+
 		AAIController* AIC = NewMinion->GetController<AAIController>();
 		if (AIC)
 		{

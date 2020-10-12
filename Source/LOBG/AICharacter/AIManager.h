@@ -49,13 +49,14 @@ public:
 		TSubclassOf<class AAIMinionChar> MinionCharClass;
 
 	// SpawnMinion
+	int WaveCourse;		// 배정할 코스 번호.
 	UFUNCTION(BlueprintCallable)
 		void SetSpawnQuantity(int MinionQuantity);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		int LeftSpawnNumber = 0;
 
-	FVector CurrentSpawnLocation;
+	FVector CurrentSpawnLocation;	
 	int CurrentRotatingNumber = 0;		// 360도 회전 횟수
 	float CurrentRotatingAngle = 0.f;		// 회전 각도
 	FTimerHandle RepeatSpawnHandle;
