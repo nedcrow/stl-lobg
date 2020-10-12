@@ -39,4 +39,14 @@ public:
 	void Server_SetMyUserName_Implementation(const FString& MyName);
 
 	FString MyUserName;
+
+	void PushOpenStore();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		TSubclassOf<class UStoreWidgetBase> StoreWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UStoreWidgetBase* StoreWidgetObject;
+
+	bool bStoreOpen = false;
 };

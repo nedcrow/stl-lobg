@@ -5,6 +5,8 @@
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "../Battle/BattlePC.h"
+#include "../Battle/BattleCharacter.h"
 
 // Sets default values
 AReSpawn::AReSpawn()
@@ -25,7 +27,8 @@ AReSpawn::AReSpawn()
 void AReSpawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Root->OnComponentBeginOverlap.AddDynamic(this, &AReSpawn::BeginOverlapProcess);
+	Root->OnComponentEndOverlap.AddDynamic(this, &AReSpawn::EndOverlapProcess);
 }
 
 // Called every frame
@@ -33,5 +36,39 @@ void AReSpawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AReSpawn::BeginOverlapProcess(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult)
+{
+	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
+	if (PlayerPawn)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
+		if (PC)
+		{
+			PC->bStoreOpen = true;
+		}
+	}
+}
+
+void AReSpawn::EndOverlapProcess(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
+	if (PlayerPawn)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
+		if (PC)
+		{
+			PC->bStoreOpen = false;
+		}
+	}
 }
 

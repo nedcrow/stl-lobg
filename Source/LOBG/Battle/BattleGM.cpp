@@ -67,10 +67,40 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 		{
 			//리스폰 위치 가져오기
 			FVector SpawnLocation = FVector(0.f, 0.f, 1000.f);
-			AReSpawn* ReSpawnObj = Cast<AReSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AReSpawn::StaticClass()));
-			if (ReSpawnObj)
+
+			TArray<AActor*> RedReSpawnArray;
+			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Red"), RedReSpawnArray);
+
+			TArray<AActor*> BlueReSpawnArray;
+			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Blue"), BlueReSpawnArray);
+
+			ABattlePS* PS = Cast<ABattlePS>(Pawn->GetPlayerState());
+			if (PS)
 			{
-				SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+				if (PS->TeamColor == ETeamColor::Red)
+				{
+					for (int i = 0; i < RedReSpawnArray.Num(); ++i)
+					{
+						AReSpawn* ReSpawnObj = Cast<AReSpawn>(RedReSpawnArray[i]);
+						if (ReSpawnObj)
+						{
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							break;
+						}
+					}
+				}
+				else if (PS->TeamColor == ETeamColor::Blue)
+				{
+					for (int i = 0; i < BlueReSpawnArray.Num(); ++i)
+					{
+						AReSpawn* ReSpawnObj = Cast<AReSpawn>(BlueReSpawnArray[i]);
+						if (ReSpawnObj)
+						{
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							break;
+						}
+					}
+				}
 			}
 			FRotator SpawnRotator = FRotator(0.f, 0.f, 0.f);
 
@@ -168,6 +198,7 @@ void ABattleGM::PlayerSpawn()
 
 				for (int i = 0; i < OutputPlayerStart.Num(); ++i)
 				{
+					
 					if (OutputPlayerStart[i]->ActorHasTag(TagText))
 					{
 						PC->Client_TestWidget();
@@ -186,6 +217,7 @@ void ABattleGM::PlayerSpawn()
 						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
 							PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
 						PC->Possess(PlayerPawn);
+						OutputPlayerStart.RemoveAt(i);
 						break;
 					}
 				}
