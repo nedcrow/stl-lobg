@@ -34,17 +34,19 @@ void UMeshesRingComponent::BeginPlay()
 void UMeshesRingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bIsRotatable) RotateAround(DeltaTime);
+	if (bIsRotatable) {
+		AddRelativeRotation(FRotator(0, DeltaTime*Speed, 0));
+	}
 }
 
-void UMeshesRingComponent::RotateAround(float DeltaTime)
+void UMeshesRingComponent::NetMulticast_RotateAround_Implementation(float DeltaTime)
 {
 	FRotator TempRotation = FRotator(0, DeltaTime * Speed, 0);
 	AddRelativeRotation(TempRotation);
 }
 
 // Remove instance from last order
-void UMeshesRingComponent::RemoveOne()
+void UMeshesRingComponent::NetMulticast_RemoveOne_Implementation()
 {
 	if (GetInstanceCount() > 0) {
 		RemoveInstance(GetInstanceCount()-1);
@@ -52,7 +54,7 @@ void UMeshesRingComponent::RemoveOne()
 }
 
 // Add instance from first order
-void UMeshesRingComponent::AddOne()
+void UMeshesRingComponent::NetMulticast_AddOne_Implementation()
 {
 	if (GetInstanceCount() < MeshCount) {
 		AddInstance(SpawnTransforms[GetInstanceCount()]);

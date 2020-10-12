@@ -239,6 +239,7 @@ void ABattleGM::PlayerSpawn()
 						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
 							PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
 						PC->Possess(PlayerPawn);
+						OutputPlayerStart.RemoveAt(i);
 						break;
 					}
 				}

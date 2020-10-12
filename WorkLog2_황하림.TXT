@@ -65,3 +65,8 @@
   Add function(BeginHit)&Clean up in BulletBase
   Fix BulletBase & Connected codes(FairyPawn, BattleCharacter)
   Test UpdateHPBar at FairyPawn
+
+1012
+  Fix M_EmissiveBullet Material (use InstancedStaticMesh)
+  Fix about replicate at FairyPawn (NetMulticast & ComponentReplication)
+  Test Reload tower's bullet
