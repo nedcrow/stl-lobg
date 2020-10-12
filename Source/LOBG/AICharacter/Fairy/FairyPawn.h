@@ -103,9 +103,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
-
+	
 	UFUNCTION()
+	void CallReload();
 	void Reload();
+	int CurrentBulletCount;
+	uint8 bIsCasting:1;
+	FTimerHandle BulletTimer;
 
 	// HUD
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

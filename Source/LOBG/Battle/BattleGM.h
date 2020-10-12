@@ -23,11 +23,19 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
 		TSubclassOf<class AAIManager> AIManagerClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
-		class AAIManager* AIManager;
+		TArray<class AAIManager*> AIManagers;	
+
+	class AAIManager* FindAIM(class AAIController* AIPawnOwner);
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
-		int SpawnAINumber = 0;
+		int SpawnAINumber = 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+		float WaveRepeatSeconds = 60.f;
 
+	FTimerHandle RepeatWaveHandle;
 
+	UFUNCTION()
+		void RepeatMinionsWave();
 
 	//리스폰 요청
 	void CallReSpawn(class ABattleCharacter* Pawn);

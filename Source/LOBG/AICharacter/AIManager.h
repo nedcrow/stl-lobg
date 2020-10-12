@@ -28,15 +28,20 @@ public:
 	// CoursePointsArray
 	TArray<AWaveCoursePoint*> CoursePoints;
 
+	void ReverseCoursePoints(TArray<AWaveCoursePoint*>& Array);
 	void SeachCoursePoints();		// 코스 포인트 검색 후 배열에 저장.
 	bool ChangeNextTarget(class AAIController* AIController);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// TeamInfo
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		FName TeamName;
+
 	// MinionsArray
 	TArray<AAIMinionChar*> ActiveMinions;
-
+	
 	void AddMinion(AAIMinionChar* AddMinion);
 	void RemoveMinion(AAIMinionChar* RemoveMinion);
 
@@ -47,7 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetSpawnQuantity(int MinionQuantity);
 
-	int LeftSpawnNumber = 0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		int LeftSpawnNumber = 0;
+
 	FVector CurrentSpawnLocation;
 	int CurrentRotatingNumber = 0;		// 360도 회전 횟수
 	float CurrentRotatingAngle = 0.f;		// 회전 각도
@@ -55,6 +62,7 @@ public:
 
 	UFUNCTION()
 		void RepeatSpawnMinions();
+
 
 
 };

@@ -28,6 +28,18 @@ void AAIManager::BeginPlay()
 
 }
 
+void AAIManager::ReverseCoursePoints(TArray<AWaveCoursePoint*>& Array)
+{
+	int ArrayLength = Array.Num();
+	if (ArrayLength > 0)
+	{
+		for (int i = 0; i <= ArrayLength / 2; i++)
+		{
+			Array.Swap(i, ArrayLength - 1 - i);		// 입력한 배열을 앞뒤를 서로 바꿔서 정렬 순서를 거꾸로 저장한다.
+		}
+	}
+}
+
 // CoursePoints 찾기
 void AAIManager::SeachCoursePoints()
 {
@@ -125,17 +137,40 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 		{
 			if (!AIChar->CurrentMoveTarget && CoursePoints.Num() > 0)
 			{
-				AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 다시 채운다.
+				AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 시작지점으로 다시 채운다.
 			}
 
 			int Index = -1;
-			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);
-			int NextIndex = Index + 1;
+			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);		// 현재 코스포인트 찾기
+			int NextIndex = Index + 1;		//
 			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints[NextIndex])		// 다음 코스포인트
 			{
 				UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
 				if (BBComp)		// 블랙보드
 				{
+					if (CoursePoints[Index]->WaveCourse != CoursePoints[NextIndex]->WaveCourse)		// NextIndex의 코스가 같은 경우에는 NextIndex를 그대로 유지하고 아니면 자신의 다음 코스를 찾는다.
+					{
+						for (int i = NextIndex; i < CoursePoints.Num(); i++)
+						{
+							if (int(CoursePoints[i]->WaveCourse) == AIChar->WaveCourse)		// 자신의 코스로 진입
+							{
+								NextIndex = i;
+								break;
+							}
+							else if (CoursePoints[i]->WaveCourse == EWaveCourse::Goal)		// Goal 코스로 진입
+							{
+								NextIndex = i;
+								break;
+							}
+							else if (i == CoursePoints.Num() - 1)		// 마지막 포인트 진입
+							{
+								NextIndex = i;
+								break;
+							}
+						}
+					}
+
+
 					FVector RelativeLocation = CoursePoints[NextIndex]->GetActorLocation() - AIChar->CurrentMoveTarget->GetActorLocation();
 
 					BBComp->SetValueAsVector(TEXT("CourseLocation"), AIChar->GetActorLocation() + RelativeLocation);		// 코스 로케이션 키 변경
@@ -242,15 +277,14 @@ void AAIManager::RepeatSpawnMinions()
 	// 액터 스폰
 	AAIMinionChar* NewMinion = GetWorld()->SpawnActor<AAIMinionChar>(MinionCharClass, NewSpawnLocation, FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f));
 
-	// 스폰한 액터 저장
 	if (NewMinion)
 	{
+		// 스폰한 액터 저장
 		ActiveMinions.Add(NewMinion);
-		LeftSpawnNumber--;
-
+		
 		// 팀 배정
-		NewMinion->TeamName = TEXT("Red");
-		NewMinion->Tags.Emplace(TEXT("Red"));
+		NewMinion->TeamName = TeamName;
+		NewMinion->Tags.Emplace(TeamName);
 
 		// 스폰한 액터들의 이동 목표 설정
 		AAIController* AIC = NewMinion->GetController<AAIController>();
@@ -261,6 +295,7 @@ void AAIManager::RepeatSpawnMinions()
 
 		// 스폰 이펙트 생성
 
+		LeftSpawnNumber--;		// 스폰 성공.
 	}
 
 
