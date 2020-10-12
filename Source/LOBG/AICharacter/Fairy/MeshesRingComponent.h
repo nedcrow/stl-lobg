@@ -19,7 +19,7 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	// Base property
 	float OneDegree = 0.01745; // = pi / 180 radian
 	float OneRadian = 57.2958; // = 180 / pi degree
@@ -38,11 +38,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
 		uint8 bIsLookBody : 1;
 
-	void RotateAround(float DeltaTime);
+	UFUNCTION(Client, Reliable)
+	void NetMulticast_RotateAround(float DeltaTime);
+	void NetMulticast_RotateAround_Implementation(float DeltaTime);
 
-	UFUNCTION()
-	void RemoveOne();
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_RemoveOne();
+	void NetMulticast_RemoveOne_Implementation();
 
-	UFUNCTION()
-	void AddOne();
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_AddOne();
+	void NetMulticast_AddOne_Implementation();
 };

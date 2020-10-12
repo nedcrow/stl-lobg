@@ -19,7 +19,8 @@
 #include "FairyAIController.h"
 #include "../../UI/HUDBarSceneComponent.h"
 #include "../../UI/HPBarWidgetBase.h"
-#include "../../Weapon/BulletDamageType.h"
+#include "../../Weapon/BulletDamageType.h" 
+#include "GameFramework/Actor.h"
 
 //#include "../../Weapon/BulletBase.h"
 
@@ -67,6 +68,8 @@ void AFairyPawn::BeginPlay()
 	{
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
+
+	CurrentBulletCount = MeshesRingComponent->MeshCount;
 }
 
 // Called every frame
@@ -123,8 +126,8 @@ void AFairyPawn::OnRepCurrentHP()
 	AFairyAIController* AIC = Cast<AFairyAIController>(GetController());
 	if (AIC && AIC->IsLocalController())
 	{
-		UpdateHPBar();
 	}
+		UpdateHPBar();
 }
 
 // Blackboard 포함한 State 변경
@@ -157,16 +160,18 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
-	int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
-	if (currentInstanceCount > 0) {
-		FTransform TempTransform;
-		MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
-		FVector StartLocation = TempTransform.GetLocation();
-		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
-		MeshesRingComponent->RemoveOne();
-			
-		// Missile 발사
-		Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
+	if(MeshesRingComponent) {
+		int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
+		UE_LOG(LogTemp, Warning, TEXT("currentInstanceCount: %d"), currentInstanceCount);
+		if (currentInstanceCount > 0) {
+			FTransform TempTransform;
+			MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
+			FVector StartLocation = TempTransform.GetLocation();
+			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+
+			// Missile 발사
+			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
+		}
 	}
 }
 
@@ -191,20 +196,38 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		5.0f
 	);
 
+	MeshesRingComponent->NetMulticast_RemoveOne();
+	CurrentBulletCount--;
+	CallReload();
+
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
 	{
 		Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
 		Bullet->TeamName = TeamName;
-	}	
+	}
+
+	
+}
+
+void AFairyPawn::CallReload()
+{
+	// 총알 수량 변하면 실행
+	// 총알이 max 미만이고, casting 중이 아니면 실행
+	if (CurrentBulletCount < MeshesRingComponent->MeshCount && bIsCasting == false) {
+		bIsCasting = true;
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 10.f, false);
+	}
+	if (CurrentBulletCount < MeshesRingComponent->MeshCount && bIsCasting == false) {
+		Reload();
+	}
 }
 
 void AFairyPawn::Reload()
 {
-	// 총알이 몇 개 미만일 때,
-	if (MeshesRingComponent->GetInstanceCount() < MeshesRingComponent->MeshCount) {
-		MeshesRingComponent->AddOne();
-	}
+	MeshesRingComponent->NetMulticast_AddOne();
+	CurrentBulletCount++;
+	bIsCasting = false;
 }
 
 void AFairyPawn::UpdateHPBar()
