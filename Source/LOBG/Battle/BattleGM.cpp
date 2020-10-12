@@ -11,7 +11,9 @@
 #include "../AICharacter/AIManager.h"
 #include "../Temp/TempTower.h"
 #include "../LOBGGameInstance.h"
+
 #include "GameFramework/PlayerStart.h"
+#include "AIController.h"
 
 void ABattleGM::BeginPlay()
 {
@@ -34,15 +36,32 @@ void ABattleGM::BeginPlay()
 	// AIManager Spawn.
 	if (AIManagerClass)
 	{
-		AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
-		if (AIM)
+		for (int i = 0; i < 2; i++)
 		{
-			AIManager = AIM;
-
-			if (SpawnAINumber > 0)
+			AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
+			if (AIM)
 			{
-				AIM->SetSpawnQuantity(SpawnAINumber);
+				AIManagers.Emplace(AIM);
+
+				switch (i)
+				{
+				case 0:
+					AIM->TeamName = TEXT("Red");
+					break;
+				case 1:
+					AIM->TeamName = TEXT("Blue");
+					AIM->ReverseCoursePoints(AIM->CoursePoints);		// 이동 순서 뒤집기.
+					break;
+				default:
+					break;
+				}
 			}
+		}
+
+
+		if (SpawnAINumber > 0)
+		{
+			RepeatMinionsWave();
 		}
 	}
 }
@@ -54,6 +73,40 @@ void ABattleGM::PostLogin(APlayerController* NewPlayer)
 	TArray<AActor*> OutTowers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
 	TowerCount = OutTowers.Num();
+}
+
+// AI매니저
+AAIManager* ABattleGM::FindAIM(AAIController * AIPawnOwner)
+{
+	if (AIPawnOwner && AIManagers.Num() > 0)
+	{
+		APawn* AIPawn = AIPawnOwner->GetPawn();
+		if (AIPawn)
+		{
+			for (int i = 0; i < AIManagers.Num(); i++)
+			{
+				if (AIPawn->ActorHasTag(AIManagers[i]->TeamName))		// AI컨트롤러의 팀과 같은 팀의 AI매니저 찾기.
+				{
+					return AIManagers[i];
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+void ABattleGM::RepeatMinionsWave()
+{
+	if (AIManagers.Num() > 0 && SpawnAINumber > 0)
+	{
+		for (int i = 0; i < AIManagers.Num(); i++)
+		{
+			AIManagers[i]->SetSpawnQuantity(SpawnAINumber);
+		}
+
+		GetWorldTimerManager().SetTimer(RepeatWaveHandle, this, &ABattleGM::RepeatMinionsWave, WaveRepeatSeconds, false);
+	}
 }
 
 void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)

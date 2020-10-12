@@ -83,6 +83,7 @@ public:
 
 	// MoveTarget
 	class AWaveCoursePoint* CurrentMoveTarget;
+	int WaveCourse;
 
 	// Fire
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
