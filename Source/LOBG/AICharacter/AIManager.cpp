@@ -129,20 +129,20 @@ void AAIManager::SeachCoursePoints()
 // BB의 목표 위치 바꾸기.
 bool AAIManager::ChangeNextTarget(AAIController * AIController)
 {
-	if (AIController)		// 컨트롤러
+	if (AIController && CoursePoints.Num() > 0)		// 컨트롤러
 	{
 		AAIMinionChar* AIChar = AIController->GetPawn<AAIMinionChar>();
 
 		if (AIChar)		// 캐릭터. 코스포인트
 		{
-			if (!AIChar->CurrentMoveTarget && CoursePoints.Num() > 0)
+			if (!AIChar->CurrentMoveTarget)
 			{
 				AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 시작지점으로 다시 채운다.
 			}
 
 			int Index = -1;
 			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);		// 현재 코스포인트 찾기
-			int NextIndex = Index + 1;		//
+			int NextIndex = Index + 1;
 			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints[NextIndex])		// 다음 코스포인트
 			{
 				UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
@@ -152,7 +152,7 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 					{
 						for (int i = NextIndex; i < CoursePoints.Num(); i++)
 						{
-							if (int(CoursePoints[i]->WaveCourse) == AIChar->WaveCourse)		// 자신의 코스로 진입
+							if ((int)CoursePoints[i]->WaveCourse == AIChar->WaveCourse)		// 자신의 코스로 진입
 							{
 								NextIndex = i;
 								break;
