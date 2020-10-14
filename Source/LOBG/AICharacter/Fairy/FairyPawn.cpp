@@ -37,8 +37,11 @@ AFairyPawn::AFairyPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	MeshesRingComponent = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("MeshesRingComponent"));
-	MeshesRingComponent->SetupAttachment(Body);
+	ActiveMeshesRingComp = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("ActiveMeshesRingComponent"));
+	ActiveMeshesRingComp->SetupAttachment(Body);
+
+	RestMeshesRingComp = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("RestMeshesRingComponent"));
+	RestMeshesRingComp->SetupAttachment(Body);
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
@@ -48,10 +51,9 @@ AFairyPawn::AFairyPawn()
 
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	Widget->SetupAttachment(HPBarHUD);
-
 	Widget->SetRelativeRotation(FRotator(0,180,0));
 
-	CurrentHP = MaxHP = 100;
+	bIsCasting=false;
 }
 
 // Called when the game starts or when spawned
@@ -69,7 +71,8 @@ void AFairyPawn::BeginPlay()
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
 
-	CurrentBulletCount = MeshesRingComponent->MeshCount;
+	CurrentBulletCount = !ActiveMeshesRingComp->bIsNoAddInstance ? ActiveMeshesRingComp->MaxMeshCount : 0;
+	
 }
 
 // Called every frame
@@ -160,12 +163,12 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
-	if(MeshesRingComponent) {
-		int currentInstanceCount = MeshesRingComponent->GetInstanceCount();
+	if(ActiveMeshesRingComp) {
+		int currentInstanceCount = ActiveMeshesRingComp->GetInstanceCount();
 		UE_LOG(LogTemp, Warning, TEXT("currentInstanceCount: %d"), currentInstanceCount);
 		if (currentInstanceCount > 0) {
 			FTransform TempTransform;
-			MeshesRingComponent->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
+			ActiveMeshesRingComp->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
 			FVector StartLocation = TempTransform.GetLocation();
 			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 
@@ -196,7 +199,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		5.0f
 	);
 
-	MeshesRingComponent->NetMulticast_RemoveOne();
+	ActiveMeshesRingComp->NetMulticast_RemoveOne();
 	CurrentBulletCount--;
 	CallReload();
 
@@ -210,24 +213,36 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	
 }
 
-void AFairyPawn::CallReload()
+bool AFairyPawn::CallReload()
 {
 	// 총알 수량 변하면 실행
 	// 총알이 max 미만이고, casting 중이 아니면 실행
-	if (CurrentBulletCount < MeshesRingComponent->MeshCount && bIsCasting == false) {
-		bIsCasting = true;
-		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 10.f, false);
+	if (CurrentBulletCount < ActiveMeshesRingComp->MaxMeshCount) {
+		if (bIsCasting == false) {
+			bIsCasting = true;
+			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 12.f, false);
+			ReloadAnimation();
+			return true;
+		}
+		else {
+			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 0.1f, false);
+		}
 	}
-	if (CurrentBulletCount < MeshesRingComponent->MeshCount && bIsCasting == false) {
-		Reload();
-	}
+	return false;
 }
 
 void AFairyPawn::Reload()
 {
-	MeshesRingComponent->NetMulticast_AddOne();
+	UE_LOG(LogTemp,Warning,TEXT("Reload"));
+	ActiveMeshesRingComp->NetMulticast_AddOne();
 	CurrentBulletCount++;
 	bIsCasting = false;
+}
+
+void AFairyPawn::ReloadAnimation()
+{
+	RestMeshesRingComp->NetMulticast_AddOne();
+	RestMeshesRingComp->NetMulticast_SetScaleOne(ActiveMeshesRingComp->GetInstanceCount()-1);
 }
 
 void AFairyPawn::UpdateHPBar()

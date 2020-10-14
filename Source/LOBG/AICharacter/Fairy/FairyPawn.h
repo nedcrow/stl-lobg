@@ -34,7 +34,10 @@ public:
 	class UStaticMeshComponent* Body;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
-	class UMeshesRingComponent* MeshesRingComponent;
+	class UMeshesRingComponent* ActiveMeshesRingComp;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
+	class UMeshesRingComponent* RestMeshesRingComp;
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,10 +59,10 @@ public:
 
 	// Base property
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
-	float MaxHP;
+	float MaxHP = 100;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
-	float CurrentHP;
+	float CurrentHP = 100;;
 
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 	float AttackPoint = 11;
@@ -105,8 +108,9 @@ public:
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	
 	UFUNCTION()
-	void CallReload();
+	bool CallReload();
 	void Reload();
+	void ReloadAnimation();
 	int CurrentBulletCount;
 	uint8 bIsCasting:1;
 	FTimerHandle BulletTimer;

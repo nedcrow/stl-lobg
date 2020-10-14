@@ -26,9 +26,14 @@ public:
 	TArray<FTransform> SpawnTransforms;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
-		int MeshCount = 1;
+		int VertexCount = 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+		int MaxMeshCount = 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		float Radius = 32.f;
+	/* No call AddInstance function when begin. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+		uint8 bIsNoAddInstance: 1; 
 
 	// About rotate
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
@@ -42,11 +47,18 @@ public:
 	void NetMulticast_RotateAround(float DeltaTime);
 	void NetMulticast_RotateAround_Implementation(float DeltaTime);
 
+	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_RemoveOne();
 	void NetMulticast_RemoveOne_Implementation();
 
+	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_AddOne();
 	void NetMulticast_AddOne_Implementation();
+
+	/* from last index */
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SetScaleOne(int Index);
+	void NetMulticast_SetScaleOne_Implementation(int Index);
 };

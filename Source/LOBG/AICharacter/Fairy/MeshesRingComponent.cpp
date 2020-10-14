@@ -14,8 +14,9 @@ void UMeshesRingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// InstanceMeshes creating & Transform setting.
-	float RUnit = 360.f / MeshCount;
-	for (int i = 0; i < MeshCount; i++) {
+	MaxMeshCount = MaxMeshCount > VertexCount ? VertexCount : FMath::Abs(MaxMeshCount + 0);
+	float RUnit = 360.f / VertexCount;
+	for (int i = 0; i < VertexCount; i++) {
 		FName MeshName = *FString::Printf(TEXT("Missile_%d"), i); // CreateDefaultSubobject 매개변수 고려하여 FString::Printf로
 		float RotateDegree = RUnit * i;
 		float x = Radius * (FMath::Cos(RotateDegree * OneDegree));
@@ -26,7 +27,7 @@ void UMeshesRingComponent::BeginPlay()
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Position.X, Position.Y, Position.Z);
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Rotation.Roll, Rotation.Pitch, Rotation.Yaw);
 
-		AddInstance(FTransform(Rotation, Position, Scale));
+		if(!bIsNoAddInstance && i < MaxMeshCount)AddInstance(FTransform(Rotation, Position, Scale));
 		SpawnTransforms.Add(FTransform(Rotation, Position, Scale));
 	}
 }
@@ -56,9 +57,19 @@ void UMeshesRingComponent::NetMulticast_RemoveOne_Implementation()
 // Add instance from first order
 void UMeshesRingComponent::NetMulticast_AddOne_Implementation()
 {
-	if (GetInstanceCount() < MeshCount) {
+	if (GetInstanceCount() < MaxMeshCount) {
 		AddInstance(SpawnTransforms[GetInstanceCount()]);
 	}
+}
+
+void UMeshesRingComponent::NetMulticast_SetScaleOne_Implementation(int Index)
+{
+	if (GetInstanceCount()+1<Index) {
+		AddInstance(SpawnTransforms[Index]);
+	}
+	FTransform TempTransform = SpawnTransforms[Index];
+	TempTransform.SetScale3D(FVector(0.1f,0.1f,0.1f));
+	UpdateInstanceTransform(Index, TempTransform, true);
 }
 
 
