@@ -70,3 +70,6 @@
   Fix M_EmissiveBullet Material (use InstancedStaticMesh)
   Fix about replicate at FairyPawn (NetMulticast & ComponentReplication)
   Test Reload tower's bullet
+
+1014
+  Test Reload tower's bullet (Scale resetting)
