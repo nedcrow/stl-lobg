@@ -49,4 +49,6 @@ public:
 		class UStoreWidgetBase* StoreWidgetObject;
 
 	bool bStoreOpen = false;
+
+	
 };

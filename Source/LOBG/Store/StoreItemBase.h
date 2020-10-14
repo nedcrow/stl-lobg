@@ -15,10 +15,16 @@ class LOBG_API UStoreItemBase : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-		class UBorder* ItemBorder;
+		class UTextBlock* AttackPointUpText;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-		class UButton* ItemButton;
+		class UButton* AttackPointUpButton;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UTextBlock* SpeedUpText;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UButton* SpeedUpButton;
 
 	virtual void NativeConstruct() override;
 

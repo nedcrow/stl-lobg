@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "StoreItemWidgetBase.h"
 #include "StoreWidgetBase.generated.h"
 
 /**
@@ -14,34 +15,29 @@ class LOBG_API UStoreWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UBorder* RedItem;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UButton* RedButton;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UBorder* BlueItem;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UButton* BlueButton;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UBorder* GreenItem;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UButton* GreenButton;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UBorder* YellowItem;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	//	class UButton* YellowButton;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-		class UVerticalBox* ItemBox;
-
 	virtual void NativeConstruct() override;
 
-	void InitBox();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UBorder* StoreBorder;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+		TArray<FString> ItemTextArray;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+		TArray<UMaterialInstance*> ItemInstanceArray;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+		TArray<EItemName> ItemNameArray;
+
+	//TArray<class UStoreItemWidgetBase*> ItemWidgetArray;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+		TSubclassOf<class UStoreItemWidgetBase> StoreItemWidgetClass;
+
+	void InitItemArray();
+
+	void SetVisiBilitySlot(ESlateVisibility NewValue);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UScrollBox* ItemBox;
 };

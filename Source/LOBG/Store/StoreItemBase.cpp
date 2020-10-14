@@ -2,20 +2,24 @@
 
 
 #include "StoreItemBase.h"
-#include "Components/Border.h"
+#include "Components/TextBlock.h"
 #include "Components/Button.h"
 
 void UStoreItemBase::NativeConstruct()
 {
-	ItemBorder = Cast<UBorder>(GetWidgetFromName(TEXT("ItemColor")));
-	ItemButton = Cast<UButton>(GetWidgetFromName(TEXT("ItemButton")));
+	AttackPointUpText = Cast<UTextBlock>(GetWidgetFromName(TEXT("AttackPointUpText")));
+	AttackPointUpButton = Cast<UButton>(GetWidgetFromName(TEXT("AttackPointUpButton")));
 
-	ItemButton->OnClicked.AddDynamic(this, &UStoreItemBase::ClickItemSlot);
+	SpeedUpText = Cast<UTextBlock>(GetWidgetFromName(TEXT("SpeedUpText")));
+	SpeedUpButton = Cast<UButton>(GetWidgetFromName(TEXT("SpeedUpButton")));
+
+	AttackPointUpButton->OnClicked.AddDynamic(this, &UStoreItemBase::ClickItemSlot);
+	SpeedUpButton->OnClicked.AddDynamic(this, &UStoreItemBase::ClickItemSlot);
 }
 
 void UStoreItemBase::SetItemColor(FLinearColor newColor)
 {
-	ItemBorder->SetBrushColor(newColor);
+	//ItemBorder->SetBrushColor(newColor);
 }
 
 void UStoreItemBase::ClickItemSlot()

@@ -6,47 +6,51 @@
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "StoreItemBase.h"
+#include "StoreItemWidgetBase.h"
+#include "Components/PanelWidget.h"
+#include "Components/CanvasPanel.h"
+#include "Components/ScrollBox.h"
 
 void UStoreWidgetBase::NativeConstruct()
 {
 	Super::NativeConstruct();
-	//RedItem = Cast<UBorder>(GetWidgetFromName(TEXT("RedItem")));
-	//BlueItem = Cast<UBorder>(GetWidgetFromName(TEXT("BlueItem")));
-	//GreenItem = Cast<UBorder>(GetWidgetFromName(TEXT("GreenItem")));
-	//YellowItem = Cast<UBorder>(GetWidgetFromName(TEXT("YellowItem")));
-	//
-	//RedButton = Cast<UButton>(GetWidgetFromName(TEXT("RedButton")));
-	//BlueButton = Cast<UButton>(GetWidgetFromName(TEXT("BlueButton")));
-	//GreenButton = Cast<UButton>(GetWidgetFromName(TEXT("GreenButton")));
-	//YellowButton = Cast<UButton>(GetWidgetFromName(TEXT("YellowButton")));
-	ItemBox = Cast<UVerticalBox>(GetWidgetFromName(TEXT("ItemBox")));
-	
-	InitBox();
+	ItemBox = Cast<UScrollBox>(GetWidgetFromName(TEXT("ItemBox")));
+	StoreBorder = Cast<UBorder>(GetWidgetFromName(TEXT("StoreBorder")));
+
+	if (ItemTextArray.Num() == ItemInstanceArray.Num() && ItemBox->GetChildrenCount() == ItemTextArray.Num())
+	{
+		for (int i = 0; i < ItemTextArray.Num(); ++i)
+		{
+			InitItemArray();
+		}
+	}
 }
 
-void UStoreWidgetBase::InitBox()
+void UStoreWidgetBase::InitItemArray()
 {
-	
 	for (int i = 0; i < ItemBox->GetChildrenCount(); ++i)
 	{
-		UStoreItemBase* ItemSlot = Cast<UStoreItemBase>(ItemBox->GetChildAt(i));
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(ItemBox->GetChildAt(i));
 		if (ItemSlot)
 		{
-			switch (i)
-			{
-			case 0:
-				ItemSlot->SetItemColor(FLinearColor::Red);
-				break;
-			case 1:
-				ItemSlot->SetItemColor(FLinearColor::Blue);
-				break;
-			case 2:
-				ItemSlot->SetItemColor(FLinearColor::Green);
-				break;
-			case 3:
-				ItemSlot->SetItemColor(FLinearColor::Yellow);
-				break;
-			}
+			ItemSlot->SetVisibility(ESlateVisibility::Collapsed);
+			ItemSlot->SetItemText(ItemTextArray[i]);
+			ItemSlot->SetItemBorder(ItemInstanceArray[i]);
+			ItemSlot->MyItemName = ItemNameArray[i];
+		}
+	}
+}
+
+void UStoreWidgetBase::SetVisiBilitySlot(ESlateVisibility NewValue)
+{
+	SetVisibility(NewValue);
+
+	for (int i = 0; i < ItemBox->GetChildrenCount(); ++i)
+	{
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(ItemBox->GetChildAt(i));
+		if (ItemSlot)
+		{
+			ItemSlot->SetVisibility(NewValue);
 		}
 	}
 }

@@ -9,6 +9,7 @@
 #include "BattleGM.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Store/StoreWidgetBase.h"
+#include "../Store/StoreItemWidgetBase.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -119,20 +120,22 @@ void ABattlePC::PushOpenStore()
 		//범위 안에서 보여져 있다면 안보이게 만들고 return
 		if (StoreWidgetObject->GetVisibility() == ESlateVisibility::Visible)
 		{
-			StoreWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+			StoreWidgetObject->SetVisiBilitySlot(ESlateVisibility::Collapsed);
 			bShowMouseCursor = false;
 			SetInputMode(FInputModeGameOnly());
 			return;
 		}
 		//숨겨져 있는 상태라면 보이게 만든다
-		StoreWidgetObject->SetVisibility(ESlateVisibility::Visible);
+		StoreWidgetObject->SetVisiBilitySlot(ESlateVisibility::Visible);
+		
+
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeGameAndUI());
 	}
 	//범위밖에서 누르면 안보이게 한다 범위 밖에서는 아무리 눌러도 보이지 않는다
 	else if (!bStoreOpen)
 	{
-		StoreWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+		StoreWidgetObject->SetVisiBilitySlot(ESlateVisibility::Collapsed);
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
 	}
