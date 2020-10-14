@@ -335,6 +335,10 @@ GM 리스폰 오브젝트가 없을 때 오류나지 않게 수정.
 리스폰 지역의 콜리전 안에서 F키를 누르면 상점 UI가 뜨도록 기능 추가
 상점 UI의 아이템을 클릭하면 돈이 차감되고 캐릭터의 능력이 강해지도록 설정할 예정
 
+황하림
+  Fix M_EmissiveBullet Material (use InstancedStaticMesh)
+  Fix about replicate at FairyPawn (NetMulticast & ComponentReplication)
+  Test Reload tower's bullet
 
 1014
 오정원
@@ -345,4 +349,6 @@ GM 리스폰 오브젝트가 없을 때 오류나지 않게 수정.
 버튼을 누르면 아이템의 이미지에 따라 다른 로그가 출력되게 설정
 내일 캐릭터에 직접 적용할 예정
 
-
+황하림
+  Test Reload tower's bullet (Scale resetting)
+  Fix Tower Reloading (Instance mesh scale setting)

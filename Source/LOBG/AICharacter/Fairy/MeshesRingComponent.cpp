@@ -62,16 +62,5 @@ void UMeshesRingComponent::NetMulticast_AddOne_Implementation()
 	}
 }
 
-void UMeshesRingComponent::NetMulticast_SetScaleOne_Implementation(int Index)
-{
-	if (GetInstanceCount()+1<Index) {
-		AddInstance(SpawnTransforms[Index]);
-	}
-	FTransform TempTransform = SpawnTransforms[Index];
-	TempTransform.SetScale3D(FVector(0.1f,0.1f,0.1f));
-	UpdateInstanceTransform(Index, TempTransform, true);
-}
-
-
 
 

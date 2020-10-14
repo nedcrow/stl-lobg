@@ -73,3 +73,4 @@
 
 1014
   Test Reload tower's bullet (Scale resetting)
+  Fix Tower Reloading (Instance mesh scale setting)

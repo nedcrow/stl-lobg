@@ -56,9 +56,4 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_AddOne();
 	void NetMulticast_AddOne_Implementation();
-
-	/* from last index */
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_SetScaleOne(int Index);
-	void NetMulticast_SetScaleOne_Implementation(int Index);
 };

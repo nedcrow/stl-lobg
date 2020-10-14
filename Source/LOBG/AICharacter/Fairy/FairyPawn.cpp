@@ -220,12 +220,13 @@ bool AFairyPawn::CallReload()
 	if (CurrentBulletCount < ActiveMeshesRingComp->MaxMeshCount) {
 		if (bIsCasting == false) {
 			bIsCasting = true;
+			ReloadingPercentage = 0;
 			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 12.f, false);
 			ReloadAnimation();
 			return true;
 		}
 		else {
-			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 0.1f, false);
+			//GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 0.1f, false);
 		}
 	}
 	return false;
@@ -233,16 +234,37 @@ bool AFairyPawn::CallReload()
 
 void AFairyPawn::Reload()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Reload"));
 	ActiveMeshesRingComp->NetMulticast_AddOne();
 	CurrentBulletCount++;
 	bIsCasting = false;
+	CallReload();
 }
 
 void AFairyPawn::ReloadAnimation()
 {
-	RestMeshesRingComp->NetMulticast_AddOne();
-	RestMeshesRingComp->NetMulticast_SetScaleOne(ActiveMeshesRingComp->GetInstanceCount()-1);
+	if (ReloadingPercentage < 1) {
+		float MaxScale = 1;
+		float StartScale = 0.1;
+		float SmoothPoint = 20; // frame per second
+		float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
+		float Scale = ReloadingPercentage == 0? StartScale : MaxScale * ReloadingPercentage;
+
+		/*UE_LOG(LogTemp, Warning, TEXT("ReloadingPercentage: %f"), ReloadingPercentage);
+		UE_LOG(LogTemp, Warning, TEXT("active %d : rest %d"), ActiveMeshesRingComp->GetInstanceCount(), RestMeshesRingComp->GetInstanceCount());*/
+
+		if (ActiveMeshesRingComp->GetInstanceCount() < RestMeshesRingComp->GetInstanceCount()) {
+			int Index = ActiveMeshesRingComp->GetInstanceCount();
+			FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+			TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
+			RestMeshesRingComp->UpdateInstanceTransform(Index, TempTransform, false, true, true);
+			
+			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::ReloadAnimation, TimeUnit, false);
+		}
+		ReloadingPercentage += 1 / (ReloadingTime * SmoothPoint);
+	} else {
+		Reload();
+	}
+	
 }
 
 void AFairyPawn::UpdateHPBar()

@@ -107,6 +107,11 @@ public:
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	
+	/* Second */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	float ReloadingTime = 12;
+	float ReloadingPercentage = 0;
+
 	UFUNCTION()
 	bool CallReload();
 	void Reload();
