@@ -23,11 +23,11 @@ void UMeshesRingComponent::BeginPlay()
 		float y = Radius * (FMath::Sin(RotateDegree * OneDegree));
 		FVector Position = FVector(x, y, 0);
 		FRotator Rotation = bIsLookBody ? FRotator(0, RotateDegree, 0) : FRotator::ZeroRotator;
-		FVector Scale = FVector::OneVector;
+		FVector Scale = FVector::OneVector * StartScale;
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Position.X, Position.Y, Position.Z);
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Rotation.Roll, Rotation.Pitch, Rotation.Yaw);
 
-		if(!bIsNoAddInstance && i < MaxMeshCount)AddInstance(FTransform(Rotation, Position, Scale));
+		if (i < MaxMeshCount)AddInstance(FTransform(Rotation, Position, Scale));
 		SpawnTransforms.Add(FTransform(Rotation, Position, Scale));
 	}
 }

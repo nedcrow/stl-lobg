@@ -38,10 +38,10 @@ AFairyPawn::AFairyPawn()
 	Body->SetupAttachment(RootComponent);
 
 	ActiveMeshesRingComp = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("ActiveMeshesRingComponent"));
-	ActiveMeshesRingComp->SetupAttachment(Body);
+	ActiveMeshesRingComp->SetupAttachment(RootComponent);
 
 	RestMeshesRingComp = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("RestMeshesRingComponent"));
-	RestMeshesRingComp->SetupAttachment(Body);
+	RestMeshesRingComp->SetupAttachment(RootComponent);
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->bHearNoises = false;
@@ -71,7 +71,7 @@ void AFairyPawn::BeginPlay()
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
 
-	CurrentBulletCount = !ActiveMeshesRingComp->bIsNoAddInstance ? ActiveMeshesRingComp->MaxMeshCount : 0;
+	CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
 	
 }
 
@@ -173,6 +173,7 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 
 			// Missile 발사
+			// fire effect 추가
 			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
 		}
 	}
@@ -249,9 +250,6 @@ void AFairyPawn::ReloadAnimation()
 		float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
 		float Scale = ReloadingPercentage == 0? StartScale : MaxScale * ReloadingPercentage;
 
-		/*UE_LOG(LogTemp, Warning, TEXT("ReloadingPercentage: %f"), ReloadingPercentage);
-		UE_LOG(LogTemp, Warning, TEXT("active %d : rest %d"), ActiveMeshesRingComp->GetInstanceCount(), RestMeshesRingComp->GetInstanceCount());*/
-
 		if (ActiveMeshesRingComp->GetInstanceCount() < RestMeshesRingComp->GetInstanceCount()) {
 			int Index = ActiveMeshesRingComp->GetInstanceCount();
 			FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
@@ -262,6 +260,11 @@ void AFairyPawn::ReloadAnimation()
 		}
 		ReloadingPercentage += 1 / (ReloadingTime * SmoothPoint);
 	} else {
+		int Index = ActiveMeshesRingComp->GetInstanceCount();
+		FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+		TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
+		RestMeshesRingComp->UpdateInstanceTransform(Index, TempTransform, false, true, true);
+
 		Reload();
 	}
 	

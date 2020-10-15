@@ -74,3 +74,7 @@
 1014
   Test Reload tower's bullet (Scale resetting)
   Fix Tower Reloading (Instance mesh scale setting)
+
+1015
+  Add Meshes & Materials (Fairy)
+  Add Particle Effects

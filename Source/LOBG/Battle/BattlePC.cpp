@@ -14,8 +14,8 @@
 void ABattlePC::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ABattlePC::ClickFire);
-	InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ABattlePC::ReleaseFire);
+	//InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ABattlePC::ClickFire);
+	//InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ABattlePC::ReleaseFire);
 
 	InputComponent->BindAction(TEXT("OpenStore"), EInputEvent::IE_Pressed, this, &ABattlePC::PushOpenStore);
 }
@@ -35,6 +35,7 @@ void ABattlePC::BeginPlay()
 	}
 }
 
+// 사격은 캐릭터에서
 void ABattlePC::ClickFire()
 {
 	ABattleCharacter* BattlePlayer = GetPawn<ABattleCharacter>();
