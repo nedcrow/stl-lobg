@@ -33,6 +33,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		uint8 bIsCrouched : 1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		uint8 bIsInAir : 1;
 
 	// lean
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")

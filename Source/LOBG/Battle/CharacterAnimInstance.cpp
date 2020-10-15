@@ -50,6 +50,11 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 		}
 		CurrentLeanAngle = FMath::FInterpTo(CurrentLeanAngle, TargetLeanAngle, DeltaSeconds, 8.0f);
 
+		// AimOffset
+		AimPitch = Pawn->GetAimOffset().Pitch;
+
+		// Jump
+		bIsInAir = Pawn->GetCharacterMovement()->IsFalling();
 	}
 }
 

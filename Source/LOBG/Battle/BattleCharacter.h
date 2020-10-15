@@ -80,6 +80,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Bullet")
 		uint8 bIsFire : 1;
+	
+	// 총알이 확산되는 각도. 기본 사격 상태에서의 수치.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+		float RandFireAngle = 4.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* FireMontage;
 
 	FTimerHandle BulletTimer;
 
@@ -141,6 +148,9 @@ public:
 	void StopLeanLeft();
 	void StartLeanRight();
 	void StopLeanRight();
+
+	// AimOffset
+	FRotator GetAimOffset();
 
 	// Animations that FSMless
 #pragma region FSMless Animations

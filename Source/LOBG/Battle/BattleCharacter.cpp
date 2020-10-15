@@ -111,6 +111,9 @@ void ABattleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Ironsight"), IE_Pressed, this, &ABattleCharacter::StartIronsight);
 	PlayerInputComponent->BindAction(TEXT("Ironsight"), IE_Released, this, &ABattleCharacter::StopIronsight);
 
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ABattleCharacter::StartFire);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Released, this, &ABattleCharacter::StopFire);
+
 	PlayerInputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &ABattleCharacter::StartCrouch);
 
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &ABattleCharacter::StartReload);
@@ -248,30 +251,63 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	bool Result = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLine, EndLine,
 		ObjectTypes, true, IgnoreObj, EDrawDebugTrace::None, OutHit, true, FLinearColor::Red, FLinearColor::Green, 1000.0f);
 
-	if (Result && OutHit.GetActor() != nullptr)
-	{
-		//Muzzle에서 트레이스 Point까지의 회전값
-		FRotator BulletRoation = (OutHit.ImpactPoint - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation();
 
-		//Muzzle위치에서 조준점까지의 회전값을 가지고 총알 스폰
-		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), BulletRoation);
-			
-		if (Bullet)
-		{
-			Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
-			Bullet->TeamName = TeamName;
-		}
-	}
-	//액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
-	//하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.
-	else if (OutHit.GetActor() == nullptr)
+
+	
+	// 액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
+	// 하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.	
+	FVector EndVector(EndLine);
+
+	// 히트 결과가 있을 경우 해당 지점으로 쏜다.
+	if (Result)
 	{
-		ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), (EndLine - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation());
-			
-		if (Bullet)
+		EndVector = OutHit.ImpactPoint;
+	}
+	
+	//Muzzle에서 트레이스 Point까지의 회전값
+	FRotator BulletRoation = (EndVector - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation();
+
+
+
+	// 총알 확산.
+	float FireAngle = RandFireAngle;
+	if (bIsIronsight)
+	{
+		//조준 하면 확산각 하락.
+		FireAngle = RandFireAngle / 4.f;
+	}
+
+	if (GetCharacterMovement()->IsFalling())
+	{
+		// 점프한 상태면 확산각 증가. 
+		FireAngle *= 2.f;
+	}
+
+
+	BulletRoation.Yaw += FMath::FRandRange(-FireAngle, FireAngle);
+	BulletRoation.Pitch += FMath::FRandRange(-FireAngle, FireAngle);
+
+
+	// 총알 스폰
+	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), BulletRoation);
+
+	// 총알 초기값 설정
+	if (Bullet)
+	{
+		Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
+		Bullet->TeamName = TeamName;
+	}
+
+	// 만들어 놓은 몽타주 애셋으로 애니메이션 몽타주 실행. 리로드와 같은 슬롯에 등록되어 있다. (둘다 상체 애니메이션이고 사격과 재장전은 동시에 할 수 없으므로)
+	if (FireMontage)
+	{
+		if (bIsIronsight)
 		{
-			Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
-			Bullet->TeamName = TeamName;
+			PlayAnimMontage(FireMontage, 1.0f, TEXT("Fire_Rifle_Ironsights"));
+		}
+		else
+		{
+			PlayAnimMontage(FireMontage, 1.0f, TEXT("Fire_Rifle_Hip"));
 		}
 	}
 }
@@ -333,7 +369,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	{
 		NetMulticast_StartDeath(FMath::RandRange(1, 3));
 		CurrentState = EBattleCharacterState::Dead;
-		FTimerHandle DeadTimer;
+		FTimerHandle DeadTimer;		
 		GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
 	}
 
@@ -418,6 +454,12 @@ void ABattleCharacter::StopLeanRight()
 	Server_SetLeanRight(false);
 }
 
+FRotator ABattleCharacter::GetAimOffset()
+{
+	// 카메라 로테이션 벡터를 캐릭터의 트랜스폼 만큼 반대로 이동시킨 로테이션을 구한다. 상대 로테이션.
+	return ActorToWorld().InverseTransformVectorNoScale(GetBaseAimRotation().Vector()).Rotation();
+}
+
 void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
 {
 	if (DeathMontage) {
@@ -475,7 +517,14 @@ void ABattleCharacter::DeathSetting()
 {
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
-	DisableInput(Cast<APlayerController>(GetController()));
+	
+	// 사망시 입력 막기
+	//GetController()->UnPossess();
+	DisableInput(GetController<APlayerController>());	
+	//GetController<APlayerController>()->SetInputMode(FInputModeUIOnly());
+
+	bIsFire = false;
+	bIsIronsight = false;
 }
 
 void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
