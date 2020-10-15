@@ -5,7 +5,6 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
-#include "StoreItemBase.h"
 #include "StoreItemWidgetBase.h"
 #include "Components/PanelWidget.h"
 #include "Components/CanvasPanel.h"
