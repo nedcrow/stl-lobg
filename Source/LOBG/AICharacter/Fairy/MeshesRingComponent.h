@@ -31,9 +31,8 @@ public:
 		int MaxMeshCount = 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		float Radius = 32.f;
-	/* No call AddInstance function when begin. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
-		uint8 bIsNoAddInstance: 1; 
+		float StartScale = 1.f; 
 
 	// About rotate
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
