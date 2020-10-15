@@ -31,7 +31,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UTextBlock* ItemText;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UTextBlock* ItemMoney;
+
 	EItemName MyItemName;
+
+	int MyItemMoney;
 
 	virtual void NativeConstruct() override;
 
@@ -41,4 +46,10 @@ public:
 	void SetItemText(FString newText);
 
 	void SetItemBorder(UMaterialInstance* NewMaterial);
+
+	void SetItemMoney(int newMoney);
+
+	bool InitSlotByMoney();
+
+	bool bEnoughMoney = false;
 };

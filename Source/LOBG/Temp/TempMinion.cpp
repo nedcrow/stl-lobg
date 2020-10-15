@@ -52,8 +52,8 @@ float ATempMinion::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 			ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
 			if (Pawn)
 			{
-				//Pawn->Server_SetBooty(MinionMoney, MinionExp);
-				Pawn->SetBooty(MinionMoney, MinionExp);
+				Pawn->Server_SetBooty(MinionMoney, MinionExp);
+				//Pawn->SetBooty(MinionMoney, MinionExp);
 			}
 		}
 		CurrentHP = 20.0f;

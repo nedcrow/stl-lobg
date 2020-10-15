@@ -67,6 +67,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogClass, Warning, TEXT("OnBeginOverlap OtherComp  : %s"), *OtherComp->GetName());
+	
 
 
 	// 같은팀이라면 return
@@ -79,6 +80,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	// ApplyDamage
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
+		UE_LOG(LogClass, Warning, TEXT("LogThisCode"));
 		UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 		Destroy();
 	}

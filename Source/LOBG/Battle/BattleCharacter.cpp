@@ -486,8 +486,8 @@ void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 		PS->PlayerMoney += Money;
 		PS->OnRep_Money();
 
-		//PS->PlayerExp += Exp;
-		//PS->SetExp(Exp);
+		PS->PlayerExp += Exp;
+		PS->NewExp += Exp;
 		PS->OnRep_Exp();
 	}
 }
@@ -564,5 +564,25 @@ void ABattleCharacter::SetHUDVisible()
 			Widget->SetVisibility(false);
 		}
 	}
+}
+
+void ABattleCharacter::Server_ItemAttack_Implementation()
+{
+	AttackPoint += 10.f;
+	UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), AttackPoint);
+}
+
+void ABattleCharacter::Server_ItemSpeed_Implementation()
+{
+	WalkSpeed += 100.f;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	Server_SetMaxWalkSpeed(WalkSpeed);
+	RunSpeed += 100.f;
+}
+
+void ABattleCharacter::Server_ItemHP_Implementation()
+{
+	CurrentHP = MaxHP;
+	OnRep_CurrentHP();
 }
 

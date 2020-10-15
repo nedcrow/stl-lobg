@@ -214,4 +214,16 @@ public:
 	void UpdateHPBar();
 
 	void SetHUDVisible();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ItemAttack();
+	void Server_ItemAttack_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ItemSpeed();
+	void Server_ItemSpeed_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ItemHP();
+	void Server_ItemHP_Implementation();
 };

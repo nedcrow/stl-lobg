@@ -29,6 +29,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
 		TArray<EItemName> ItemNameArray;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+		TArray<int> ItemMoneyArray;
+
 	//TArray<class UStoreItemWidgetBase*> ItemWidgetArray;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
@@ -40,4 +43,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UScrollBox* ItemBox;
+
+	void CheckSlotActive();
 };

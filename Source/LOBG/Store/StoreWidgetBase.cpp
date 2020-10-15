@@ -6,8 +6,6 @@
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "StoreItemWidgetBase.h"
-#include "Components/PanelWidget.h"
-#include "Components/CanvasPanel.h"
 #include "Components/ScrollBox.h"
 
 void UStoreWidgetBase::NativeConstruct()
@@ -34,8 +32,11 @@ void UStoreWidgetBase::InitItemArray()
 		{
 			ItemSlot->SetVisibility(ESlateVisibility::Collapsed);
 			ItemSlot->SetItemText(ItemTextArray[i]);
+			ItemSlot->SetItemMoney(ItemMoneyArray[i]);
 			ItemSlot->SetItemBorder(ItemInstanceArray[i]);
 			ItemSlot->MyItemName = ItemNameArray[i];
+			ItemSlot->MyItemMoney = ItemMoneyArray[i];
+			ItemSlot->InitSlotByMoney();
 		}
 	}
 }
@@ -50,6 +51,25 @@ void UStoreWidgetBase::SetVisiBilitySlot(ESlateVisibility NewValue)
 		if (ItemSlot)
 		{
 			ItemSlot->SetVisibility(NewValue);
+		}
+	}
+}
+
+void UStoreWidgetBase::CheckSlotActive()
+{
+	for (int i = 0; i < ItemBox->GetChildrenCount(); ++i)
+	{
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(ItemBox->GetChildAt(i));
+		if (ItemSlot)
+		{
+			if (ItemSlot->InitSlotByMoney())
+			{
+				ItemSlot->bEnoughMoney = true;
+			}
+			else
+			{
+				ItemSlot->bEnoughMoney = false;
+			}
 		}
 	}
 }
