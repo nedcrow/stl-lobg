@@ -78,3 +78,4 @@
 1015
   Add Meshes & Materials (Fairy)
   Add Particle Effects
+  Fix BP_FairyPawn (Add colision at body mesh)

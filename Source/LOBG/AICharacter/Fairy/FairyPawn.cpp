@@ -99,11 +99,12 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 
 	float TempHP = 0;
 	TempHP = CurrentHP - Damage;
+
 	// 피격 애니메이션 추가 필요
 
 	CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
 	OnRepCurrentHP();
-
+	UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
 		// 죽음 애니메이션(?) 추가 필요
