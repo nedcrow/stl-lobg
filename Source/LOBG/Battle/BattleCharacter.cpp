@@ -294,8 +294,13 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	// 총알 초기값 설정
 	if (Bullet)
 	{
-		Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
-		Bullet->TeamName = TeamName;
+		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+		if (PS)
+		{
+			float BulletAttackPoint = PS->AttackPoint;
+			Bullet->SetDamageInfo(OutHit, GetController(), BulletAttackPoint);
+			Bullet->TeamName = TeamName;
+		}
 	}
 
 	// 만들어 놓은 몽타주 애셋으로 애니메이션 몽타주 실행. 리로드와 같은 슬롯에 등록되어 있다. (둘다 상체 애니메이션이고 사격과 재장전은 동시에 할 수 없으므로)
@@ -617,12 +622,21 @@ void ABattleCharacter::SetHUDVisible()
 
 void ABattleCharacter::Server_ItemAttack_Implementation()
 {
-	AttackPoint += 10.f;
-	UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), AttackPoint);
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->AttackPoint += 10.f;
+		UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+	}
 }
 
 void ABattleCharacter::Server_ItemSpeed_Implementation()
 {
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->PlayerSpeed += 100.f;
+	}
 	WalkSpeed += 100.f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	Server_SetMaxWalkSpeed(WalkSpeed);

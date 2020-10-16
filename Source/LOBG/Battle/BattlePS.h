@@ -34,6 +34,12 @@ public:
 	UFUNCTION()
 	void OnRep_Exp();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float AttackPoint = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float PlayerSpeed = 0.f;
+
 	float NextExp = 200;
 	float TempExp = 0;
 
@@ -45,4 +51,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 	ETeamColor TeamColor = ETeamColor::None;
+
+
 };
