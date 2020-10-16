@@ -31,6 +31,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 		class UWeaponComponent* Weapon;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class USkeletalMesh* RoboMeshes;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		TArray<class UMaterialInterface*> RoboMaterials;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -67,9 +72,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float AttackDamage = 10.f;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_TeamName", Category = "Data")
 		FName TeamName;
-	
+	UFUNCTION()
+		void OnRep_TeamName();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = "OnRep_CurrentState", Category = "Data")
 		EMinioonState CurrentState;
 	UFUNCTION()
