@@ -1,0 +1,13 @@
+미니언 AI
+  WaveCoursePoint
+    * 코스 Actor 맵에 배치 - Data 세팅
+
+  AI Manager
+    * 한 그룹에 하나 씩
+    * GM - Ai manager 설정 및 wave 세팅
+    * Spawn 규칙 - 전체 웨이브 포인트 찾아서 배열화 - 첫 번째 아이템에서 스폰
+    * BP - SpawnPointActor 설정
+
+  AI 상태 확인 및 변경
+    * PawnSensing, BT 전용 BTTask 사용
+  

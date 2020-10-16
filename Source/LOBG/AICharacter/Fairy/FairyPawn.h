@@ -33,6 +33,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMeshComponent* Body;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class USkeletalMeshComponent* Head;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
 	class UMeshesRingComponent* ActiveMeshesRingComp;
 
