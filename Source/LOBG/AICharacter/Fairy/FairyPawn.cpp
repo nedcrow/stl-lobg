@@ -37,6 +37,9 @@ AFairyPawn::AFairyPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
+	Head = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Head"));
+	Head->SetupAttachment(Body);
+
 	ActiveMeshesRingComp = CreateDefaultSubobject<UMeshesRingComponent>(TEXT("ActiveMeshesRingComponent"));
 	ActiveMeshesRingComp->SetupAttachment(RootComponent);
 
