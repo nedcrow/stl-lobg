@@ -52,6 +52,8 @@ void AAIManager::SeachCoursePoints()
 
 	AWaveCoursePoint* CurrentElement;		// 임시 포인터
 	CoursePoints.Empty();
+	UE_LOG(LogClass, Warning, TEXT("--------------- %d --------------------  ----------------"), CoursePoints.Num());
+
 	for (int i = 0; i < 5; i++)		// 열거형 검색
 	{
 		for (int j = 0; j < OutActors.Num(); j++)
@@ -62,7 +64,8 @@ void AAIManager::SeachCoursePoints()
 			{
 				int ArrayIndex = CoursePoints.Num() - 1;
 
-				if (j == 0)			// 해당 열거형의 첫번째면 바로 추가. 첫번째로 검색한 원소여도 바로 배열에 추가된다.
+
+				if (ArrayIndex == -1)			// 해당 열거형의 첫번째면 바로 추가. 첫번째로 검색한 원소여도 바로 배열에 추가된다.
 				{
 					CoursePoints.Add(CurrentElement);
 				}
