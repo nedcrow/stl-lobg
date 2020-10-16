@@ -33,6 +33,10 @@ AAIMinionChar::AAIMinionChar()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), FRotator(0.f, -90.f, 0.f));
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);		// Player 채널. 콘피그 파일 수정시 확인 필요.
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//if (RoboMeshes)
+	//{
+	//	GetMesh()->SetSkeletalMesh(RoboMeshes);		// 메시 적용.
+	//}
 
 	// Weapon
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
@@ -142,6 +146,7 @@ void AAIMinionChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AAIMinionChar, CurrentHP);
 	DOREPLIFETIME(AAIMinionChar, CurrentState);
 	DOREPLIFETIME(AAIMinionChar, bIsFire);
+	DOREPLIFETIME(AAIMinionChar, TeamName);
 
 }
 
@@ -157,8 +162,29 @@ void AAIMinionChar::OnRep_CurrentHP()
 	UpdateHPBar();
 }
 
+void AAIMinionChar::OnRep_TeamName()
+{
+	Tags.AddUnique(TeamName);
+
+	if (RoboMeshes)
+	{
+		GetMesh()->SetSkeletalMesh(RoboMeshes);		// 메시 적용.
+	}
+
+	// 팀별 머티리얼 적용.
+	if (TeamName == TEXT("Red") && RoboMaterials.IsValidIndex(0))
+	{
+		GetMesh()->SetMaterial(0, RoboMaterials[0]);
+	}
+	else if (TeamName == TEXT("Blue") && RoboMaterials.IsValidIndex(1))
+	{
+		GetMesh()->SetMaterial(0, RoboMaterials[1]);
+	}
+}
+
 void AAIMinionChar::OnRep_CurrentState()
 {
+	// 변수 동기화를 위해서 생성.
 }
 
 void AAIMinionChar::SetState(EMinioonState NewState)

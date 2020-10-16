@@ -31,9 +31,9 @@ void AAIManager::BeginPlay()
 void AAIManager::ReverseCoursePoints(TArray<AWaveCoursePoint*>& Array)
 {
 	int ArrayLength = Array.Num();
-	if (ArrayLength > 0)
+	if (ArrayLength > 1)		// 배열 길이 2 이상이면 스왑 실행.
 	{
-		for (int i = 0; i <= ArrayLength / 2; i++)
+		for (int i = 0; i < ArrayLength / 2; i++)
 		{
 			Array.Swap(i, ArrayLength - 1 - i);		// 입력한 배열을 앞뒤를 서로 바꿔서 정렬 순서를 거꾸로 저장한다.
 		}
@@ -52,8 +52,6 @@ void AAIManager::SeachCoursePoints()
 
 	AWaveCoursePoint* CurrentElement;		// 임시 포인터
 	CoursePoints.Empty();
-	UE_LOG(LogClass, Warning, TEXT("--------------- %d --------------------  ----------------"), CoursePoints.Num());
-
 	for (int i = 0; i < 5; i++)		// 열거형 검색
 	{
 		for (int j = 0; j < OutActors.Num(); j++)
@@ -62,10 +60,13 @@ void AAIManager::SeachCoursePoints()
 
 			if ((int)CurrentElement->WaveCourse == i)		// 배열의 열거형을 순서대로 검색하여 같은 열거형을 찾는다.
 			{
-				int ArrayIndex = CoursePoints.Num() - 1;
+				int ArrayIndex = CoursePoints.Num() - 1;		// 목표 저장 배열의 마지막 인덱스.
 
-
-				if (ArrayIndex == -1)			// 해당 열거형의 첫번째면 바로 추가. 첫번째로 검색한 원소여도 바로 배열에 추가된다.
+				if (ArrayIndex == -1)			// 첫번째로 검색한 원소면 바로 배열에 추가된다.
+				{
+					CoursePoints.Add(CurrentElement);
+				}
+				else if (CurrentElement->WaveCourse >= CoursePoints[ArrayIndex]->WaveCourse)		// 마지막 원소보다 코스가 크거나 같으면 뒤에 추가.
 				{
 					CoursePoints.Add(CurrentElement);
 				}
@@ -146,7 +147,7 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 			int Index = -1;
 			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);		// 현재 코스포인트 찾기
 			int NextIndex = Index + 1;
-			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints[NextIndex])		// 다음 코스포인트
+			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints.IsValidIndex(NextIndex))		// 다음 코스포인트
 			{
 				UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
 				if (BBComp)		// 블랙보드
@@ -155,12 +156,12 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 					{
 						for (int i = NextIndex; i < CoursePoints.Num(); i++)
 						{
-							if ((int)CoursePoints[i]->WaveCourse == AIChar->WaveCourse)		// 자신의 코스로 진입
+							if ((int)CoursePoints[i]->WaveCourse == AIChar->WaveCourse)		// 시작 코스에서 자신의 코스로 진입
 							{
 								NextIndex = i;
 								break;
 							}
-							else if (CoursePoints[i]->WaveCourse == EWaveCourse::Goal)		// Goal 코스로 진입
+							else if (CoursePoints[i]->WaveCourse == CoursePoints.Last()->WaveCourse)		// 마지막 코스로 진입
 							{
 								NextIndex = i;
 								break;
@@ -289,7 +290,7 @@ void AAIManager::RepeatSpawnMinions()
 		
 		// 팀 배정
 		NewMinion->TeamName = TeamName;
-		NewMinion->Tags.Emplace(TeamName);
+		NewMinion->OnRep_TeamName();
 
 		// 스폰한 액터들의 이동 목표 설정
 		NewMinion->WaveCourse = WaveCourse;			// 코스 저장.
