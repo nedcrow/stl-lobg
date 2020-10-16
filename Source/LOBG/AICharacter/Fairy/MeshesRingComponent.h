@@ -26,6 +26,8 @@ public:
 	TArray<FTransform> SpawnTransforms;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
+		FRotator MeshRotation = FRotator::ZeroRotator;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		int VertexCount = 1;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		int MaxMeshCount = 1;

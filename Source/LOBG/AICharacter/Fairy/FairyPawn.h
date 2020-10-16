@@ -33,6 +33,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UStaticMeshComponent* Body;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class USkeletalMeshComponent* Head;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AMeshesRing")
 	class UMeshesRingComponent* ActiveMeshesRingComp;
 
@@ -100,6 +103,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	TSubclassOf<class ABulletBase> BulletClass;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class UParticleSystem* SpawnEffect;
+
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
 
@@ -107,6 +113,10 @@ public:
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulticast_SpawnEffect(FVector SpawnLocation);
+	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
+
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	float ReloadingTime = 12;
