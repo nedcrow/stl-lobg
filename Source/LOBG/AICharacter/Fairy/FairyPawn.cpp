@@ -178,6 +178,7 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 
 			// Missile 발사
 			// fire effect 추가
+			NetMulticast_SpawnEffect(StartLocation);
 			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
 		}
 	}
@@ -217,6 +218,19 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 
 	
 }
+
+void AFairyPawn::NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation)
+{
+	if (SpawnEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
+			SpawnEffect,
+			SpawnLocation
+		);
+	}
+}
+
+
 
 bool AFairyPawn::CallReload()
 {

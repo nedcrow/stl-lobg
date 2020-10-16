@@ -23,6 +23,7 @@ void UMeshesRingComponent::BeginPlay()
 		float y = Radius * (FMath::Sin(RotateDegree * OneDegree));
 		FVector Position = FVector(x, y, 0);
 		FRotator Rotation = bIsLookBody ? FRotator(0, RotateDegree, 0) : FRotator::ZeroRotator;
+		Rotation += MeshRotation;
 		FVector Scale = FVector::OneVector * StartScale;
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Position.X, Position.Y, Position.Z);
 		//UE_LOG(LogClass, Warning, TEXT("Missile_%d: FRotator_(%f, %f, %f)"), i, Rotation.Roll, Rotation.Pitch, Rotation.Yaw);
