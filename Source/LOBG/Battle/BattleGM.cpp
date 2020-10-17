@@ -14,6 +14,7 @@
 
 #include "GameFramework/PlayerStart.h"
 #include "AIController.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 
 void ABattleGM::BeginPlay()
 {
@@ -225,8 +226,8 @@ void ABattleGM::SetPSTeamColor()
 			}
 		}
 	}
-	//설정한 PS의 TeamColor를 토대로 플레이어 스폰
-	PlayerSpawn();
+	//플레이어의 메시설정
+	CreatePlayerMeshWidget();
 }
 
 void ABattleGM::PlayerSpawn()
@@ -254,6 +255,7 @@ void ABattleGM::PlayerSpawn()
 					
 					if (OutputPlayerStart[i]->ActorHasTag(TagText))
 					{
+
 						PC->Client_TestWidget();
 						ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
 							PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
@@ -279,6 +281,53 @@ void ABattleGM::PlayerSpawn()
 	}
 }
 
+void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller)
+{
+	if (Controller)
+	{
+		ABattlePS* PS = Controller->GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			FName TagText;
+			if (PS->TeamColor == ETeamColor::Red)
+			{
+				TagText = TEXT("Red");
+			}
+			else if (PS->TeamColor == ETeamColor::Blue)
+			{
+				TagText = TEXT("Blue");
+			}
+
+			for (int i = 0; i < OutputPlayerStart.Num(); ++i)
+			{
+
+				if (OutputPlayerStart[i]->ActorHasTag(TagText))
+				{
+
+					Controller->Client_TestWidget();
+					ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+						PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
+					Controller->Possess(PlayerPawn);
+					Controller->InitPlayerWithTeam();
+					OutputPlayerStart.RemoveAt(i);
+					break;
+				}
+				//개발용으로 팀을 설정하지 않을때를 위한 else코드
+				//나중에 지워야함
+				else if (TestMapVersonSpawn)
+				{
+					Controller->Client_TestWidget();
+					ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
+						PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
+					Controller->Possess(PlayerPawn);
+					OutputPlayerStart.RemoveAt(i);
+					break;
+				}
+			}
+		}
+	}
+}
+
 void ABattleGM::CheckAllControllerHasName()
 {
 	//나중에 PC를 직접 검사해서 이름이 저장되어있다면으로 수정가능
@@ -290,6 +339,18 @@ void ABattleGM::CheckAllControllerHasName()
 	{
 		//서버의 PC들이 아이디를 다 가지고 있다면 PS에 팀 설정
 		SetPSTeamColor();
+	}
+}
+
+void ABattleGM::CreatePlayerMeshWidget()
+{
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			PC->Client_CreateMeshWidget();
+		}
 	}
 }
 

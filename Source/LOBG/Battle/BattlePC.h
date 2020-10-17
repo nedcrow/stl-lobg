@@ -50,5 +50,17 @@ public:
 
 	bool bStoreOpen = false;
 
-	
+	UFUNCTION(Client, Reliable)
+		void Client_CreateMeshWidget();
+	void Client_CreateMeshWidget_Implementation();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		TSubclassOf<class UMeshWidgetBase> MeshWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UMeshWidgetBase* MeshWidgetObject;
+
+	UFUNCTION(Server, Reliable)
+		void Server_MakePlayerInGM();
+	void Server_MakePlayerInGM_Implementation();
 };

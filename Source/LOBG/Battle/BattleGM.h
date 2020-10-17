@@ -68,7 +68,11 @@ public:
 
 	void PlayerSpawn();
 
+	void PlayerSpawn_Test(class ABattlePC* Controller);
+
 	void CheckAllControllerHasName();
 
 	bool TestMapVersonSpawn;
+
+	void CreatePlayerMeshWidget();
 };

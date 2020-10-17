@@ -63,6 +63,8 @@ ABattleCharacter::ABattleCharacter()
 	//Widget->SetIsReplicated(true);
 
 	Tags.Add(TEXT("Player"));
+
+	
 }
 
 // Called when the game starts or when spawned

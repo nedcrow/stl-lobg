@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Store/StoreWidgetBase.h"
 #include "../Store/StoreItemWidgetBase.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -80,6 +81,11 @@ void ABattlePC::Client_TestWidget_Implementation()
 {
 	if (IsLocalPlayerController())
 	{
+		if (MeshWidgetObject)
+		{
+			MeshWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
 		if (BattleWidgetClass)
 		{
 			BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
@@ -88,6 +94,7 @@ void ABattlePC::Client_TestWidget_Implementation()
 				BattleWidgetObject->AddToViewport();
 			}
 			SetInputMode(FInputModeGameOnly());
+			bShowMouseCursor = false;
 		}
 
 		if (StoreWidgetClass)
@@ -139,5 +146,31 @@ void ABattlePC::PushOpenStore()
 		StoreWidgetObject->SetVisiBilitySlot(ESlateVisibility::Collapsed);
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
+	}
+}
+
+void ABattlePC::Client_CreateMeshWidget_Implementation()
+{
+	if (IsLocalPlayerController())
+	{
+		if (MeshWidgetClass)
+		{
+			MeshWidgetObject = CreateWidget<UMeshWidgetBase>(this, MeshWidgetClass);
+			if (MeshWidgetObject)
+			{
+				MeshWidgetObject->AddToViewport();
+				SetInputMode(FInputModeUIOnly());
+				bShowMouseCursor = true;
+			}
+		}
+	}
+}
+
+void ABattlePC::Server_MakePlayerInGM_Implementation()
+{
+	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->PlayerSpawn_Test(this);
 	}
 }
