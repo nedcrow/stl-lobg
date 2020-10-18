@@ -14,7 +14,6 @@
 
 #include "GameFramework/PlayerStart.h"
 #include "AIController.h"
-#include "../ChoiceMesh/MeshWidgetBase.h"
 
 void ABattleGM::BeginPlay()
 {
@@ -281,13 +280,15 @@ void ABattleGM::PlayerSpawn()
 	}
 }
 
-void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller)
+void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller, EMeshType MyMeshType)
 {
 	if (Controller)
 	{
 		ABattlePS* PS = Controller->GetPlayerState<ABattlePS>();
 		if (PS)
 		{
+			PS->PlayerMeshType = MyMeshType;
+
 			FName TagText;
 			if (PS->TeamColor == ETeamColor::Red)
 			{
@@ -317,9 +318,11 @@ void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller)
 				else if (TestMapVersonSpawn)
 				{
 					Controller->Client_TestWidget();
+					//Controller->MeshWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
 					ABattleCharacter* PlayerPawn = GetWorld()->SpawnActor<ABattleCharacter>(
 						PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
 					Controller->Possess(PlayerPawn);
+					Controller->InitPlayerWithTeam();
 					OutputPlayerStart.RemoveAt(i);
 					break;
 				}

@@ -23,11 +23,26 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 		// Reload - Test
 		bIsReload = Pawn->bIsReload;
 		// Montage 있고, Montage가 실행중 아니면 ReloadMontage 실행
-		if (Pawn->ReloadMontage && bIsReload)
+		if (bIsReload)
 		{
-			if (!Montage_IsPlaying(Pawn->ReloadMontage))
+			switch (Pawn->PlayerMeshType)
 			{
-				Pawn->PlayAnimMontage(Pawn->ReloadMontage);
+			case EMeshType::None:
+				Pawn->CurrentReloadMontage = Pawn->ReloadMontage;
+				break;
+			case EMeshType::Female:
+				Pawn->CurrentReloadMontage = Pawn->ReloadMontage_Female;
+				break;
+			case EMeshType::Male:
+				Pawn->CurrentReloadMontage = Pawn->ReloadMontage_Male;
+				break;
+			default:
+				break;
+			}
+
+			if (Pawn->CurrentReloadMontage && !Montage_IsPlaying(Pawn->CurrentReloadMontage))
+			{
+				Pawn->PlayAnimMontage(Pawn->CurrentReloadMontage);
 			}
 		}
 

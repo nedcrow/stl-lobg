@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "../LOBGGameInstance.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 #include "BattleGM.generated.h"
 
 /**
@@ -68,7 +69,7 @@ public:
 
 	void PlayerSpawn();
 
-	void PlayerSpawn_Test(class ABattlePC* Controller);
+	void PlayerSpawn_Test(class ABattlePC* Controller, EMeshType MyMeshType);
 
 	void CheckAllControllerHasName();
 

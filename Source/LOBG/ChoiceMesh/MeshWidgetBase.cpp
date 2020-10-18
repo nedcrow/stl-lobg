@@ -10,17 +10,29 @@ void UMeshWidgetBase::NativeConstruct()
 	FemaleButton = Cast<UButton>(GetWidgetFromName(TEXT("FemaleButton")));
 	MaleButton = Cast<UButton>(GetWidgetFromName(TEXT("MaleButton")));
 
-	FemaleButton->OnClicked.AddDynamic(this, &UMeshWidgetBase::ClickedButton);
-	MaleButton->OnClicked.AddDynamic(this, &UMeshWidgetBase::ClickedButton);
+	FemaleButton->OnClicked.AddDynamic(this, &UMeshWidgetBase::ClickedFemaleButton);
+	MaleButton->OnClicked.AddDynamic(this, &UMeshWidgetBase::ClickedMaleButton);
 }
 
-void UMeshWidgetBase::ClickedButton()
+void UMeshWidgetBase::ClickedFemaleButton()
 {
-	UE_LOG(LogClass, Warning, TEXT("ClickedButton"));
+	UE_LOG(LogClass, Warning, TEXT("ClickedFemale"));
 	bHasMesh = true;
+	CurrentMeshType = EMeshType::Female;
 	ABattlePC* PC = Cast<ABattlePC>(GetOwningPlayer());
 	if (PC)
 	{
-		PC->Server_MakePlayerInGM();
+		PC->Server_MakePlayerInGM(CurrentMeshType);
+	}
+}
+
+void UMeshWidgetBase::ClickedMaleButton()
+{
+	bHasMesh = true;
+	CurrentMeshType = EMeshType::Male;
+	ABattlePC* PC = Cast<ABattlePC>(GetOwningPlayer());
+	if (PC)
+	{
+		PC->Server_MakePlayerInGM(CurrentMeshType);
 	}
 }
