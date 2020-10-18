@@ -18,7 +18,7 @@ EBTNodeResult::Type UBTTask_MinionAttack::ExecuteTask(UBehaviorTreeComponent & O
 			AActor* TargetPawn = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPawn")));
 			if (TargetPawn)
 			{
-				// 타겟 액터 or 로케이션
+				// 타겟 액터 or 로케이션. 상체의 로케이션을 전달한다.
 				AIChar->OnFire(TargetPawn->GetActorLocation());
 
 				return EBTNodeResult::Succeeded;

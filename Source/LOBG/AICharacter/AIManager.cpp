@@ -289,8 +289,7 @@ void AAIManager::RepeatSpawnMinions()
 		ActiveMinions.Add(NewMinion);
 		
 		// 팀 배정
-		NewMinion->TeamName = TeamName;
-		NewMinion->OnRep_TeamName();
+		NewMinion->SetTeamName(TeamName);
 
 		// 스폰한 액터들의 이동 목표 설정
 		NewMinion->WaveCourse = WaveCourse;			// 코스 저장.

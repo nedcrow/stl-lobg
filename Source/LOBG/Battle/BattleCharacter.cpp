@@ -29,7 +29,7 @@
 ABattleCharacter::ABattleCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Collision
 	GetCapsuleComponent()->SetCapsuleHalfHeight(88.0f);
@@ -284,25 +284,49 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		FireAngle *= 2.f;
 	}
 
-
 	BulletRoation.Yaw += FMath::FRandRange(-FireAngle, FireAngle);
 	BulletRoation.Pitch += FMath::FRandRange(-FireAngle, FireAngle);
 
 
-	// 총알 스폰
-	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Weapon->GetSocketLocation(TEXT("Muzzle")), BulletRoation);
 
-	// 총알 초기값 설정
+	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + BulletRoation.RotateVector(FVector(100.0f, 0.0f, 10.0f));
+
+
+
+
+	// 모든 클라이언트에서 총알 스폰.
+	NetMulticast_ProcessFire(SpawnLocation, BulletRoation);
+
+
+
+
+}
+
+void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLocation, FRotator SpawnRotation)
+{
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// 총알 스폰
+	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+	// 총알 초기값 설정.
 	if (Bullet)
 	{
+		float BulletAttackPoint = 0.f;
+
 		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 		if (PS)
 		{
-			float BulletAttackPoint = PS->AttackPoint;
-			Bullet->SetDamageInfo(OutHit, GetController(), BulletAttackPoint);
-			Bullet->TeamName = TeamName;
+			BulletAttackPoint = PS->AttackPoint;
 		}
+
+		Bullet->SetDamageInfo(GetController(), BulletAttackPoint, TeamName);
 	}
+
+
 
 	// 만들어 놓은 몽타주 애셋으로 애니메이션 몽타주 실행. 리로드와 같은 슬롯에 등록되어 있다. (둘다 상체 애니메이션이고 사격과 재장전은 동시에 할 수 없으므로)
 	if (FireMontage && FireMontage_Female && FireMontage_Male)
@@ -321,7 +345,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 		default:
 			break;
 		}
-		
+
 		if (bIsIronsight)
 		{
 			PlayAnimMontage(CurrentFireMontage, 1.0f, TEXT("Fire_Rifle_Ironsights"));
@@ -331,6 +355,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 			PlayAnimMontage(CurrentFireMontage, 1.0f, TEXT("Fire_Rifle_Hip"));
 		}
 	}
+
 }
 
 // TakeDamage

@@ -30,11 +30,18 @@ public:
 	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 		class UWeaponComponent* Weapon;
-
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class USkeletalMesh* RoboMeshes;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		TArray<class UMaterialInterface*> RoboMaterials;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
+		class UStaticMeshComponent* TeamLampEye;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
+		class UStaticMeshComponent* TeamLampBack;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		TArray<class UMaterialInterface*> TeamLampMaterials;
 
 protected:
 	// Called when the game starts or when spawned
@@ -49,6 +56,10 @@ public:
 		
 	UFUNCTION()
 		void ProcessSeenPawn(APawn* Pawn);
+
+	// MoveTarget
+	class AWaveCoursePoint* CurrentMoveTarget;
+	int WaveCourse;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -77,6 +88,7 @@ public:
 		FName TeamName;
 	UFUNCTION()
 		void OnRep_TeamName();
+	void SetTeamName(FName MyTeamName);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = "OnRep_CurrentState", Category = "Data")
 		EMinioonState CurrentState;
@@ -89,10 +101,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float AimPitch = 0.f;
 
-	// MoveTarget
-	class AWaveCoursePoint* CurrentMoveTarget;
-	int WaveCourse;
-
 	// Fire
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsFire : 1;
@@ -104,8 +112,8 @@ public:
 	void OnFire(FVector TargetLocation);
 
 	UFUNCTION(NetMulticast, Reliable)
-		void NetMulticast_ProcessFire();
-	void NetMulticast_ProcessFire_Implementation();
+		void NetMulticast_ProcessFire(FVector SpawnLocation, FRotator SpawnRotation);
+	void NetMulticast_ProcessFire_Implementation(FVector SpawnLocation, FRotator SpawnRotation);
 
 	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

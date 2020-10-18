@@ -15,7 +15,7 @@
 AEmissiveBullet::AEmissiveBullet()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 
 	// Use a sphere as a simple collision representation
@@ -51,8 +51,8 @@ AEmissiveBullet::AEmissiveBullet()
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
 
-	// Network
-	bReplicates = true;
+	// Network. 사용하지 않는다. 총알을 각자 스폰해야 전송량을 줄일 수 있다.
+	//bReplicates = true;
 
 	// ETC
 	Tags.Add(TEXT("Bullet"));
@@ -99,20 +99,25 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 		return;
 	}
 
-	//플레이어에 충돌하면
-	if (OtherActor->ActorHasTag(TEXT("Player")))
+	// 데미지는 서버에서만 계산한다.
+	if (GIsServer)
 	{
-		//UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -Hit.ImpactNormal, Hit, SummonerController, this, UBulletDamageType::StaticClass());
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		//플레이어에 충돌하면
+		if (OtherActor->ActorHasTag(TEXT("Player")))
+		{
+			//UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -Hit.ImpactNormal, Hit, SummonerController, this, UBulletDamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		}
+		else if (OtherActor->ActorHasTag(TEXT("Minion")))
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		}
+		else if (OtherActor->ActorHasTag(TEXT("Tower")))
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+		}
 	}
-	else if (OtherActor->ActorHasTag(TEXT("Minion")))
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-	}
-	else if (OtherActor->ActorHasTag(TEXT("Tower")))
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-	}
+
 	UE_LOG(LogClass, Warning, TEXT("AEmissiveBullet::OnHit : OtherComp->GetName() %s"), *OtherComp->GetName());
 
 	Destroy();

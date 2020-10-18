@@ -17,7 +17,7 @@
 ABulletBase::ABulletBase()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	RootComponent = Sphere;
@@ -28,6 +28,9 @@ ABulletBase::ABulletBase()
 	StaticMesh->CastShadow = false;			// Disallow mesh to cast other shadows
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
+
+	// Die after 3 seconds by default
+	InitialLifeSpan = 3.0f;
 
 	Tags.Add(TEXT("Bullet"));
 }
@@ -54,11 +57,13 @@ void ABulletBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(ABulletBase, TeamName);
 }
 
-void ABulletBase::SetDamageInfo(FHitResult OutHit, AController* Controller, float NewAttackPoint)
+void ABulletBase::SetDamageInfo(AController* Controller, float NewAttackPoint, FName NewTeamName)
 {
-	TraceHit = OutHit;
+	//TraceHit = OutHit;
 	SummonerController = Controller;
 	AttackPoint = NewAttackPoint;
+	TeamName = NewTeamName;
+	Tags.Add(TeamName);
 }
 
 //플레이어에 충돌하면
@@ -68,31 +73,33 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	UE_LOG(LogClass, Warning, TEXT("Other Actor : %s %s"), *OtherActor->GetName(), *SweepResult.BoneName.ToString());
 
-
-
 	// 같은팀이라면 return
-	if (OtherActor->ActorHasTag(TeamName))
+	if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
 	{
 		Destroy();
 		return;
 	}
 
-	// ApplyDamage
-	if (OtherActor->ActorHasTag(TEXT("Player")))
+	// 데미지는 서버에서만 계산한다.
+	if (GIsServer)
 	{
-		UE_LOG(LogClass, Warning, TEXT("LogThisCode"));
-		UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
-		Destroy();
-	}
-	else if (OtherActor->ActorHasTag(TEXT("Minion")))
-	{
-		UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
-		Destroy();
-	}
-	else if (OtherActor->ActorHasTag(TEXT("Tower")))
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-		Destroy();
+		// ApplyDamage
+		if (OtherActor->ActorHasTag(TEXT("Player")))
+		{
+			UE_LOG(LogClass, Warning, TEXT("LogThisCode"));
+			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			Destroy();
+		}
+		else if (OtherActor->ActorHasTag(TEXT("Minion")))
+		{
+			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			Destroy();
+		}
+		else if (OtherActor->ActorHasTag(TEXT("Tower")))
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+			Destroy();
+		}
 	}
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.

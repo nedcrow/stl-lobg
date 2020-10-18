@@ -212,8 +212,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
 	{
-		Bullet->SetDamageInfo(OutHit, GetController(), AttackPoint);
-		Bullet->TeamName = TeamName;
+		Bullet->SetDamageInfo(GetController(), AttackPoint, TeamName);
 	}
 
 	

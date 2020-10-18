@@ -67,8 +67,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void Server_SetMaxWalkSpeed(float NewSpeed);
-	void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);
-
+	void Server_SetMaxWalkSpeed_Implementation(float NewSpeed);	
 
 
 #pragma region FireAndTakeDamage
@@ -108,7 +107,11 @@ public:
 	UFUNCTION(Server, Reliable)
 		void Server_ProcessFire(FVector StartLine, FVector EndLine);
 	void Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine);
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_ProcessFire(FVector SpawnLocation, FRotator SpawnRotation);
+	void NetMulticast_ProcessFire_Implementation(FVector SpawnLocation, FRotator SpawnRotation);
 
+	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
 

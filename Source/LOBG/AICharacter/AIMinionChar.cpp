@@ -4,16 +4,17 @@
 #include "AIMinionChar.h"
 
 #include "MinionAIC.h"
+#include "Fairy/FairyPawn.h"
 #include "../Weapon/WeaponComponent.h"
 #include "../Weapon/EmissiveBullet.h"
 #include "../Battle/BattleGM.h"
 #include "../Battle/BattleCharacter.h"
-#include "Fairy/FairyPawn.h"
 #include "../UI/HUDBarSceneComponent.h"
 #include "../UI/HPBarWidgetBase.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -24,7 +25,7 @@
 AAIMinionChar::AAIMinionChar()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Collision
 	GetCapsuleComponent()->SetCapsuleHalfHeight(88.0f);
@@ -37,6 +38,22 @@ AAIMinionChar::AAIMinionChar()
 	//{
 	//	GetMesh()->SetSkeletalMesh(RoboMeshes);		// 메시 적용.
 	//}
+
+	TeamLampEye = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeamLampEye"));
+	TeamLampEye->SetupAttachment(GetMesh(), TEXT("head"));
+	TeamLampEye->SetRelativeLocationAndRotation(FVector(11.3f, 3.36f, 0.f), FRotator(0.f, 90.f, 45.f));
+	TeamLampEye->SetCollisionProfileName(TEXT("NoCollision"), false);
+	TeamLampEye->SetGenerateOverlapEvents(false);
+	TeamLampEye->PrimaryComponentTick.bCanEverTick = false;
+	TeamLampEye->SetRelativeScale3D(FVector(0.5f, 1.f, 1.f));
+
+	TeamLampBack = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeamLampBack"));
+	TeamLampBack->SetupAttachment(GetMesh(), TEXT("spine_03"));
+	TeamLampBack->SetRelativeLocationAndRotation(FVector(22.4f,16.1f, 0.f), FRotator(90.f, 0.f, 37.f));
+	TeamLampBack->SetCollisionProfileName(TEXT("NoCollision"), false);
+	TeamLampBack->SetGenerateOverlapEvents(false);
+	TeamLampBack->PrimaryComponentTick.bCanEverTick = false;
+	TeamLampBack->SetRelativeScale3D(FVector(0.6f, 1.63f, 1.f));
 
 	// Weapon
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon"));
@@ -127,9 +144,10 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 	if (MinionAIC)
 	{
 		MinionAIC->SetValueTargetPawn(Pawn);
+
+		SetState(EMinioonState::Chase);
 	}
 
-	SetState(EMinioonState::Chase);
 }
 
 // Called every frame
@@ -174,14 +192,38 @@ void AAIMinionChar::OnRep_TeamName()
 	}
 
 	// 팀별 머티리얼 적용.
-	if (TeamName == TEXT("Red") && RoboMaterials.IsValidIndex(0))
+	if (TeamName == TEXT("Red"))
 	{
-		GetMesh()->SetMaterial(0, RoboMaterials[0]);
+		if (RoboMaterials.IsValidIndex(0))
+		{
+			GetMesh()->SetMaterial(0, RoboMaterials[0]);
+		}
+
+		if (TeamLampMaterials.IsValidIndex(0))
+		{
+			TeamLampEye->SetMaterial(0, TeamLampMaterials[0]);
+			TeamLampBack->SetMaterial(0, TeamLampMaterials[0]);
+		}
 	}
-	else if (TeamName == TEXT("Blue") && RoboMaterials.IsValidIndex(1))
+	else if (TeamName == TEXT("Blue"))
 	{
-		GetMesh()->SetMaterial(0, RoboMaterials[1]);
+		if (RoboMaterials.IsValidIndex(1))
+		{
+			GetMesh()->SetMaterial(0, RoboMaterials[1]);
+		}
+
+		if (TeamLampMaterials.IsValidIndex(1))
+		{
+			TeamLampEye->SetMaterial(0, TeamLampMaterials[1]);
+			TeamLampBack->SetMaterial(0, TeamLampMaterials[1]);
+		}
 	}
+}
+
+void AAIMinionChar::SetTeamName(FName MyTeamName)
+{
+	TeamName = MyTeamName;
+	OnRep_TeamName();
 }
 
 void AAIMinionChar::OnRep_CurrentState()
@@ -197,6 +239,17 @@ void AAIMinionChar::SetState(EMinioonState NewState)
 	if (MinionAIC)
 	{
 		MinionAIC->SetValueState(NewState);
+	}
+
+	// 노멀상태에서 폰센싱 작동.
+	if (NewState == EMinioonState::Normal)
+	{
+		PawnSensing->SetActive(true);
+	}
+	else
+	{
+		PawnSensing->SetActive(false);
+
 	}
 }
 
@@ -221,7 +274,8 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 			TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
 			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
 			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
-			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));		// Player 채널
+			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));		// SeeTrough 채널
 
 			TArray<AActor*> ActorsToIgnore;
 
@@ -231,7 +285,7 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 				ObjectTypes, true, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
 			// 히트 결과가 같은 팀이면 사격
-			if (bResult && OutHit.Actor->IsValidLowLevelFast())
+			if (bResult)
 			{
 				//FName EnemyTeam;
 				//if (TeamName == TEXT("Red"))
@@ -244,38 +298,50 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 				//}
 
 				// 아군이나 폰이 아닌 것들이 히트되면 사격 중지.
-				if (OutHit.Actor->ActorHasTag(TeamName) || !Cast<APawn>(OutHit.Actor)->IsValidLowLevelFast())
+				if (!Cast<APawn>(OutHit.Actor) || OutHit.Actor->ActorHasTag(TeamName))
 				{
+					// 명중시킬 수 없을 경우 이동.
+					SetState(EMinioonState::Normal);
+
 					return;
 				}
 			}
 
 
 
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			// spawn the projectile at the muzzle
-			AEmissiveBullet* SpawnedBullet = World->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			if (SpawnedBullet)
-			{
-				SpawnedBullet->SetDamageInfo(GetController(), AttackDamage, TeamName);
-			}
+			// 모든 클라이언트에서 총알 스폰.
+			NetMulticast_ProcessFire(SpawnLocation, SpawnRotation);
 		}
 	}
 	else
 	{
+		SetState(EMinioonState::Normal);
+
 		return;
 	}
 
 	
 	// 사격 후속 이펙트
-	NetMulticast_ProcessFire();
+	//NetMulticast_ProcessFire();
 }
 
-void AAIMinionChar::NetMulticast_ProcessFire_Implementation()
+void AAIMinionChar::NetMulticast_ProcessFire_Implementation(FVector SpawnLocation, FRotator SpawnRotation)
 {
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// spawn the projectile at the muzzle
+	AEmissiveBullet* SpawnedBullet = GetWorld()->SpawnActor<AEmissiveBullet>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	// 총알 초기화
+	if (SpawnedBullet)
+	{
+		SpawnedBullet->SetDamageInfo(GetController(), AttackDamage, TeamName);
+	}
+
+
+
+
 	// 소리 스폰
 
 	// 사격 몽타주 재생
@@ -353,10 +419,16 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		SetState(EMinioonState::Dead);
 		SetLifeSpan(5.f);
 	}
-	else
+	else if(EventInstigator)
 	{
-		// 피격시 폰센싱 반응 함수로 노멀 스테이트일 때만 BB에 폰을 등록하고 조준하도록 바꾼다.
-		ProcessSeenPawn(EventInstigator->GetPawn());
+		// 총알을 날린 적이 이미 사망했을 가능성이 있으므로 적이 존재하는지 체크한다.
+		APawn* EnemyPawn = EventInstigator->GetPawn();
+		if (EnemyPawn)
+		{
+			// 피격시 폰센싱 반응 함수로 노멀 스테이트일 때만 BB에 폰을 등록하고 조준하도록 바꾼다.
+			ProcessSeenPawn(EnemyPawn);
+		}
+
 	}
 
 	UE_LOG(LogClass, Warning, TEXT("AAIMinionChar::TakeDamage::OnHit : DamageEvent %d"), DamageEvent.GetTypeID());
