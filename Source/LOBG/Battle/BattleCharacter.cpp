@@ -333,6 +333,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	}
 }
 
+// TakeDamage
 float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -356,7 +357,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		{
 			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
 			UE_LOG(LogTemp, Warning, TEXT("Head shot!"));
-			TempHP = 0;
+			TempHP = 0.f;
 		}
 		else
 		{

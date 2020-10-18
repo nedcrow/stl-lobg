@@ -72,8 +72,8 @@ void AAIMinionChar::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 초기화
 	CurrentHP = MaxHP;
-
 	SetState(EMinioonState::Normal);
 
 	if (PawnSensing)
@@ -93,27 +93,27 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 
 	UE_LOG(LogClass, Warning, TEXT("ProcessSeenPawn()"));
 
-	if (Pawn->ActorHasTag("Minion"))
-	{
+	//if (Pawn->ActorHasTag("Minion"))
+	//{
 
-	}
-	else if (Pawn->ActorHasTag("Player"))
-	{
-		Pawn->GetPlayerState();
-		//ABattleCharacter * PlayerPawn = Cast<ABattleCharacter>(Pawn);
-		//if (PlayerPawn->TeamColor == TeamColor)
-		//{
+	//}
+	//else if (Pawn->ActorHasTag("Player"))
+	//{
+	//	Pawn->GetPlayerState();
+	//	//ABattleCharacter * PlayerPawn = Cast<ABattleCharacter>(Pawn);
+	//	//if (PlayerPawn->TeamColor == TeamColor)
+	//	//{
 
-		//}
-	}
-	else if (Pawn->ActorHasTag("Tower"))
-	{
-		AFairyPawn * FAiryPawn = Cast<AFairyPawn>(Pawn);
-		//if (FAiryPawn->TeamColor == TeamColor)
-		//{
+	//	//}
+	//}
+	//else if (Pawn->ActorHasTag("Tower"))
+	//{
+	//	AFairyPawn * FAiryPawn = Cast<AFairyPawn>(Pawn);
+	//	//if (FAiryPawn->TeamColor == TeamColor)
+	//	//{
 
-		//}
-	}
+	//	//}
+	//}
 
 	//AMinionAIC* MinionAIC = GetController<AMinionAIC>();
 	//if (MinionAIC)
@@ -121,6 +121,8 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 	//}
 
 
+
+	// 자극을 준 폰을 BB에 입력한다.
 	AMinionAIC* MinionAIC = Cast<AMinionAIC>(GetController());
 	if (MinionAIC)
 	{
@@ -213,6 +215,43 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + SpawnRotation.RotateVector(FVector(100.0f, 0.0f, 10.0f));
 
+
+
+			// 총구와 타겟 사이가 비어있는지 검사한다. 태스크나 별도 함수로 빼야 하겠지만, 이곳이 시작지점을 파악하기 쉬워서 일단 여기에 넣는다.
+			TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
+			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+			ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+
+			TArray<AActor*> ActorsToIgnore;
+
+			FHitResult OutHit;
+
+			bool bResult = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), SpawnLocation, TargetLocation,
+				ObjectTypes, true, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
+
+			// 히트 결과가 같은 팀이면 사격
+			if (bResult && OutHit.Actor->IsValidLowLevelFast())
+			{
+				//FName EnemyTeam;
+				//if (TeamName == TEXT("Red"))
+				//{
+				//	EnemyTeam = TEXT("Blue");
+				//}
+				//else if (TeamName == TEXT("Blue"))
+				//{
+				//	EnemyTeam = TEXT("Red");
+				//}
+
+				// 아군이나 폰이 아닌 것들이 히트되면 사격 중지.
+				if (OutHit.Actor->ActorHasTag(TeamName) || !Cast<APawn>(OutHit.Actor)->IsValidLowLevelFast())
+				{
+					return;
+				}
+			}
+
+
+
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -257,6 +296,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 
 	if (CurrentHP <= 0) return DamageAmount;
 	
+	// 데미지 계산.
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
@@ -274,7 +314,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		{
 			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
 
-			TempHP = 0;
+			TempHP = 0.f;
 		}
 		else
 		{
@@ -298,6 +338,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 
 	}
 
+	// HP 입력.
 	TempHP = FMath::Clamp(TempHP, 0.f, MaxHP);
 	if (CurrentHP != TempHP)
 	{
@@ -311,6 +352,11 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		NetMulticast_StartDeath(FMath::RandRange(1, 3));
 		SetState(EMinioonState::Dead);
 		SetLifeSpan(5.f);
+	}
+	else
+	{
+		// 피격시 폰센싱 반응 함수로 노멀 스테이트일 때만 BB에 폰을 등록하고 조준하도록 바꾼다.
+		ProcessSeenPawn(EventInstigator->GetPawn());
 	}
 
 	UE_LOG(LogClass, Warning, TEXT("AAIMinionChar::TakeDamage::OnHit : DamageEvent %d"), DamageEvent.GetTypeID());
