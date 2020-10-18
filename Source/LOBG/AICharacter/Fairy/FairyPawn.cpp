@@ -105,7 +105,7 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 
 	// 피격 애니메이션 추가 필요
 
-	CurrentHP = FMath::Clamp(TempHP, 0.0f, 100.0f);
+	CurrentHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
 	OnRepCurrentHP();
 	UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
 	if (CurrentHP <= 0 && EventInstigator != NULL)
@@ -130,11 +130,7 @@ void AFairyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 
 void AFairyPawn::OnRepCurrentHP()
 {
-	AFairyAIController* AIC = Cast<AFairyAIController>(GetController());
-	if (AIC && AIC->IsLocalController())
-	{
-	}
-		UpdateHPBar();
+	UpdateHPBar();
 }
 
 // Blackboard 포함한 State 변경
@@ -178,7 +174,7 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 
 			// Missile 발사
 			// fire effect 추가
-			NetMulticast_SpawnEffect(StartLocation);
+			NetMulticast_FireEffect(StartLocation);
 			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
 		}
 	}
@@ -216,21 +212,8 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		Bullet->TeamName = TeamName;
 	}
 
-	
+	TempEffectLocation = StartLocation;
 }
-
-void AFairyPawn::NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation)
-{
-	if (SpawnEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
-			SpawnEffect,
-			SpawnLocation
-		);
-	}
-}
-
-
 
 bool AFairyPawn::CallReload()
 {
@@ -284,8 +267,46 @@ void AFairyPawn::ReloadAnimation()
 		RestMeshesRingComp->UpdateInstanceTransform(Index, TempTransform, false, true, true);
 
 		Reload();
+		NetMulticast_SpawnEffect(TempEffectLocation);
 	}
 	
+}
+
+void AFairyPawn::Repair()
+{
+	if (CurrentHP < MaxHP) {
+		float TempHP = 0;
+		TempHP = CurrentHP + RepairPerSec;
+
+		// 피격 애니메이션 추가 필요
+
+		CurrentHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
+		OnRepCurrentHP();
+	}
+}
+
+void AFairyPawn::NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation)
+{
+	if (SpawnEffect)
+	{
+		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			SpawnEffect,
+			SpawnLocation
+		);
+	}
+}
+
+void AFairyPawn::NetMulticast_FireEffect_Implementation(FVector SpawnLocation)
+{
+	if (FireEffect)
+	{
+		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			FireEffect,
+			SpawnLocation
+		);
+	}
 }
 
 void AFairyPawn::UpdateHPBar()
