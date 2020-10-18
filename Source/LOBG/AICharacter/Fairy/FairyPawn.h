@@ -103,8 +103,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	TSubclassOf<class ABulletBase> BulletClass;
 
+	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-	class UParticleSystem* SpawnEffect;
+	float ReloadingTime = 12;
+	float ReloadingPercentage = 0;
+
+	int CurrentBulletCount;
+	uint8 bIsCasting : 1;
+	FTimerHandle BulletTimer;
 
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
@@ -112,23 +118,36 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
-	
-	UFUNCTION(NetMulticast, Unreliable)
-	void NetMulticast_SpawnEffect(FVector SpawnLocation);
-	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
-
-	/* Second */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-	float ReloadingTime = 12;
-	float ReloadingPercentage = 0;
 
 	UFUNCTION()
 	bool CallReload();
 	void Reload();
 	void ReloadAnimation();
-	int CurrentBulletCount;
-	uint8 bIsCasting:1;
-	FTimerHandle BulletTimer;
+
+
+	// Repair
+	float RepairPerSec = 10.f;
+
+	UFUNCTION()
+	void Repair();
+
+
+	// Effect
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class UParticleSystem* SpawnEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class UParticleSystem* FireEffect;
+
+	FVector TempEffectLocation;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulticast_SpawnEffect(FVector SpawnLocation);
+	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulticast_FireEffect(FVector SpawnLocation);
+	void NetMulticast_FireEffect_Implementation(FVector SpawnLocation);
 
 	// HUD
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

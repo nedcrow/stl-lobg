@@ -29,9 +29,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class USceneComponent* ReSpawnArea;
-
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UStaticMeshComponent* Sphere;
+
 
 	UFUNCTION()
 		void BeginOverlapProcess(UPrimitiveComponent* OverlappedComponent, 

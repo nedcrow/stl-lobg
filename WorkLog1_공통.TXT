@@ -370,6 +370,11 @@ GM 리스폰 오브젝트가 없을 때 오류나지 않게 수정.
 플레이어의 돈이 아이템 가격보다 충분하지 않다면 비활성화 되고 구매할 수 없다
 돈이 살 수 있는 만큼 있다면 활성화 되고 클릭하면 구매한다 UI와도 동기화 된다
 
+황하림
+  Add Meshes & Materials (Fairy)
+  Add Particle Effects
+  Fix BP_FairyPawn (Add colision at body mesh)
+
 
 1016
 오정원
@@ -396,3 +401,9 @@ AI 구동법 배움
 고른 캐릭터로 매시와 애니메이션 블루프린트가 바껴서 나온다
 사망 후 리스폰도 매시가 그대로 이다
 
+황하림
+  Add Repair function in Fairy
+  Add spawn&fire effects in Fairy
+  Fix TakeDamage in Fairy (MaxHP)
+  Fix KY particles
+  Test import mesh
