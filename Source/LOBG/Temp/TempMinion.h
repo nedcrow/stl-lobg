@@ -31,9 +31,25 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	float MaxHP = 20.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_CurrentHP", Category = "Status")
 	float CurrentHP = 20.f;
+
+	UFUNCTION()
+		void OnRep_CurrentHP();
 
 	int MinionMoney = 100;
 
 	float MinionExp = 100.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UHUDBarSceneComponent* HPBarHUD;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UWidgetComponent* Widget;
+
+	void UpdateHPBar();
 };

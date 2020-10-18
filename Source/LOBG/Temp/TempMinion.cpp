@@ -6,6 +6,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
+#include "../UI/HPBarWidgetBase.h"
+#include "../UI/HUDBarSceneComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ATempMinion::ATempMinion()
@@ -19,6 +23,14 @@ ATempMinion::ATempMinion()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 
+	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
+	HPBarHUD->SetupAttachment(RootComponent);
+	HPBarHUD->SetRelativeLocation(FVector(0, 0, 110));
+
+	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	Widget->SetupAttachment(HPBarHUD);
+	Widget->SetRelativeRotation(FRotator(0, 180.f, 0));
+
 	Tags.Add(TEXT("Minion"));
 }
 
@@ -26,7 +38,8 @@ ATempMinion::ATempMinion()
 void ATempMinion::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CurrentHP = MaxHP;
+	UpdateHPBar();
 }
 
 // Called every frame
@@ -41,6 +54,7 @@ float ATempMinion::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
 		CurrentHP -= DamageAmount;
+		OnRep_CurrentHP();
 		UE_LOG(LogClass, Warning, TEXT("Minion Current HP : %f"), CurrentHP);
 	}
 	
@@ -57,7 +71,28 @@ float ATempMinion::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 			}
 		}
 		CurrentHP = 20.0f;
+		OnRep_CurrentHP();
 	}
 	return 0.0f;
+}
+
+void ATempMinion::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATempMinion, CurrentHP);
+}
+
+void ATempMinion::OnRep_CurrentHP()
+{
+	UpdateHPBar();
+}
+
+void ATempMinion::UpdateHPBar()
+{
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		HPWidget->SetHPBar(CurrentHP / MaxHP);
+	}
 }
 
