@@ -73,6 +73,7 @@ void ABattlePC::InitPlayerWithTeam()
 				PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
 			}
 			PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
+			PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
 		}
 	}
 }
@@ -81,11 +82,6 @@ void ABattlePC::Client_TestWidget_Implementation()
 {
 	if (IsLocalPlayerController())
 	{
-		if (MeshWidgetObject)
-		{
-			MeshWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
-		}
-
 		if (BattleWidgetClass)
 		{
 			BattleWidgetObject = CreateWidget<UBattleWidgetBase>(this, BattleWidgetClass);
@@ -104,6 +100,14 @@ void ABattlePC::Client_TestWidget_Implementation()
 			{
 				StoreWidgetObject->AddToViewport();
 				StoreWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
+
+		if (MeshWidgetClass)
+		{
+			if (MeshWidgetObject)
+			{
+				MeshWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
@@ -166,11 +170,11 @@ void ABattlePC::Client_CreateMeshWidget_Implementation()
 	}
 }
 
-void ABattlePC::Server_MakePlayerInGM_Implementation()
+void ABattlePC::Server_MakePlayerInGM_Implementation(const EMeshType& MyMeshType)
 {
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
-		GM->PlayerSpawn_Test(this);
+		GM->PlayerSpawn_Test(this, MyMeshType);
 	}
 }

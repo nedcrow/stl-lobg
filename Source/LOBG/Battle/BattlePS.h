@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "../LOBGGameInstance.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 #include "BattlePS.generated.h"
 
 /**
@@ -52,5 +53,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 	ETeamColor TeamColor = ETeamColor::None;
 
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		EMeshType PlayerMeshType = EMeshType::None;
 };

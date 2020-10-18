@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../LOBGGameInstance.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 #include "BattleCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -88,6 +89,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* FireMontage;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* FireMontage_Female;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* FireMontage_Male;
+
+	class UAnimMontage* CurrentFireMontage;
+
 	FTimerHandle BulletTimer;
 
 	void StartFire();
@@ -158,6 +167,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* DeathMontage;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* DeathMontage_Female;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* DeathMontage_Male;
+
+		class UAnimMontage* CurrentDeathMontage;
+
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_StartDeath(int Index);
 	void NetMulticast_StartDeath_Implementation(int Index);
@@ -165,6 +182,14 @@ public:
 	// Reload
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* ReloadMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* ReloadMontage_Female;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* ReloadMontage_Male;
+
+		class UAnimMontage* CurrentReloadMontage;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		uint8 bIsReload : 1;
@@ -178,6 +203,14 @@ public:
 	// Hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* HitActionMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* HitActionMontage_Female;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UAnimMontage* HitActionMontage_Male;
+
+		class UAnimMontage* CurrentHitActionMontage;
 
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_StartHitMontage(int Number);
@@ -236,4 +269,23 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_ItemHP();
 	void Server_ItemHP_Implementation();
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MeshType")
+		class USkeletalMesh* FemaleMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MeshType")
+		TSubclassOf<class UAnimInstance> FemaleAnim;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MeshType")
+		class USkeletalMesh* MaleMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MeshType")
+		TSubclassOf<class UAnimInstance> MaleAnim;
+
+	EMeshType PlayerMeshType = EMeshType::None;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SetMeshSettings(const EMeshType& MyMeshType);
+	void NetMulticast_SetMeshSettings_Implementation(const EMeshType& MyMeshType);
 };

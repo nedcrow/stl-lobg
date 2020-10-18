@@ -91,7 +91,6 @@ void ABattleCharacter::BeginPlay()
 void ABattleCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -306,15 +305,30 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	}
 
 	// 만들어 놓은 몽타주 애셋으로 애니메이션 몽타주 실행. 리로드와 같은 슬롯에 등록되어 있다. (둘다 상체 애니메이션이고 사격과 재장전은 동시에 할 수 없으므로)
-	if (FireMontage)
+	if (FireMontage && FireMontage_Female && FireMontage_Male)
 	{
+		switch (PlayerMeshType)
+		{
+		case EMeshType::None:
+			CurrentFireMontage = FireMontage;
+			break;
+		case EMeshType::Female:
+			CurrentFireMontage = FireMontage_Female;
+			break;
+		case EMeshType::Male:
+			CurrentFireMontage = FireMontage_Male;
+			break;
+		default:
+			break;
+		}
+		
 		if (bIsIronsight)
 		{
-			PlayAnimMontage(FireMontage, 1.0f, TEXT("Fire_Rifle_Ironsights"));
+			PlayAnimMontage(CurrentFireMontage, 1.0f, TEXT("Fire_Rifle_Ironsights"));
 		}
 		else
 		{
-			PlayAnimMontage(FireMontage, 1.0f, TEXT("Fire_Rifle_Hip"));
+			PlayAnimMontage(CurrentFireMontage, 1.0f, TEXT("Fire_Rifle_Hip"));
 		}
 	}
 }
@@ -470,9 +484,25 @@ FRotator ABattleCharacter::GetAimOffset()
 
 void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
 {
-	if (DeathMontage) {
+	switch (PlayerMeshType)
+	{
+	case EMeshType::None:
+		CurrentDeathMontage = DeathMontage;
+		break;
+	case EMeshType::Female:
+		CurrentDeathMontage = DeathMontage_Female;
+		break;
+	case EMeshType::Male:
+		CurrentDeathMontage = DeathMontage_Male;
+		break;
+	default:
+		break;
+	}
+
+	if (CurrentDeathMontage) {
+
 		FString DeathSectionName = FString::Printf(TEXT("Death%d"), Index);
-		PlayAnimMontage(DeathMontage, 1.f, FName(DeathSectionName));
+		PlayAnimMontage(CurrentDeathMontage, 1.f, FName(DeathSectionName));
 		DeathSetting();
 	}
 }
@@ -486,7 +516,6 @@ void ABattleCharacter::Server_SetReload_Implementation(bool NewState)
 
 void ABattleCharacter::StartReload()
 {
-	
 	bIsReload = true;
 	Server_SetReload(true);
 	
@@ -494,9 +523,23 @@ void ABattleCharacter::StartReload()
 
 void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 {
+	switch (PlayerMeshType)
+	{
+	case EMeshType::None:
+		CurrentHitActionMontage = HitActionMontage;
+		break;
+	case EMeshType::Female:
+		CurrentHitActionMontage = HitActionMontage_Female;
+		break;
+	case EMeshType::Male:
+		CurrentHitActionMontage = HitActionMontage_Male;
+		break;
+	default:
+		break;
+	}
 	if (HitActionMontage) {
 		FString HitSectionName = FString::Printf(TEXT("Hit%d"), Number);
-		PlayAnimMontage(HitActionMontage, 1.f, FName(HitSectionName));
+		PlayAnimMontage(CurrentHitActionMontage, 1.f, FName(HitSectionName));
 	}
 }
 
@@ -650,5 +693,26 @@ void ABattleCharacter::Server_ItemHP_Implementation()
 {
 	CurrentHP = MaxHP;
 	OnRep_CurrentHP();
+}
+
+void ABattleCharacter::NetMulticast_SetMeshSettings_Implementation(const EMeshType& MyMeshType)
+{
+	PlayerMeshType = MyMeshType;
+	
+	switch (PlayerMeshType)
+	{
+	case EMeshType::None:
+		break;
+	case EMeshType::Female:
+		GetMesh()->SetSkeletalMesh(FemaleMesh);
+		GetMesh()->SetAnimClass(FemaleAnim);
+		break;
+	case EMeshType::Male:
+		GetMesh()->SetSkeletalMesh(MaleMesh);
+		GetMesh()->SetAnimClass(MaleAnim);
+		break;
+	default:
+		break;
+	}
 }
 

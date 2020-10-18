@@ -6,6 +6,14 @@
 #include "Blueprint/UserWidget.h"
 #include "MeshWidgetBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EMeshType : uint8
+{
+    None =      0 UMETA(Display = "None"),
+    Female =    1 UMETA(Display = "Female"),
+    Male =      2 UMETA(Display = "Male"),
+};
+
 /**
  * 
  */
@@ -23,7 +31,12 @@ public:
     virtual void NativeConstruct() override;
 
     UFUNCTION()
-    void ClickedButton();
+    void ClickedFemaleButton();
+
+    UFUNCTION()
+        void ClickedMaleButton();
 
     bool bHasMesh = false;
+
+    EMeshType CurrentMeshType = EMeshType::None;
 };

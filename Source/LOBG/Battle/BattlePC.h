@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "../LOBGGameInstance.h"
+#include "../ChoiceMesh/MeshWidgetBase.h"
 #include "BattlePC.generated.h"
 
 /**
@@ -61,6 +62,6 @@ public:
 		class UMeshWidgetBase* MeshWidgetObject;
 
 	UFUNCTION(Server, Reliable)
-		void Server_MakePlayerInGM();
-	void Server_MakePlayerInGM_Implementation();
+		void Server_MakePlayerInGM(const EMeshType& MyMeshType);
+	void Server_MakePlayerInGM_Implementation(const EMeshType& MyMeshType);
 };
