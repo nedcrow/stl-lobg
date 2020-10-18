@@ -79,3 +79,10 @@
   Add Meshes & Materials (Fairy)
   Add Particle Effects
   Fix BP_FairyPawn (Add colision at body mesh)
+
+1018
+  Add Repair function in Fairy
+  Add spawn&fire effects in Fairy
+  Fix TakeDamage in Fairy (MaxHP)
+  Fix KY particles
+  Test import mesh
