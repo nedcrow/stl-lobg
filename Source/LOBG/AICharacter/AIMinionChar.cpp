@@ -141,7 +141,7 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 
 	// 자극을 준 폰을 BB에 입력한다.
 	AMinionAIC* MinionAIC = Cast<AMinionAIC>(GetController());
-	if (MinionAIC)
+	if (MinionAIC && !MinionAIC->IsActorBeingDestroyed())
 	{
 		MinionAIC->SetValueTargetPawn(Pawn);
 
@@ -263,10 +263,10 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-			//const FRotator SpawnRotation = GetControlRotation();
-			const FRotator SpawnRotation = (TargetLocation - GetActorLocation()).Rotation();
 			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + SpawnRotation.RotateVector(FVector(100.0f, 0.0f, 10.0f));
+			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + GetActorForwardVector() * 100.f;
+			//const FRotator SpawnRotation = GetControlRotation();
+			const FRotator SpawnRotation = (TargetLocation - SpawnLocation).Rotation();
 
 
 
