@@ -16,12 +16,17 @@ EBTNodeResult::Type UBTTask_MinionAttack::ExecuteTask(UBehaviorTreeComponent & O
 		if (AIChar)
 		{
 			AActor* TargetPawn = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPawn")));
-			if (TargetPawn)
+			if (TargetPawn && !TargetPawn->IsActorBeingDestroyed())
 			{
 				// 타겟 액터 or 로케이션. 상체의 로케이션을 전달한다.
 				AIChar->OnFire(TargetPawn->GetActorLocation());
 
 				return EBTNodeResult::Succeeded;
+			}
+			else
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("TargetPawn"), nullptr);
+				AIChar->SetState(EMinioonState::Normal);
 			}
 		}
 	}
