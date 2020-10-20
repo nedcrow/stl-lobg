@@ -49,8 +49,12 @@ void ALobbyPC::Client_SplitTeam_Implementation(const TArray<FString>& RedArray, 
 {
 	if (IsLocalPlayerController() && LobbyWidgetObject)
 	{
-		LobbyWidgetObject->SplitTeam(RedArray, BlueArray);
-
+		ULOBGGameInstance* GI = GetGameInstance<ULOBGGameInstance>();
+		if (GI)
+		{
+			LobbyWidgetObject->SplitTeam(RedArray, BlueArray, GI->GetUserID());
+		}
+		
 	}
 }
 

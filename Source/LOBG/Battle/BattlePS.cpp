@@ -55,6 +55,8 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, PlayerLevel);
 	DOREPLIFETIME(ABattlePS, PlayerMoney);
 	DOREPLIFETIME(ABattlePS, PlayerExp);
+	DOREPLIFETIME(ABattlePS, AttackPoint);
+	DOREPLIFETIME(ABattlePS, PlayerSpeed);
 	DOREPLIFETIME(ABattlePS, NewExp);
 	DOREPLIFETIME(ABattlePS, TeamColor);
 	DOREPLIFETIME(ABattlePS, PlayerMeshType);

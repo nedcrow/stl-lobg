@@ -82,14 +82,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 
 	// 데미지는 서버에서만 계산한다.
-	if (GIsServer)
+	
+	if (GetWorld()->IsServer())
 	{
 		// ApplyDamage
-		//bool RadialType = SummonerController->GetOwner()->ActorHasTag("Tower") ? true : false;
-		if(SummonerController->GetOwner()){ UE_LOG(LogTemp, Warning, TEXT("test test test")); };
-		bool RadialType = false;
+		bool RadialType = AttackRadial > 0 ? true : false;
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
+			UE_LOG(LogClass, Warning, TEXT("AttackPlayer"));
 			if (RadialType) {
 			TArray<AActor*> Ignores;
 				UGameplayStatics::ApplyRadialDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, AttackRadial, UBulletDamageType::StaticClass(), Ignores, this);
@@ -103,7 +103,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			if (RadialType) {
 				TArray<AActor*> Ignores;
-				UGameplayStatics::ApplyRadialDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, 400, UBulletDamageType::StaticClass(), Ignores, this);
+				UGameplayStatics::ApplyRadialDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, AttackRadial, UBulletDamageType::StaticClass(), Ignores, this);
 			}
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());

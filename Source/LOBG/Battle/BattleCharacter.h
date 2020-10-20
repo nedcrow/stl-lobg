@@ -59,7 +59,10 @@ public:
 	void Turn(float Value);
 
 	// Sprint
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 	float WalkSpeed = 300.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 	float RunSpeed = 600.f;
 
 	void DoSprint();

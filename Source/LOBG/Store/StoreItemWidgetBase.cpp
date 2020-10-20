@@ -7,6 +7,7 @@
 #include "Components/Border.h"
 #include "../Battle/BattleCharacter.h"
 #include "../Battle/BattlePS.h"
+#include "Styling/WidgetStyle.h"
 
 void UStoreItemWidgetBase::NativeConstruct()
 {
@@ -84,13 +85,19 @@ bool UStoreItemWidgetBase::InitSlotByMoney()
 		if (PS->PlayerMoney < MyItemMoney)
 		{
 			UE_LOG(LogClass, Warning, TEXT("Not Enough Money"));
-			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 0.5f));
+			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 0.3f));
+			FSlateBrush MyHorvered;
+			MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0);
+			ItemButton->WidgetStyle.SetHovered(MyHorvered);
 			return false;
 		}
 		else
 		{
 			UE_LOG(LogClass, Warning, TEXT("Enough Money"));
 			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
+			FSlateBrush MyHorvered;
+			MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.5f);
+			ItemButton->WidgetStyle.SetHovered(MyHorvered);
 			return true;
 		}
 	}

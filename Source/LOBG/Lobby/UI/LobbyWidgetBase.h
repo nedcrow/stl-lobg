@@ -17,6 +17,9 @@ class LOBG_API ULobbyWidgetBase : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UButton* LobbyBorder;
+
 	// About start button
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UButton* StartGameButton;
@@ -46,9 +49,12 @@ public:
 	//ºó½½·Ô È®ÀÎ
 	int IsEmptySlot();
 
-	void SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArray);
+	void SplitTeam(const TArray<FString>& RedArray, const TArray<FString>& BlueArrayj, FString MyName);
 
 	//ÇÃ·¹ÀÌ¾îÀÇ ÆÀ»ö±ò ¼³Á¤
 	void SetGITeamColor(ETeamColor Color);
+
+	UFUNCTION()
+	void BackGroundFunction();
 
 };

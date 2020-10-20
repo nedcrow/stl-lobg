@@ -16,10 +16,10 @@ void UStoreWidgetBase::NativeConstruct()
 
 	if (ItemTextArray.Num() == ItemInstanceArray.Num() && ItemBox->GetChildrenCount() == ItemTextArray.Num())
 	{
-		for (int i = 0; i < ItemTextArray.Num(); ++i)
-		{
+		//for (int i = 0; i < ItemTextArray.Num(); ++i)
+		//{
 			InitItemArray();
-		}
+		//}
 	}
 }
 

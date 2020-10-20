@@ -39,7 +39,7 @@ public:
 		float AttackPoint = 5.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
-		float PlayerSpeed = 0.f;
+		float PlayerSpeed = 300.f;
 
 	float NextExp = 200;
 	float TempExp = 0;

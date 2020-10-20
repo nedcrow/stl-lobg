@@ -120,6 +120,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 		{
 			//리스폰 위치 가져오기
 			FVector SpawnLocation = FVector(0.f, 0.f, 1000.f);
+			FRotator SpawnRotator = FRotator(0, 0, 0);
 
 			TArray<AActor*> RedReSpawnArray;
 			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Red"), RedReSpawnArray);
@@ -138,6 +139,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
 							break;
 						}
 					}
@@ -150,19 +152,20 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
 							break;
 						}
 					}
 				}
 			}
-			FRotator SpawnRotator = FRotator(0.f, 0.f, 0.f);
+			
 
 			ABattleCharacter* BattlePlayer = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, SpawnLocation, SpawnRotator);
 
 			//플레이어컨트롤러에 연결
 			PC->Possess(BattlePlayer);
 
-			//컨트롤러 연결 후 리셋할 목록들
+			//컨트롤러 연결 후 초기화할 목록들
 			BattlePlayer->NetMulticast_ReSpawnUI();
 			PC->InitPlayerWithTeam();
 		}

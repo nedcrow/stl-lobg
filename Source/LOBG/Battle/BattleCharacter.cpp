@@ -82,6 +82,7 @@ void ABattleCharacter::BeginPlay()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
+		//WalkSpeed = PS->PlayerSpeed;
 	}
 
 	UE_LOG(LogClass, Warning, TEXT("Character BeginPlay"));
@@ -134,6 +135,8 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, CurrentHP);
 	DOREPLIFETIME(ABattleCharacter, MaxHP);
 	DOREPLIFETIME(ABattleCharacter, CurrentState);
+	DOREPLIFETIME(ABattleCharacter, WalkSpeed);
+	DOREPLIFETIME(ABattleCharacter, RunSpeed);
 }
 
 // Move
@@ -186,6 +189,7 @@ void ABattleCharacter::Turn(float Value)
 // Sprint
 void ABattleCharacter::DoSprint()
 {
+	RunSpeed = WalkSpeed + 100.f;
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 	Server_SetMaxWalkSpeed(RunSpeed);
 }
@@ -586,6 +590,8 @@ void ABattleCharacter::NetMulticast_ReSpawnUI_Implementation()
 	{
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
+		WalkSpeed = PS->PlayerSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	}
 }
 

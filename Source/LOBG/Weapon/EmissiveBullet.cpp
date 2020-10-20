@@ -100,7 +100,7 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 	}
 
 	// 데미지는 서버에서만 계산한다.
-	if (GIsServer)
+	if (GetWorld()->IsServer())
 	{
 		//플레이어에 충돌하면
 		if (OtherActor->ActorHasTag(TEXT("Player")))
