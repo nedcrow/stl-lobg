@@ -38,19 +38,13 @@ void UMeshesRingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (bIsRotatable) {
-		AddRelativeRotation(FRotator(0, DeltaTime*Speed, 0));
+		AddRelativeRotation(FRotator(0, DeltaTime * Speed, 0));
 	}
 }
 
-void UMeshesRingComponent::NetMulticast_RotateAround_Implementation(FRotator NewRotator)
+void UMeshesRingComponent::NetMulticast_StartRotateAround_Implementation()
 {
-	SetRelativeRotation(NewRotator);
-	UE_LOG(LogTemp,Warning,TEXT("Rotator:: %f, %f, %f"), NewRotator.Roll, GetRelativeRotation().Yaw, NewRotator.Pitch);
-}
-
-void UMeshesRingComponent::StartRotateAround(FTimerHandle TimerHandle)
-{
-	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AFairyPawn::Server_SetRingComponentRotation, 1.f, false);
+	bIsRotatable = true;
 }
 
 // Remove instance from last order

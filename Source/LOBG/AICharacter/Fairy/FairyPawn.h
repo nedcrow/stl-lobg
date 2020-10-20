@@ -73,8 +73,9 @@ public:
 	UFUNCTION()
 	void OnRepCurrentHP();
 
-
-	void SetRingComponentRotation();
+	UFUNCTION(Server, Reliable)
+	void Server_CallRotationRingComponent();
+	void Server_CallRotationRingComponent_Implementation();
 
 	// State & AI ref - 변할 수 있는 상태
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
@@ -116,8 +117,10 @@ public:
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	float ReloadingTime = 12;
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
 	TArray<float> ReloadingPercentages;
-	float ReloadingPercentage = 0;
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	TArray<int> ReloadingTargetIndexes;
 
 	int CurrentBulletCount;
 	uint8 bIsCasting : 1;

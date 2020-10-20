@@ -45,11 +45,8 @@ public:
 		uint8 bIsLookBody : 1;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_RotateAround(FRotator NewRotator);
-	void NetMulticast_RotateAround_Implementation(FRotator NewRotator);
-
-	UFUNCTION()
-	void StartRotateAround(FTimerHandle TimerHandle);
+	void NetMulticast_StartRotateAround();
+	void NetMulticast_StartRotateAround_Implementation();
 
 	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)

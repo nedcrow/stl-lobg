@@ -96,3 +96,8 @@
   Fix tower's collision
   Fix reloading
   Backup
+  Add parameter in sky material & etc
+  Fix synchronize starting rotator
+
+1021
+  할 것, Fix missile reloading, ai 배치, 카메라 배치.
