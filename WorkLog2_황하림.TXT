@@ -93,3 +93,6 @@
 
 1020
   Test radial damage
+  Fix tower's collision
+  Fix reloading
+  Backup

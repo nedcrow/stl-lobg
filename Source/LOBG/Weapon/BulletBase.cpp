@@ -62,7 +62,7 @@ void ABulletBase::SetDamageInfo(AController* Controller, float NewAttackPoint, f
 	//TraceHit = OutHit;
 	SummonerController = Controller;
 	AttackPoint = NewAttackPoint;
-	AttackRadial = AttackRadial;
+	AttackRadial = NewAttackRadial;
 	TeamName = NewTeamName;
 	Tags.Add(TeamName);
 }

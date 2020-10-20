@@ -74,6 +74,8 @@ public:
 	void OnRepCurrentHP();
 
 
+	void SetRingComponentRotation();
+
 	// State & AI ref - 변할 수 있는 상태
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 	ETeamColor TeamColor=ETeamColor::None;
@@ -103,15 +105,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	TSubclassOf<class ABulletBase> BulletClass;
 
-	/* Second */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-	float ReloadingTime = 12;
-	float ReloadingPercentage = 0;
-
-	int CurrentBulletCount;
-	uint8 bIsCasting : 1;
-	FTimerHandle BulletTimer;
-
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
 
@@ -119,10 +112,27 @@ public:
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 
-	UFUNCTION()
-	bool CallReload();
+	// Reload
+	/* Second */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	float ReloadingTime = 12;
+	TArray<float> ReloadingPercentages;
+	float ReloadingPercentage = 0;
+
+	int CurrentBulletCount;
+	uint8 bIsCasting : 1;
+	FTimerHandle BulletTimer;
+
+	UFUNCTION(Server, Reliable)
+	void Server_CallReload();
+	void Server_CallReload_Implementation();
+
 	void Reload();
 	void ReloadAnimation();
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_EndReloadAnimation(int Index, FTransform TargetTransform);
+	void NetMulticast_EndReloadAnimation_Implementation(int Index, FTransform TargetTransform);
+
 
 
 	// Repair
@@ -141,11 +151,11 @@ public:
 
 	FVector TempEffectLocation;
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_SpawnEffect(FVector SpawnLocation);
 	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_FireEffect(FVector SpawnLocation);
 	void NetMulticast_FireEffect_Implementation(FVector SpawnLocation);
 

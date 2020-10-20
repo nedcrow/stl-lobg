@@ -74,8 +74,12 @@ void AFairyPawn::BeginPlay()
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
 
-	CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
+	if(ActiveMeshesRingComp) CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
+	for (; CurrentBulletCount > 0; CurrentBulletCount--) {
+		ReloadingPercentages.Add(0);
+	}
 	
+	SetRingComponentRotation();
 }
 
 // Called every frame
@@ -133,6 +137,19 @@ void AFairyPawn::OnRepCurrentHP()
 	UpdateHPBar();
 }
 
+void AFairyPawn::SetRingComponentRotation()
+{
+	/*ActiveMeshesRingComp->SetRelativeRotation(tempRot);
+	RestMeshesRingComp->SetRelativeRotation(tempRot);*/
+	/*ActiveMeshesRingComp->NetMulticast_RotateAround(TempRot);
+	RestMeshesRingComp->NetMulticast_RotateAround(TempRot);*/
+
+	if (UGameplayStatics::GetGameMode(GetWorld())) {
+		FRotator TempRot = ActiveMeshesRingComp->GetRelativeRotation();
+		UE_LOG(LogTemp, Warning, TEXT("TempRotator:: %f, %f, %f"), TempRot.Roll, TempRot.Yaw, TempRot.Pitch);
+	}
+}
+
 // Blackboard 포함한 State 변경
 void AFairyPawn::SetCurrentState(EFairyState NewState)
 {
@@ -165,21 +182,18 @@ void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
 	if(ActiveMeshesRingComp) {
 		int currentInstanceCount = ActiveMeshesRingComp->GetInstanceCount();
-		UE_LOG(LogTemp, Warning, TEXT("currentInstanceCount: %d"), currentInstanceCount);
 		if (currentInstanceCount > 0) {
 			FTransform TempTransform;
 			ActiveMeshesRingComp->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
 			FVector StartLocation = TempTransform.GetLocation();
 			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 
-			// Missile 발사
-			// fire effect 추가
-			NetMulticast_FireEffect(StartLocation);
 			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
 		}
 	}
 }
 
+/* Tracing, RemoveIstanceMissile, Spawn missile, fire effect */
 void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation)
 {
 	TArray<AActor*> ActorToIgnore;
@@ -203,7 +217,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 
 	ActiveMeshesRingComp->NetMulticast_RemoveOne();
 	CurrentBulletCount--;
-	CallReload();
+	Server_CallReload();
 
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
@@ -211,10 +225,11 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		Bullet->SetDamageInfo(GetController(), AttackPoint, 200, TeamName);
 	}
 
+	NetMulticast_FireEffect(StartLocation);
 	TempEffectLocation = StartLocation;
 }
 
-bool AFairyPawn::CallReload()
+void AFairyPawn::Server_CallReload_Implementation()
 {
 	// 총알 수량 변하면 실행
 	// 총알이 max 미만이고, casting 중이 아니면 실행
@@ -224,13 +239,8 @@ bool AFairyPawn::CallReload()
 			ReloadingPercentage = 0;
 			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 12.f, false);
 			ReloadAnimation();
-			return true;
-		}
-		else {
-			//GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Reload, 0.1f, false);
 		}
 	}
-	return false;
 }
 
 void AFairyPawn::Reload()
@@ -238,7 +248,7 @@ void AFairyPawn::Reload()
 	ActiveMeshesRingComp->NetMulticast_AddOne();
 	CurrentBulletCount++;
 	bIsCasting = false;
-	CallReload();
+	Server_CallReload();
 }
 
 void AFairyPawn::ReloadAnimation()
@@ -254,7 +264,7 @@ void AFairyPawn::ReloadAnimation()
 			int Index = ActiveMeshesRingComp->GetInstanceCount();
 			FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
 			TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
-			RestMeshesRingComp->UpdateInstanceTransform(Index, TempTransform, false, true, true);
+			NetMulticast_EndReloadAnimation(Index, TempTransform);
 			
 			GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::ReloadAnimation, TimeUnit, false);
 		}
@@ -263,12 +273,16 @@ void AFairyPawn::ReloadAnimation()
 		int Index = ActiveMeshesRingComp->GetInstanceCount();
 		FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
 		TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
-		RestMeshesRingComp->UpdateInstanceTransform(Index, TempTransform, false, true, true);
+		NetMulticast_EndReloadAnimation(Index, TempTransform);
 
 		Reload();
 		NetMulticast_SpawnEffect(TempEffectLocation);
 	}
-	
+}
+
+void AFairyPawn::NetMulticast_EndReloadAnimation_Implementation(int Index, FTransform TargetTransform)
+{
+	RestMeshesRingComp->UpdateInstanceTransform(Index, TargetTransform, false, true, true);
 }
 
 void AFairyPawn::Repair()
@@ -276,9 +290,6 @@ void AFairyPawn::Repair()
 	if (CurrentHP < MaxHP) {
 		float TempHP = 0;
 		TempHP = CurrentHP + RepairPerSec;
-
-		// 피격 애니메이션 추가 필요
-
 		CurrentHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
 		OnRepCurrentHP();
 	}
