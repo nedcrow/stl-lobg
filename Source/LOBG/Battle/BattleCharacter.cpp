@@ -323,7 +323,7 @@ void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLoca
 			BulletAttackPoint = PS->AttackPoint;
 		}
 
-		Bullet->SetDamageInfo(GetController(), BulletAttackPoint, TeamName);
+		Bullet->SetDamageInfo(GetController(), BulletAttackPoint, 0, TeamName);
 	}
 
 

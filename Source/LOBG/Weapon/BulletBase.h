@@ -46,7 +46,8 @@ public:
 	FHitResult TraceHit;
 	AController* SummonerController;
 	float AttackPoint = 0.f;
-	void SetDamageInfo(AController* Controller, float NewAttackPoint, FName NewTeamName);
+	float AttackRadial = 0.f;
+	void SetDamageInfo(AController* Controller, float NewAttackPoint, float NewAttackRadial, FName NewTeamName);
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class UBulletDamageType> DamageType;
