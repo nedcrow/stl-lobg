@@ -36,24 +36,19 @@ void ABattleGM::BeginPlay()
 	// AIManager Spawn.
 	if (AIManagerClass)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
 			if (AIM)
 			{
 				AIManagers.Emplace(AIM);
-
-				switch (i)
-				{
-				case 0:
+				int index = i%2;
+				if (index == 0) {
 					AIM->TeamName = TEXT("Red");
-					break;
-				case 1:
+				}
+				else {
 					AIM->TeamName = TEXT("Blue");
-					AIM->ReverseCoursePoints(AIM->CoursePoints);		// 이동 순서 뒤집기.
-					break;
-				default:
-					break;
+					AIM->ReverseCoursePoints(AIM->CoursePoints); // 이동 순서 뒤집기.
 				}
 			}
 		}

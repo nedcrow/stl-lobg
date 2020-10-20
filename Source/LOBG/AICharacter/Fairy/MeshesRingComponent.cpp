@@ -2,6 +2,7 @@
 
 
 #include "MeshesRingComponent.h"
+#include "GameFramework/Actor.h"
 
 UMeshesRingComponent::UMeshesRingComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -41,10 +42,15 @@ void UMeshesRingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UMeshesRingComponent::NetMulticast_RotateAround_Implementation(float DeltaTime)
+void UMeshesRingComponent::NetMulticast_RotateAround_Implementation(FRotator NewRotator)
 {
-	FRotator TempRotation = FRotator(0, DeltaTime * Speed, 0);
-	AddRelativeRotation(TempRotation);
+	SetRelativeRotation(NewRotator);
+	UE_LOG(LogTemp,Warning,TEXT("Rotator:: %f, %f, %f"), NewRotator.Roll, GetRelativeRotation().Yaw, NewRotator.Pitch);
+}
+
+void UMeshesRingComponent::StartRotateAround(FTimerHandle TimerHandle)
+{
+	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AFairyPawn::Server_SetRingComponentRotation, 1.f, false);
 }
 
 // Remove instance from last order

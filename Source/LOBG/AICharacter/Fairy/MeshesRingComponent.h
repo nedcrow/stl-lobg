@@ -44,9 +44,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation")
 		uint8 bIsLookBody : 1;
 
-	UFUNCTION(Client, Reliable)
-	void NetMulticast_RotateAround(float DeltaTime);
-	void NetMulticast_RotateAround_Implementation(float DeltaTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_RotateAround(FRotator NewRotator);
+	void NetMulticast_RotateAround_Implementation(FRotator NewRotator);
+
+	UFUNCTION()
+	void StartRotateAround(FTimerHandle TimerHandle);
 
 	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
