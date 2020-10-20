@@ -86,3 +86,10 @@
   Fix TakeDamage in Fairy (MaxHP)
   Fix KY particles
   Test import mesh
+
+1019
+  Update contents(Ruins)
+  Add test map(Battle)
+
+1020
+  Test radial damage

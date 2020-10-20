@@ -208,7 +208,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
 	{
-		Bullet->SetDamageInfo(GetController(), AttackPoint, TeamName);
+		Bullet->SetDamageInfo(GetController(), AttackPoint, 200, TeamName);
 	}
 
 	TempEffectLocation = StartLocation;
