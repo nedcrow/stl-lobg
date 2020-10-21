@@ -24,7 +24,7 @@ void ABattleGM::BeginPlay()
 		TeamRedUsers = GI->TeamRedUsers;
 		TeamBlueUsers = GI->TeamBlueUsers;
 
-		//개발을 위한 코드 팀을 설정하지 않고 Test맵에서 사용할 때 캐릭터를 스폰하기 위함
+		//개발을 위한 코드 팀을 설정하지 않고 Test 맵에서 사용할 때 캐릭터를 스폰하기 위함
 		//나중에 지울 예정
 		if (TeamRedUsers.Num() + TeamBlueUsers.Num() == 0)
 		{
@@ -48,11 +48,11 @@ void ABattleGM::BeginPlay()
 				}
 				else {
 					AIM->TeamName = TEXT("Blue");
-					AIM->ReverseCoursePoints(AIM->CoursePoints); // 이동 순서 뒤집기.
 				}
+				AIM->WaveCourse = FMath::FloorToInt(i/2) + 1;	// Manager 마다 WaveCourse 할당
+				AIM->SeachCoursePoints2();
 			}
 		}
-
 
 		if (SpawnAINumber > 0)
 		{

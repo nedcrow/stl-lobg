@@ -89,10 +89,19 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		bool RadialType = AttackRadial > 0 ? true : false;
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
-			UE_LOG(LogClass, Warning, TEXT("AttackPlayer"));
 			if (RadialType) {
-			TArray<AActor*> Ignores;
-				UGameplayStatics::ApplyRadialDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, AttackRadial, UBulletDamageType::StaticClass(), Ignores, this);
+				UGameplayStatics::ApplyRadialDamage(
+					GetWorld(),
+					AttackPoint,
+					OtherActor->GetActorLocation(),
+					AttackRadial,
+					UBulletDamageType::StaticClass(),
+					TArray<AActor*>(),
+					this,
+					SummonerController,
+					false,
+					ECC_Visibility
+				);
 			}
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());

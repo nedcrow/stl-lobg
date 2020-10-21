@@ -368,12 +368,11 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP <= 0) return 0.f;
 
+	UE_LOG(LogTemp, Warning, TEXT("fuck!!"));
 
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
-
-		//Destroy();
 
 		// 피격 시 HitAnimation
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
@@ -392,16 +391,17 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		{
 			TempHP -= DamageAmount;
 		}
-
-
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Radial Hit: %f"), DamageAmount);
+		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
 
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
+		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
 
 	}

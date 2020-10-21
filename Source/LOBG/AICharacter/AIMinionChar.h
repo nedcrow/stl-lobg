@@ -59,6 +59,7 @@ public:
 
 	// MoveTarget
 	class AWaveCoursePoint* CurrentMoveTarget;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Data")
 	int WaveCourse;
 
 	// Called every frame

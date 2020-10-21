@@ -24,18 +24,18 @@ void AAIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SeachCoursePoints();		// 웨이브 코스 포인트를 찾아서 저장.
+	//SeachCoursePoints();		// 웨이브 코스 포인트를 찾아서 저장.
 
 }
 
-void AAIManager::ReverseCoursePoints(TArray<AWaveCoursePoint*>& Array)
+void AAIManager::ReverseCoursePoints()
 {
-	int ArrayLength = Array.Num();
+	int ArrayLength = CoursePoints.Num();
 	if (ArrayLength > 1)		// 배열 길이 2 이상이면 스왑 실행.
 	{
 		for (int i = 0; i < ArrayLength / 2; i++)
 		{
-			Array.Swap(i, ArrayLength - 1 - i);		// 입력한 배열을 앞뒤를 서로 바꿔서 정렬 순서를 거꾸로 저장한다.
+			CoursePoints.Swap(i, ArrayLength - 1 - i);		// 입력한 배열을 앞뒤를 서로 바꿔서 정렬 순서를 거꾸로 저장한다.
 		}
 	}
 }
@@ -130,6 +130,56 @@ void AAIManager::SeachCoursePoints()
 	//}
 }
 
+void AAIManager::SeachCoursePoints2()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWaveCoursePoint::StaticClass(), OutActors);
+	if (OutActors.Num() <= 0)
+	{
+		return;
+	}
+
+	AWaveCoursePoint* CurrentElement;		// 임시 포인터
+	CoursePoints.Empty();
+
+	// Push actors at CoursePoints & Reset OutActors after same WaveCourse Checking
+	for (int i = 0; i < OutActors.Num(); i++)
+	{
+		CurrentElement = Cast<AWaveCoursePoint>(OutActors[i]);
+		if ((int)CurrentElement->WaveCourse == WaveCourse)
+		{				
+			CoursePoints.Add(CurrentElement);
+			OutActors.RemoveAt(i);
+			i--;			
+		}
+	}
+	// Sort
+	CoursePoints.Sort([](const AWaveCoursePoint& A, const AWaveCoursePoint& B) {
+		return A.CourseNumber < B.CourseNumber;
+	});
+
+	// Push first & end actors at CoursePoints 
+	for (int i = 0; i < OutActors.Num(); i++)
+	{
+		CurrentElement = Cast<AWaveCoursePoint>(OutActors[i]);
+		if ((int)CurrentElement->WaveCourse == 0) {
+			CoursePoints.Insert(CurrentElement, 0);
+		}
+		else if ((int)CurrentElement->WaveCourse == 4) {
+			CoursePoints.Add(CurrentElement);
+		}
+	}
+
+	if (TeamName == TEXT("Blue")) {
+		UE_LOG(LogTemp, Warning, TEXT("Reverse"));
+		ReverseCoursePoints();
+	}
+
+	for (int i = 0; i < CoursePoints.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("My CoursePoints: %d(%d)"), i, CoursePoints[i]->CourseNumber);
+	}
+}
+
 // BB의 목표 위치 바꾸기.
 bool AAIManager::ChangeNextTarget(AAIController * AIController)
 {
@@ -222,12 +272,12 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 		return;
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("-------CoursePoints.Num()-------- %d"), CoursePoints.Num());
+	/*UE_LOG(LogClass, Warning, TEXT("-------CoursePoints.Num()-------- %d"), CoursePoints.Num());
 	for (int i = 0; i < CoursePoints.Num(); i++)
 	{
 		UE_LOG(LogClass, Warning, TEXT("-----WaveCourse------- %d"), CoursePoints[i]->WaveCourse);
 		UE_LOG(LogClass, Warning, TEXT("----CourseNumber------ %d"), CoursePoints[i]->CourseNumber);
-	}
+	}*/
 
 	if (LeftSpawnNumber <= 0)		// 스폰 횟수 체크
 	{
@@ -239,7 +289,7 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 
 		CurrentRotatingNumber = 0;		// 스폰 회전 위치 초기화
 
-		WaveCourse = FMath::RandRange(1, 3);		// 웨이브 랜덤 할당.
+		//WaveCourse = FMath::RandRange(1, 3);		// 웨이브 랜덤 할당
 
 		// 액터 스폰 시작
 		RepeatSpawnMinions();
