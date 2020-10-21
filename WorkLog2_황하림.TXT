@@ -96,3 +96,8 @@
   Fix tower's collision
   Fix reloading
   Backup
+
+1021
+  Fix BulletBase's radial damage
+  Fix BattleGM (spawn AIManager & wave course setting)
+  Fix AIManager (about SeachCoursePoints function)  

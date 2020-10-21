@@ -28,8 +28,9 @@ public:
 	// CoursePointsArray
 	TArray<AWaveCoursePoint*> CoursePoints;
 
-	void ReverseCoursePoints(TArray<AWaveCoursePoint*>& Array);
+	void ReverseCoursePoints();
 	void SeachCoursePoints();		// 코스 포인트 검색 후 배열에 저장.
+	void SeachCoursePoints2();		// 코스 포인트 검색 후 배열에 저장. (조건 추가)
 	bool ChangeNextTarget(class AAIController* AIController);
 
 	// Called every frame
@@ -49,6 +50,7 @@ public:
 		TSubclassOf<class AAIMinionChar> MinionCharClass;
 
 	// SpawnMinion
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Data")
 	int WaveCourse;		// 배정할 코스 번호.
 	UFUNCTION(BlueprintCallable)
 		void SetSpawnQuantity(int MinionQuantity);
