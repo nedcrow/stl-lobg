@@ -56,10 +56,10 @@ void UMeshesRingComponent::NetMulticast_RemoveOne_Implementation()
 }
 
 // Add instance from first order
-void UMeshesRingComponent::NetMulticast_AddOne_Implementation()
+void UMeshesRingComponent::NetMulticast_AddOne_Implementation(int Index)
 {
 	if (GetInstanceCount() < MaxMeshCount) {
-		AddInstance(SpawnTransforms[GetInstanceCount()]);
+		AddInstance(SpawnTransforms[Index]);
 	}
 }
 

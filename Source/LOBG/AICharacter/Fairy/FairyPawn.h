@@ -130,11 +130,11 @@ public:
 	void Server_CallReload();
 	void Server_CallReload_Implementation();
 
-	void Reload();
-	void ReloadAnimation();
+	//void Reload(int Index);
+	void CallReloadAnimation();
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_EndReloadAnimation(int Index, FTransform TargetTransform);
-	void NetMulticast_EndReloadAnimation_Implementation(int Index, FTransform TargetTransform);
+	void NetMulticast_UpdateReloadAnimation(int Index, FTransform TargetTransform, bool End);
+	void NetMulticast_UpdateReloadAnimation_Implementation(int Index, FTransform TargetTransform, bool End);
 
 
 
@@ -151,8 +151,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* FireEffect;
-
-	FVector TempEffectLocation;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_SpawnEffect(FVector SpawnLocation);

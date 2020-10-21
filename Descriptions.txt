@@ -11,6 +11,8 @@
   AI 상태 확인 및 변경
     * PawnSensing, BT 전용 BTTask 사용
   
+
+
 %%%%%%% HUD띄우는 법 (서버설정 추가 : 6번 설명 참조) %%%%%%%%%
 1. 헤더에 컴포넌트로 HUDBarSceneComponent와 UWidgetComponent를 설정한다.
 밑에랑 같이 쓰면 됨

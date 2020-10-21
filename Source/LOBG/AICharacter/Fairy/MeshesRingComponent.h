@@ -55,6 +55,6 @@ public:
 
 	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_AddOne();
-	void NetMulticast_AddOne_Implementation();
+	void NetMulticast_AddOne(int Index);
+	void NetMulticast_AddOne_Implementation(int Index);
 };
