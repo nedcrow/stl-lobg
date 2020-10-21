@@ -18,9 +18,9 @@ class LOBG_API UBTTask_CheckDistance : public UBTTaskNode
 {
 	GENERATED_BODY()
 
+public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		TEnumAsByte<EArithmeticKeyOperation::Type> TargetCondition;
 

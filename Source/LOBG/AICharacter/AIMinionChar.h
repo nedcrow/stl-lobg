@@ -53,14 +53,17 @@ public:
 		class UBehaviorTree* BTMinion;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 		class UPawnSensingComponent* PawnSensing;
-		
+
 	UFUNCTION()
 		void ProcessSeenPawn(APawn* Pawn);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+		float PawnSensingSightRadius = 1500.f;
 
 	// MoveTarget
 	class AWaveCoursePoint* CurrentMoveTarget;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Data")
-	int WaveCourse;
+		int WaveCourse;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

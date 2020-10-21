@@ -176,7 +176,7 @@ void AAIManager::SeachCoursePoints2()
 	}
 
 	for (int i = 0; i < CoursePoints.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("My CoursePoints: %d(%d)"), i, CoursePoints[i]->CourseNumber);
+		UE_LOG(LogTemp, Warning, TEXT("CoursePoints[%d] W %d, C %d"), i, (int)CoursePoints[i]->WaveCourse, CoursePoints[i]->CourseNumber);
 	}
 }
 
@@ -185,22 +185,22 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 {
 	if (AIController && CoursePoints.Num() > 0)		// 컨트롤러
 	{
-		AAIMinionChar* AIChar = AIController->GetPawn<AAIMinionChar>();
-
-		if (AIChar)		// 캐릭터. 코스포인트
+		UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
+		if (BBComp)		// 블랙보드
 		{
-			if (!AIChar->CurrentMoveTarget)
-			{
-				AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 시작지점으로 다시 채운다.
-			}
+			AAIMinionChar* AIChar = AIController->GetPawn<AAIMinionChar>();
 
-			int Index = -1;
-			CoursePoints.Find(AIChar->CurrentMoveTarget, Index);		// 현재 코스포인트 찾기
-			int NextIndex = Index + 1;
-			if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints.IsValidIndex(NextIndex))		// 다음 코스포인트
+			if (AIChar)		// 캐릭터. 코스포인트
 			{
-				UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
-				if (BBComp)		// 블랙보드
+				if (!AIChar->CurrentMoveTarget)
+				{
+					AIChar->CurrentMoveTarget = CoursePoints[0];		// 코스 포인트가 비어있을 경우 시작지점으로 다시 채운다.
+				}
+
+				int Index = -1;
+				CoursePoints.Find(AIChar->CurrentMoveTarget, Index);		// 현재 코스포인트 찾기
+				int NextIndex = Index + 1;
+				if (Index >= 0 && NextIndex < CoursePoints.Num() && CoursePoints.IsValidIndex(NextIndex))		// 다음 코스포인트
 				{
 					if (CoursePoints[Index]->WaveCourse != CoursePoints[NextIndex]->WaveCourse)		// NextIndex의 코스가 같은 경우에는 NextIndex를 그대로 유지하고 아니면 자신의 다음 코스를 찾는다.
 					{
@@ -221,7 +221,7 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 								NextIndex = i;
 								break;
 							}
-						}						
+						}
 					}
 
 

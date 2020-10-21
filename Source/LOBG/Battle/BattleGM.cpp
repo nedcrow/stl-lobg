@@ -9,6 +9,7 @@
 #include "BattlePS.h"
 #include "BattleGS.h"
 #include "../AICharacter/AIManager.h"
+#include "../AICharacter/AIMinionChar.h"
 #include "../Temp/TempTower.h"
 #include "../LOBGGameInstance.h"
 
@@ -75,12 +76,17 @@ AAIManager* ABattleGM::FindAIM(AAIController * AIPawnOwner)
 {
 	if (AIPawnOwner && AIManagers.Num() > 0)
 	{
-		APawn* AIPawn = AIPawnOwner->GetPawn();
+		AAIMinionChar* AIPawn = AIPawnOwner->GetPawn<AAIMinionChar>();
 		if (AIPawn)
 		{
 			for (int i = 0; i < AIManagers.Num(); i++)
 			{
-				if (AIPawn->ActorHasTag(AIManagers[i]->TeamName))		// AI컨트롤러의 팀과 같은 팀의 AI매니저 찾기.
+				//if (AIPawn->ActorHasTag(AIManagers[i]->TeamName))		// AI컨트롤러의 팀과 같은 팀의 AI매니저 찾기.
+				//{
+				//	return AIManagers[i];
+				//}
+
+				if (AIPawn->ActorHasTag(AIManagers[i]->TeamName) && AIManagers[i]->WaveCourse == AIPawn->WaveCourse)		// AI컨트롤러의 팀과 같은 팀의 AI매니저 찾기. 6 AIManager Version.
 				{
 					return AIManagers[i];
 				}

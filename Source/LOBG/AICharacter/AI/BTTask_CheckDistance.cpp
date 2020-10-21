@@ -3,7 +3,7 @@
 
 #include "BTTask_CheckDistance.h"
 
-#include "../AIMinionChar.h"
+//#include "../AIMinionChar.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"

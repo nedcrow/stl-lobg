@@ -64,7 +64,7 @@ AAIMinionChar::AAIMinionChar()
 
 	// AI
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	PawnSensing->SightRadius = 1500;
+	PawnSensing->SightRadius = PawnSensingSightRadius;
 	PawnSensing->bOnlySensePlayers = false;
 	PawnSensing->bHearNoises = false;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
