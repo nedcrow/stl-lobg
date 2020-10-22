@@ -129,6 +129,9 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			TArray<AActor*> BlueReSpawnArray;
 			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Blue"), BlueReSpawnArray);
 
+			TArray<AActor*> NoneReSpawnArray;
+			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("None"), BlueReSpawnArray);
+
 			ABattlePS* PS = Cast<ABattlePS>(Pawn->GetPlayerState());
 			if (PS)
 			{
@@ -150,6 +153,20 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 					for (int i = 0; i < BlueReSpawnArray.Num(); ++i)
 					{
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(BlueReSpawnArray[i]);
+						if (ReSpawnObj)
+						{
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
+							break;
+						}
+					}
+				}
+
+				else if (PS->TeamColor == ETeamColor::None)
+				{
+					for (int i = 0; i < NoneReSpawnArray.Num(); ++i)
+					{
+						AReSpawn* ReSpawnObj = Cast<AReSpawn>(NoneReSpawnArray[i]);
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
