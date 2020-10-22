@@ -23,6 +23,8 @@ public:
 	// Base property
 	float OneDegree = 0.01745; // = pi / 180 radian
 	float OneRadian = 57.2958; // = 180 / pi degree
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 	TArray<FTransform> SpawnTransforms;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
@@ -50,11 +52,22 @@ public:
 
 	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_RemoveOne();
-	void NetMulticast_RemoveOne_Implementation();
+	void NetMulticast_RemoveOne(int Index);
+	void NetMulticast_RemoveOne_Implementation(int Index);
 
 	/* from last index */
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_AddOne(int Index);
-	void NetMulticast_AddOne_Implementation(int Index);
+	void NetMulticast_AddOne(int Index, FTransform NewTransform);
+	void NetMulticast_AddOne_Implementation(int Index, FTransform NewTransform);
+
+	/* from last index */
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SwapTransformWithLastIndex(int Index, FTransform NewTransform);
+	void NetMulticast_SwapTransformWithLastIndex_Implementation(int Index, FTransform NewTransform);
+
+	/* from last index */
+	UFUNCTION(NetMulticast, Reliable)
+	TArray<FTransform> NetMulticast_GetSpawnTransforms();
+	TArray<FTransform> NetMulticast_GetSpawnTransforms_Implementation();
+
 };

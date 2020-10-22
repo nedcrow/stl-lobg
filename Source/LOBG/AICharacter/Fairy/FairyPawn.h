@@ -120,18 +120,22 @@ public:
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
 	TArray<float> ReloadingPercentages;
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<int> ReloadingTargetIndexes;
+	TArray<bool> IsReloadingArr;
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	TArray<int> MissileIndexArr;
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	TArray<FTransform> FirstTransformArr;
 
 	int CurrentBulletCount;
 	uint8 bIsCasting : 1;
 	FTimerHandle BulletTimer;
 
 	UFUNCTION(Server, Reliable)
-	void Server_CallReload();
-	void Server_CallReload_Implementation();
+	void Server_CallReload(int Index);
+	void Server_CallReload_Implementation(int Index);
 
-	//void Reload(int Index);
 	void CallReloadAnimation();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_UpdateReloadAnimation(int Index, FTransform TargetTransform, bool End);
 	void NetMulticast_UpdateReloadAnimation_Implementation(int Index, FTransform TargetTransform, bool End);
