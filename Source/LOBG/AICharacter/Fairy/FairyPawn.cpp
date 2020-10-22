@@ -74,11 +74,19 @@ void AFairyPawn::BeginPlay()
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
 
-	if(ActiveMeshesRingComp) CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
+	if (ActiveMeshesRingComp) {
+		CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
+		for (int i=0; i<CurrentBulletCount; i++) {
+			MissileIndexArr.Emplace(i);
+		}
+		IsReloadingArr.Init(false, CurrentBulletCount);
+		ReloadingPercentages.Init(0, CurrentBulletCount);
+		FirstTransformArr.Init(FTransform(), CurrentBulletCount);
+	}
 	
-	ReloadingPercentages.Init(0,CurrentBulletCount);
-	
-	GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Server_CallRotationRingComponent, 2.f, false);
+	if (GetWorld()->IsServer()) {
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Server_CallRotationRingComponent, 2.f, false);
+	}
 }
 
 // Called every frame
@@ -138,10 +146,10 @@ void AFairyPawn::OnRepCurrentHP()
 
 void AFairyPawn::Server_CallRotationRingComponent_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server call"));
-
-	ActiveMeshesRingComp->NetMulticast_StartRotateAround();
-	RestMeshesRingComp->NetMulticast_StartRotateAround();
+	if (ActiveMeshesRingComp && RestMeshesRingComp){
+		ActiveMeshesRingComp->NetMulticast_StartRotateAround();
+		RestMeshesRingComp->NetMulticast_StartRotateAround();
+	}
 }
 
 // Blackboard 포함한 State 변경
@@ -209,9 +217,17 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		5.0f
 	);
 
-	ActiveMeshesRingComp->NetMulticast_RemoveOne();
+	
 	CurrentBulletCount--;
-	Server_CallReload();
+	for (int i = MissileIndexArr.Num() - 1; i - 1; i--) {
+		if(!IsReloadingArr[i]) {
+			FirstTransformArr[MissileIndexArr[i]] = ActiveMeshesRingComp->SpawnTransforms[MissileIndexArr[i]];
+			ActiveMeshesRingComp->NetMulticast_RemoveOne(MissileIndexArr[i]);
+			Server_CallReload(MissileIndexArr[i]);
+			break;
+		}		
+	}
+	
 
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
@@ -222,27 +238,18 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	NetMulticast_FireEffect(StartLocation);
 }
 
-void AFairyPawn::Server_CallReload_Implementation()
+void AFairyPawn::Server_CallReload_Implementation(int Index)
 {
 	// 총알 수량 변하면 실행
 	// 총알이 max 미만이고, casting 중이 아니면 실행
 	if (CurrentBulletCount < ActiveMeshesRingComp->MaxMeshCount) {
-		ReloadingTargetIndexes.Emplace(CurrentBulletCount);
+		IsReloadingArr[Index] = true;
 		if (bIsCasting == false) {
 			bIsCasting = true;
 			CallReloadAnimation();
-			UE_LOG(LogTemp, Warning, TEXT("index item - start"));
-			for (int i = 0; i < ReloadingTargetIndexes.Num(); i++) {
-				UE_LOG(LogTemp,Warning,TEXT("index item - %d"), ReloadingTargetIndexes[i]);
-			}
 		}
 	}
 }
-
-//void AFairyPawn::Reload(int Index)
-//{
-//	
-//}
 
 /* (Recursion) Update each missile's reloading mesh & call spawning function. */
 void AFairyPawn::CallReloadAnimation()
@@ -251,41 +258,47 @@ void AFairyPawn::CallReloadAnimation()
 	float SmoothPoint = 20; // frame per second
 	float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
 
-	for (int i=0; i<ReloadingTargetIndexes.Num(); i++) {
-		int Index = ReloadingTargetIndexes[i];
-		if (ReloadingPercentages[Index] < 1) {	// update ReloadingPercentages
-			float MaxScale = 1;
-			float StartScale = 0.1;
-			float Scale = ReloadingPercentages[Index] == 0 ? StartScale : MaxScale * ReloadingPercentages[Index];
+	for (int i = 0; i < MissileIndexArr.Num(); i++) {
+		int Index = MissileIndexArr[i];
+		if (IsReloadingArr[Index]) {
+			if (ReloadingPercentages[Index] < 1) {	// update ReloadingPercentages
+				float MaxScale = 1;
+				float StartScale = 0.1;
+				float Scale = ReloadingPercentages[Index] == 0 ? StartScale : MaxScale * ReloadingPercentages[Index];
 
-			if (Index < RestMeshesRingComp->GetInstanceCount()) {
-				FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
-				TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
-				NetMulticast_UpdateReloadAnimation(Index, TempTransform, false);
+				if (Index < RestMeshesRingComp->GetInstanceCount()) {
+					FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+					TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
+					NetMulticast_UpdateReloadAnimation(Index, TempTransform, false);
 
-				Nextable = true;
+					Nextable = true;
+				}
+				ReloadingPercentages[Index] += 1 / (ReloadingTime * SmoothPoint);
 			}
-			ReloadingPercentages[Index] += 1 / (ReloadingTime * SmoothPoint);
-		}
-		else {	// reset ReloadingPercentages, call spawning function, call spawn effect, reset etc
-			FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
-			TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
-			NetMulticast_UpdateReloadAnimation(Index, TempTransform, true);
+			else {	// reset ReloadingPercentages, call spawning function, call spawn effect, reset etc
+				FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+				TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
+				NetMulticast_UpdateReloadAnimation(Index, TempTransform, true);
 
-			ActiveMeshesRingComp->NetMulticast_AddOne(Index);
+				ActiveMeshesRingComp->NetMulticast_AddOne(Index, FirstTransformArr[Index]);
+				RestMeshesRingComp->NetMulticast_SwapTransformWithLastIndex(Index, FirstTransformArr[Index]);
 
-			FTransform SpawnTramsform;
-			RestMeshesRingComp->GetInstanceTransform(Index, SpawnTramsform, true);
-			NetMulticast_SpawnEffect(SpawnTramsform.GetLocation());
+				FTransform SpawnTramsform;
+				RestMeshesRingComp->GetInstanceTransform(Index, SpawnTramsform, true);
+				NetMulticast_SpawnEffect(SpawnTramsform.GetLocation());
 
-			CurrentBulletCount++;
-			bIsCasting = false;
-			UE_LOG(LogTemp, Warning, TEXT("Reload"));
-		}
+				CurrentBulletCount++;
+			}
+		}		
 	}
 
 	if(Nextable){
 		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::CallReloadAnimation, TimeUnit, false);
+	}
+	else {
+		bIsCasting = false;
+		UE_LOG(LogTemp, Warning, TEXT("End reloading"));
+
 	}
 }
 
@@ -294,15 +307,11 @@ void AFairyPawn::NetMulticast_UpdateReloadAnimation_Implementation(int Index, FT
 	RestMeshesRingComp->UpdateInstanceTransform(Index, TargetTransform, false, true, true);
 	if (End) {
 		ReloadingPercentages[Index] = 0;
-		ReloadingTargetIndexes.Remove(Index);
-
-		UE_LOG(LogTemp, Warning, TEXT("index item - end"));
-		for (int i = 0; i < ReloadingTargetIndexes.Num(); i++) {
-			UE_LOG(LogTemp, Warning, TEXT("index item - %d"), ReloadingTargetIndexes[i]);
-		}
+		IsReloadingArr[Index] = false;
+		UE_LOG(LogTemp, Warning, TEXT("Effect location : %d (%f, %f, %f)"), Index, TargetTransform.GetLocation().X, TargetTransform.GetLocation().Y, TargetTransform.GetLocation().Z);
 	}
 
-	/*if (ReloadingTargetIndexes.Num() == 0) {
+	/*if (ReloadingTargetArr.Num() == 0) {
 		bIsCasting = false;
 	}*/
 
@@ -360,14 +369,12 @@ void AFairyPawn::NetMulticast_ResetTags_Implementation(const FName & TeamTag)
 		Tags.Emplace(TEXT("Tower"));
 		if (enumPtr) Tags.Emplace(FName(enumPtr->GetNameStringByIndex((int32)TeamColor)));
 		TeamName = FName(enumPtr->GetNameStringByIndex((int32)TeamColor));
-		UE_LOG(LogTemp, Warning, TEXT("AAA:%s"), *TeamName.ToString());
 	}
 	else {
 		Tags.Empty();
 		Tags.Emplace(TEXT("Tower"));
 		Tags.Emplace(TeamTag);
 		TeamName = TeamTag;
-		UE_LOG(LogTemp, Warning, TEXT("BBB:%s"), *TeamName.ToString());
 	}
 
 }
