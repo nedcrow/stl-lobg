@@ -30,7 +30,7 @@ ABulletBase::ABulletBase()
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 5.0f;
 
 	Tags.Add(TEXT("Bullet"));
 }

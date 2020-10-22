@@ -225,7 +225,8 @@ bool AAIManager::ChangeNextTarget(AAIController * AIController)
 
 					FVector RelativeLocation = CoursePoints[NextIndex]->GetActorLocation() - AIChar->CurrentMoveTarget->GetActorLocation();
 
-					BBComp->SetValueAsVector(TEXT("CourseLocation"), AIChar->GetActorLocation() + RelativeLocation);		// 코스 로케이션 키 변경
+					BBComp->SetValueAsVector(TEXT("CourseLocation"), CoursePoints[NextIndex]->GetActorLocation());		// 코스 로케이션 키 변경. 예비용.
+					BBComp->SetValueAsVector(TEXT("NewLocation"), AIChar->GetActorLocation() + RelativeLocation);		// 뉴 로케이션 키 변경. 상대 위치.
 
 					AIChar->CurrentMoveTarget = CoursePoints[NextIndex];		// 코스포인트 저장.
 

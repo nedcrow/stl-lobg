@@ -72,7 +72,7 @@ AAIMinionChar::AAIMinionChar()
 	// UI
 	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
 	HPBarHUD->SetupAttachment(RootComponent);
-	HPBarHUD->SetRelativeLocation(FVector(0, 0, 110));
+	HPBarHUD->SetRelativeLocation(FVector(0, 0, 110.f));
 
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	Widget->SetupAttachment(HPBarHUD);

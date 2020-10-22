@@ -19,7 +19,7 @@ EBTNodeResult::Type UBTTask_MinionAttack::ExecuteTask(UBehaviorTreeComponent & O
 			if (TargetPawn && !TargetPawn->IsActorBeingDestroyed())
 			{
 				// 타겟 액터 or 로케이션. 상체의 로케이션을 전달한다.
-				AIChar->OnFire(TargetPawn->GetActorLocation());
+				AIChar->OnFire(TargetPawn->GetActorLocation() + FVector(0.f, 0.f, 20.f));
 
 				return EBTNodeResult::Succeeded;
 			}
