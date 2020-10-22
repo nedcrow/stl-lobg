@@ -171,12 +171,10 @@ void AAIManager::SeachCoursePoints2()
 	}
 
 	if (TeamName == TEXT("Blue")) {
-		UE_LOG(LogTemp, Warning, TEXT("Reverse"));
 		ReverseCoursePoints();
 	}
 
 	for (int i = 0; i < CoursePoints.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("CoursePoints[%d] W %d, C %d"), i, (int)CoursePoints[i]->WaveCourse, CoursePoints[i]->CourseNumber);
 	}
 }
 
@@ -360,7 +358,7 @@ void AAIManager::RepeatSpawnMinions()
 	// ½ºÆù Repeat
 	if (LeftSpawnNumber > 0)
 	{
-		GetWorldTimerManager().SetTimer(RepeatSpawnHandle, this, &AAIManager::RepeatSpawnMinions, 0.5f, false);
+		GetWorldTimerManager().SetTimer(RepeatSpawnHandle, this, &AAIManager::RepeatSpawnMinions, 2.f, false);
 
 		if (CurrentRotatingNumber == 0)
 		{

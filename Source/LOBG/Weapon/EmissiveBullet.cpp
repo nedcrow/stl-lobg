@@ -118,7 +118,6 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 		}
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("AEmissiveBullet::OnHit : OtherComp->GetName() %s"), *OtherComp->GetName());
 
 	Destroy();
 }

@@ -12,7 +12,6 @@
 #include "../AICharacter/AIMinionChar.h"
 #include "../Temp/TempTower.h"
 #include "../LOBGGameInstance.h"
-
 #include "GameFramework/PlayerStart.h"
 #include "AIController.h"
 
@@ -34,32 +33,35 @@ void ABattleGM::BeginPlay()
 	}
 	FindPlayerStart();
 
-	// AIManager Spawn.
-	if (AIManagerClass)
-	{
-		for (int i = 0; i < 6; i++)
-		{
-			AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
-			if (AIM)
-			{
-				AIManagers.Emplace(AIM);
-				int index = i%2;
-				if (index == 0) {
-					AIM->TeamName = TEXT("Red");
-				}
-				else {
-					AIM->TeamName = TEXT("Blue");
-				}
-				AIM->WaveCourse = FMath::FloorToInt(i/2) + 1;	// Manager 마다 WaveCourse 할당
-				AIM->SeachCoursePoints2();
-			}
-		}
+	//5초 실행되도록 함수로 옮김
+	// GS의 시간 변수가 0이 되면 GM의 StartAIMinion() 실행
 
-		if (SpawnAINumber > 0)
-		{
-			RepeatMinionsWave();
-		}
-	}
+	// AIManager Spawn.
+	//if (AIManagerClass)
+	//{
+	//	for (int i = 0; i < 6; i++)
+	//	{
+	//		AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
+	//		if (AIM)
+	//		{
+	//			AIManagers.Emplace(AIM);
+	//			int index = i%2;
+	//			if (index == 0) {
+	//				AIM->TeamName = TEXT("Red");
+	//			}
+	//			else {
+	//				AIM->TeamName = TEXT("Blue");
+	//			}
+	//			AIM->WaveCourse = FMath::FloorToInt(i/2) + 1;	// Manager 마다 WaveCourse 할당
+	//			AIM->SeachCoursePoints2();
+	//		}
+	//	}
+	//
+	//	if (SpawnAINumber > 0)
+	//	{
+	//		RepeatMinionsWave();
+	//	}
+	//}
 }
 
 void ABattleGM::PostLogin(APlayerController* NewPlayer)
@@ -143,7 +145,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
+							SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
 					}
@@ -156,7 +158,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
+							SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
 					}
@@ -170,7 +172,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						if (ReSpawnObj)
 						{
 							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-							SpawnRotator = ReSpawnObj->GetActorForwardVector().Rotation();
+							SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
 					}
@@ -193,7 +195,6 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 void ABattleGM::CountTower()
 {
 	TowerCount--;
-	UE_LOG(LogClass, Warning, TEXT("TowerCount is %d"), TowerCount);
 
 	if (TowerCount == 0)
 	{
@@ -356,7 +357,6 @@ void ABattleGM::CheckAllControllerHasName()
 {
 	//나중에 PC를 직접 검사해서 이름이 저장되어있다면으로 수정가능
 
-	UE_LOG(LogClass, Warning, TEXT("SetPSTeamColor"));
 	CheckControllerHasName.Add(true);
 	int AllPlayerNum = TeamRedUsers.Num() + TeamBlueUsers.Num();
 	if (CheckControllerHasName.Num() == AllPlayerNum || TestMapVersonSpawn)
@@ -374,6 +374,50 @@ void ABattleGM::CreatePlayerMeshWidget()
 		if (PC)
 		{
 			PC->Client_CreateMeshWidget();
+		}
+	}
+}
+
+void ABattleGM::SetGameStartTimeWidget(int GameTime)
+{
+	UE_LOG(LogClass, Warning, TEXT("OnRep_GameStartTimeInGM"));
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			PC->Client_SetGameStartUI(GameTime);
+		}
+	}
+}
+
+void ABattleGM::StartAIMinion()
+{
+	if (AIManagerClass)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
+			if (AIM)
+			{
+				AIManagers.Emplace(AIM);
+				int index = i % 2;
+				if (index == 0)
+				{
+					AIM->TeamName = TEXT("Red");
+				}
+				else
+				{
+					AIM->TeamName = TEXT("Blue");
+				}
+				AIM->WaveCourse = FMath::FloorToInt(i / 2) + 1;	// Manager 마다 WaveCourse 할당
+				AIM->SeachCoursePoints2();
+			}
+		}
+
+		if (SpawnAINumber > 0)
+		{
+			RepeatMinionsWave();
 		}
 	}
 }

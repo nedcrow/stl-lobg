@@ -76,4 +76,8 @@ public:
 	bool TestMapVersonSpawn;
 
 	void CreatePlayerMeshWidget();
+
+	void SetGameStartTimeWidget(int GameTime);
+
+	void StartAIMinion();
 };

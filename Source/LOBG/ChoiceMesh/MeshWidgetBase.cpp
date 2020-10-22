@@ -16,7 +16,6 @@ void UMeshWidgetBase::NativeConstruct()
 
 void UMeshWidgetBase::ClickedFemaleButton()
 {
-	UE_LOG(LogClass, Warning, TEXT("ClickedFemale"));
 	bHasMesh = true;
 	CurrentMeshType = EMeshType::Female;
 	ABattlePC* PC = Cast<ABattlePC>(GetOwningPlayer());

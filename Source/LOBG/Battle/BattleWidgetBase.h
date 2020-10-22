@@ -30,7 +30,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UTextBlock* CountPlayer;
 
-
 	virtual void NativeConstruct()override;
 
 	void SetHPBar(float Percent);

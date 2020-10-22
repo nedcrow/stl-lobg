@@ -108,7 +108,6 @@ void AAIMinionChar::ProcessSeenPawn(APawn * Pawn)
 		return;
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("ProcessSeenPawn()"));
 
 	//if (Pawn->ActorHasTag("Minion"))
 	//{
@@ -394,13 +393,11 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		TempHP -= DamageAmount;
 
 
-		UE_LOG(LogClass, Warning, TEXT("FRadialDamageEvent::ClassID %d"), DamageEvent.GetTypeID());
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
 		TempHP -= DamageAmount;
 
-		UE_LOG(LogClass, Warning, TEXT("FDamageEvent::ClassID %d"), DamageEvent.GetTypeID());
 
 	}
 
@@ -431,7 +428,6 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("AAIMinionChar::TakeDamage::OnHit : DamageEvent %d"), DamageEvent.GetTypeID());
 
 
 	return DamageAmount;

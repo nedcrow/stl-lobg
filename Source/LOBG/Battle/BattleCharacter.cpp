@@ -85,7 +85,6 @@ void ABattleCharacter::BeginPlay()
 		//WalkSpeed = PS->PlayerSpeed;
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("Character BeginPlay"));
 }
 
 // Called every frame
@@ -245,6 +244,7 @@ void ABattleCharacter::OnFire()
 		
 		Server_ProcessFire(StartVector, EndVector);
 	}
+	FTimerHandle BulletTimer;
 	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABattleCharacter::OnFire, 0.12f, false);
 }
 
@@ -368,7 +368,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP <= 0) return 0.f;
 
-	UE_LOG(LogTemp, Warning, TEXT("fuck!!"));
 
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
@@ -384,7 +383,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)
 		{
 			//총, 총알 타입에 따라 헤드샷을 맞았을 때 다른 데미지 들어간다
-			UE_LOG(LogTemp, Warning, TEXT("Head shot!"));
 			TempHP = 0.f;
 		}
 		else
@@ -394,7 +392,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Radial Hit: %f"), DamageAmount);
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
 
@@ -703,7 +700,6 @@ void ABattleCharacter::Server_ItemAttack_Implementation()
 	if (PS)
 	{
 		PS->AttackPoint += 10.f;
-		UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
 	}
 }
 

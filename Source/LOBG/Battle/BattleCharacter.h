@@ -99,8 +99,6 @@ public:
 
 	class UAnimMontage* CurrentFireMontage;
 
-	FTimerHandle BulletTimer;
-
 	void StartFire();
 	void StopFire();
 

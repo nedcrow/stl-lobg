@@ -7,10 +7,12 @@
 #include "../LOBGGameInstance.h"
 #include "BattlePS.h"
 #include "BattleGM.h"
+#include "BattleGS.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Store/StoreWidgetBase.h"
 #include "../Store/StoreItemWidgetBase.h"
 #include "../ChoiceMesh/MeshWidgetBase.h"
+#include "../UI/GameStartWidgetBase.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -167,6 +169,50 @@ void ABattlePC::Client_CreateMeshWidget_Implementation()
 				bShowMouseCursor = true;
 			}
 		}
+
+		if (GameStartWidgetClass)
+		{
+			GameStartWidgetObject = CreateWidget<UGameStartWidgetBase>(this, GameStartWidgetClass);
+			if (GameStartWidgetObject)
+			{
+				GameStartWidgetObject->AddToViewport();
+				if (HasAuthority())
+				{
+					UE_LOG(LogClass, Warning, TEXT("GetWorld()->IsServer()"));
+					ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
+					if (GS)
+					{
+						GS->GameStartTime = 10;
+						GS->OnRep_GameStartTime();
+						FTimerHandle StartTimerHandle;
+						GetWorldTimerManager().SetTimer(StartTimerHandle, this, &ABattlePC::UpdateGameStartTime, 1.f, false);
+					}
+				}
+			}
+		}
+	}
+}
+
+void ABattlePC::UpdateGameStartTime()
+{
+	ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		GS->GameStartTime -= 1;
+		GS->OnRep_GameStartTime();
+		if (GS->GameStartTime == 0)
+		{
+			ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (GM)
+			{
+				GM->StartAIMinion();
+			}
+		}
+		else
+		{
+			FTimerHandle StartTimerHandle;
+			GetWorldTimerManager().SetTimer(StartTimerHandle, this, &ABattlePC::UpdateGameStartTime, 1.f, false);
+		}
 	}
 }
 
@@ -177,4 +223,10 @@ void ABattlePC::Server_MakePlayerInGM_Implementation(const EMeshType& MyMeshType
 	{
 		GM->PlayerSpawn_Test(this, MyMeshType);
 	}
+}
+
+void ABattlePC::Client_SetGameStartUI_Implementation(const int & StartTime)
+{
+	int GameStartTimeInPC = StartTime;
+	GameStartWidgetObject->SetGameStartTimeText(GameStartTimeInPC);
 }

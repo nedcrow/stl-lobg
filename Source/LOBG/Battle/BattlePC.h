@@ -61,7 +61,19 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UMeshWidgetBase* MeshWidgetObject;
 
+	void UpdateGameStartTime();
+
 	UFUNCTION(Server, Reliable)
 		void Server_MakePlayerInGM(const EMeshType& MyMeshType);
 	void Server_MakePlayerInGM_Implementation(const EMeshType& MyMeshType);
+
+	UFUNCTION(Client, Reliable)
+		void Client_SetGameStartUI(const int& StartTime);
+	void Client_SetGameStartUI_Implementation(const int& StartTime);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		TSubclassOf<class UGameStartWidgetBase> GameStartWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UGameStartWidgetBase* GameStartWidgetObject;
 };
