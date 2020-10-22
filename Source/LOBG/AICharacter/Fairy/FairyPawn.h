@@ -116,17 +116,25 @@ public:
 	// Reload
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-	float ReloadingTime = 12;
+	float ReloadingTime = 24;
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
 	TArray<float> ReloadingPercentages;
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
 	TArray<bool> IsReloadingArr;
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
 	TArray<int> MissileIndexArr;
+	/* local location */
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)	
+	TArray<FTransform> FirstLocalTransformArr;
 	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<FTransform> FirstTransformArr;
+	TArray<FTransform> CurrentActiveTransformArr;
+	/* world location */
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	TArray<FTransform> FirstWorldTransformArr; // 삭제 예정
+	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	TArray<FTransform> CurrentRestTransformArr;
 
-	int CurrentBulletCount;
+	int CurrentMissileCount;
 	uint8 bIsCasting : 1;
 	FTimerHandle BulletTimer;
 

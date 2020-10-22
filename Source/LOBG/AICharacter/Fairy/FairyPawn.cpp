@@ -74,14 +74,23 @@ void AFairyPawn::BeginPlay()
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFairyPawn::ProcessSeenPawn);
 	}
 
+	// init arrays about missile reloading
 	if (ActiveMeshesRingComp) {
-		CurrentBulletCount = ActiveMeshesRingComp->MaxMeshCount;
-		for (int i=0; i<CurrentBulletCount; i++) {
+		CurrentMissileCount = ActiveMeshesRingComp->MaxMeshCount;
+		IsReloadingArr.Init(false, CurrentMissileCount);
+		ReloadingPercentages.Init(0, CurrentMissileCount);
+		FirstLocalTransformArr.Init(FTransform(), CurrentMissileCount);
+		FirstWorldTransformArr.Init(FTransform(), CurrentMissileCount);
+		CurrentRestTransformArr.Init(FTransform(), CurrentMissileCount);
+		for (int i=0; i<CurrentMissileCount; i++) {
 			MissileIndexArr.Emplace(i);
-		}
-		IsReloadingArr.Init(false, CurrentBulletCount);
-		ReloadingPercentages.Init(0, CurrentBulletCount);
-		FirstTransformArr.Init(FTransform(), CurrentBulletCount);
+
+			FTransform TempTransform;
+			RestMeshesRingComp->GetInstanceTransform(i, TempTransform, true);
+			CurrentRestTransformArr[i] = TempTransform;
+		}		
+		CurrentActiveTransformArr = ActiveMeshesRingComp->SpawnTransforms;
+		
 	}
 	
 	if (GetWorld()->IsServer()) {
@@ -183,11 +192,8 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
 	if(ActiveMeshesRingComp) {
-		int currentInstanceCount = ActiveMeshesRingComp->GetInstanceCount();
-		if (currentInstanceCount > 0) {
-			FTransform TempTransform;
-			ActiveMeshesRingComp->GetInstanceTransform(currentInstanceCount - 1, TempTransform, true);
-			FVector StartLocation = TempTransform.GetLocation();
+		if (CurrentMissileCount > 0) {
+			FVector StartLocation = CurrentRestTransformArr[CurrentMissileCount-1].GetLocation();
 			FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 
 			Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
@@ -218,10 +224,13 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	);
 
 	
-	CurrentBulletCount--;
-	for (int i = MissileIndexArr.Num() - 1; i - 1; i--) {
-		if(!IsReloadingArr[i]) {
-			FirstTransformArr[MissileIndexArr[i]] = ActiveMeshesRingComp->SpawnTransforms[MissileIndexArr[i]];
+	CurrentMissileCount--;
+	for (int i = MissileIndexArr.Num() - 1; i > 0; i--) {
+		if(!IsReloadingArr[i] && CurrentActiveTransformArr.Num()>0) {
+			/*FTransform Temp = CurrentActiveTransformArr[MissileIndexArr[i]];
+			FirstLocalTransformArr[MissileIndexArr[i]] = Temp;*/
+			FirstLocalTransformArr[MissileIndexArr[i]] = CurrentActiveTransformArr[MissileIndexArr[i]];
+			FirstWorldTransformArr[MissileIndexArr[i]] = CurrentRestTransformArr[MissileIndexArr[i]];
 			ActiveMeshesRingComp->NetMulticast_RemoveOne(MissileIndexArr[i]);
 			Server_CallReload(MissileIndexArr[i]);
 			break;
@@ -242,7 +251,7 @@ void AFairyPawn::Server_CallReload_Implementation(int Index)
 {
 	// 총알 수량 변하면 실행
 	// 총알이 max 미만이고, casting 중이 아니면 실행
-	if (CurrentBulletCount < ActiveMeshesRingComp->MaxMeshCount) {
+	if (CurrentMissileCount < ActiveMeshesRingComp->MaxMeshCount) {
 		IsReloadingArr[Index] = true;
 		if (bIsCasting == false) {
 			bIsCasting = true;
@@ -254,20 +263,22 @@ void AFairyPawn::Server_CallReload_Implementation(int Index)
 /* (Recursion) Update each missile's reloading mesh & call spawning function. */
 void AFairyPawn::CallReloadAnimation()
 {
+    // About CallReloadAnimation loop
 	bool Nextable=false;
 	float SmoothPoint = 20; // frame per second
 	float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
 
+	// Set scale of each reloading meshes
 	for (int i = 0; i < MissileIndexArr.Num(); i++) {
 		int Index = MissileIndexArr[i];
-		if (IsReloadingArr[Index]) {
+		if (IsReloadingArr[Index]) { // reload checking
 			if (ReloadingPercentages[Index] < 1) {	// update ReloadingPercentages
 				float MaxScale = 1;
 				float StartScale = 0.1;
 				float Scale = ReloadingPercentages[Index] == 0 ? StartScale : MaxScale * ReloadingPercentages[Index];
 
 				if (Index < RestMeshesRingComp->GetInstanceCount()) {
-					FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+					FTransform TempTransform = FirstLocalTransformArr[Index];
 					TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
 					NetMulticast_UpdateReloadAnimation(Index, TempTransform, false);
 
@@ -276,18 +287,25 @@ void AFairyPawn::CallReloadAnimation()
 				ReloadingPercentages[Index] += 1 / (ReloadingTime * SmoothPoint);
 			}
 			else {	// reset ReloadingPercentages, call spawning function, call spawn effect, reset etc
-				FTransform TempTransform = RestMeshesRingComp->SpawnTransforms[Index];
+				FTransform TempTransform = FirstLocalTransformArr[Index];
 				TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
 				NetMulticast_UpdateReloadAnimation(Index, TempTransform, true);
 
-				ActiveMeshesRingComp->NetMulticast_AddOne(Index, FirstTransformArr[Index]);
-				RestMeshesRingComp->NetMulticast_SwapTransformWithLastIndex(Index, FirstTransformArr[Index]);
+				ActiveMeshesRingComp->NetMulticast_AddOne(FirstLocalTransformArr[Index]);
+				
+				FTransform EffectTransform;
+				RestMeshesRingComp->GetInstanceTransform(Index,EffectTransform,true);
+				NetMulticast_SpawnEffect(EffectTransform.GetLocation());
+				//NetMulticast_SpawnEffect(FirstWorldTransformArr[Index].GetLocation());
 
-				FTransform SpawnTramsform;
-				RestMeshesRingComp->GetInstanceTransform(Index, SpawnTramsform, true);
-				NetMulticast_SpawnEffect(SpawnTramsform.GetLocation());
+				// Swap old location with new location
+				if (FirstLocalTransformArr[Index].GetLocation() != CurrentActiveTransformArr[CurrentMissileCount].GetLocation()) {
+					CurrentActiveTransformArr.Swap(Index, CurrentMissileCount);
+					//CurrentRestTransformArr.Swap(Index, CurrentMissileCount);
+					UE_LOG(LogTemp, Warning, TEXT("Swap"));
+				}
 
-				CurrentBulletCount++;
+				CurrentMissileCount++;
 			}
 		}		
 	}
@@ -310,12 +328,6 @@ void AFairyPawn::NetMulticast_UpdateReloadAnimation_Implementation(int Index, FT
 		IsReloadingArr[Index] = false;
 		UE_LOG(LogTemp, Warning, TEXT("Effect location : %d (%f, %f, %f)"), Index, TargetTransform.GetLocation().X, TargetTransform.GetLocation().Y, TargetTransform.GetLocation().Z);
 	}
-
-	/*if (ReloadingTargetArr.Num() == 0) {
-		bIsCasting = false;
-	}*/
-
-	
 }
 
 void AFairyPawn::Repair()
