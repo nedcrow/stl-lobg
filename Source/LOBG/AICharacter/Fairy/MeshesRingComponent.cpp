@@ -80,10 +80,10 @@ void UMeshesRingComponent::NetMulticast_SwapTransformWithLastIndex_Implementatio
 	}
 }
 
-TArray<FTransform> UMeshesRingComponent::NetMulticast_GetSpawnTransforms_Implementation()
-{
-	return SpawnTransforms;
-}
+//TArray<FTransform> UMeshesRingComponent::NetMulticast_GetSpawnTransforms_Implementation()
+//{
+//	return SpawnTransforms;
+//}
 
 
 

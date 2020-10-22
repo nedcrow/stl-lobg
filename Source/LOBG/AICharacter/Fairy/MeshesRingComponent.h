@@ -66,8 +66,8 @@ public:
 	void NetMulticast_SwapTransformWithLastIndex_Implementation(int Index, FTransform NewTransform);
 
 	/* from last index */
-	UFUNCTION(NetMulticast, Reliable)
-	TArray<FTransform> NetMulticast_GetSpawnTransforms();
-	TArray<FTransform> NetMulticast_GetSpawnTransforms_Implementation();
+	//UFUNCTION(NetMulticast, Reliable)
+	//TArray<FTransform> NetMulticast_GetSpawnTransforms();
+	//TArray<FTransform> NetMulticast_GetSpawnTransforms_Implementation();
 
 };
