@@ -52,6 +52,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class UBulletDamageType> DamageType;
 
+	// Effect
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class UParticleSystem* HitEffect;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_HitEffect(FVector SpawnLocation);
+	void NetMulticast_HitEffect_Implementation(FVector SpawnLocation);
+
 	// OverlapEvent
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,

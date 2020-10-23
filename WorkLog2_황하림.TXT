@@ -107,5 +107,19 @@
   Fix missile reloading (ing)
 
 1022
-  발사 수정해야함 - 발사시 삭제 미사일을 인덱스로 지정 (3발쏘고 1발 재장전 후 쏘면 로딩 배열이 544 됨) - 해결
-  장전 중 발사 시 순서 꼬임 - (ing)
+  Fix missile reloading
+    발사 수정해야함 - 발사시 삭제 미사일을 인덱스로 지정 (3발쏘고 1발 재장전 후 쏘면 로딩 배열이 544 됨) - 해결
+    장전 중 발사 시 순서 꼬임 - 해결
+  
+
+1023
+  Fix some perticle duration
+  Add effect at missile & bullet
+  Add function that setting color of tower hp bar
+  Fix missile reloading(ing)
+    * Scaling 함수화
+    * 발사 순서를 갱신된 배열의 뒤에서부터가 아니라, 배열 길이의 역순서로
+    * 네트웍 사용 줄임 - ing (현재 remove는 서버만 되고, add는 둘 다 안 됨)
+
+ 
+   

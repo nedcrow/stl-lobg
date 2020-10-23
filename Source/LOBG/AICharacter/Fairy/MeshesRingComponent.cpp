@@ -48,7 +48,7 @@ void UMeshesRingComponent::NetMulticast_StartRotateAround_Implementation()
 }
 
 // Remove instance from last order
-void UMeshesRingComponent::NetMulticast_RemoveOne_Implementation(int Index)
+void UMeshesRingComponent::RemoveOne(int Index)
 {
 	if (GetInstanceCount() > 0) {
 		RemoveInstance(Index);
@@ -56,20 +56,11 @@ void UMeshesRingComponent::NetMulticast_RemoveOne_Implementation(int Index)
 }
 
 // Add instance & swap new transform and old transform
-void UMeshesRingComponent::NetMulticast_AddOne_Implementation(FTransform NewTransform)
+void UMeshesRingComponent::AddOne(FTransform NewTransform)
 {
 	if (GetInstanceCount() < MaxMeshCount) {
 		AddInstance(NewTransform);
-		UE_LOG(LogTemp, Warning, TEXT("Spawn location : (%f, %f, %f)"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
-	}
-}
-
-// swap new transform and old transform
-void UMeshesRingComponent::NetMulticast_SwapTransformWithLastIndex_Implementation(int Index, FTransform NewTransform)
-{
-	if (GetInstanceCount() < MaxMeshCount) {
-		SpawnTransforms.Swap(Index, GetInstanceCount()); // Because AddInstance() is not addition to place of index
-		UE_LOG(LogTemp, Warning, TEXT("swap : %d (%f, %f, %f)"), Index, SpawnTransforms[Index].GetLocation().X, SpawnTransforms[Index].GetLocation().Y, SpawnTransforms[Index].GetLocation().Z);
+		//UE_LOG(LogTemp, Warning, TEXT("Spawn location : (%f, %f, %f)"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
 	}
 }
 
