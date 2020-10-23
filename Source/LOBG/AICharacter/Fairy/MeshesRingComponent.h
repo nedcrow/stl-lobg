@@ -49,15 +49,9 @@ public:
 	void NetMulticast_StartRotateAround();
 	void NetMulticast_StartRotateAround_Implementation();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_RemoveOne(int Index);
-	void NetMulticast_RemoveOne_Implementation(int Index);
+	UFUNCTION()
+	void RemoveOne(int Index);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_AddOne(FTransform NewTransform);
-	void NetMulticast_AddOne_Implementation(FTransform NewTransform);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_SwapTransformWithLastIndex(int Index, FTransform NewTransform);
-	void NetMulticast_SwapTransformWithLastIndex_Implementation(int Index, FTransform NewTransform);
+	UFUNCTION()
+	void AddOne(FTransform NewTransform);
 };

@@ -106,6 +106,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	TSubclassOf<class ABulletBase> BulletClass;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	int CurrentMissileIndex;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	float AttackRadial = 500;
+
 	UFUNCTION()
 	void StartFireTo(FVector TargetLocation);
 
@@ -113,41 +119,59 @@ public:
 	void Server_ProcessFire(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 	void Server_ProcessFire_Implementation(FVector StartLocation, FRotator StartDirection, FVector TargetLocation);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_RemoveCurrentMissile();
+	void NetMulticast_RemoveCurrentMissile_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_AddMissile(FTransform NewTransform);
+	void Server_AddMissile_Implementation(FTransform NewTransform);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_AddMissile(FTransform NewTransform);
+	void NetMulticast_AddMissile_Implementation(FTransform NewTransform);
+
+	int SetNextMissileIndex();
+
 	// Reload
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-	float ReloadingTime = 24;
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
+	float ReloadingTime = 10;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<float> ReloadingPercentages;
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<bool> IsReloadingArr;
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<int> MissileIndexArr;
-	/* local location */
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)	
-	TArray<FTransform> FirstLocalTransformArr;
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<FTransform> CurrentActiveTransformArr;
-	/* world location */
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<FTransform> FirstWorldTransformArr; // 삭제 예정
-	UPROPERTY(BlueprintReadOnly, Replicated, EditAnywhere)
-	TArray<FTransform> CurrentRestTransformArr;
 
-	int CurrentMissileCount;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	//TArray<int> MissileIndexArr;
+	///* local location */
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)	
+	//TArray<FTransform> FirstLocalTransformArr;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	//TArray<FTransform> CurrentActiveTransformArr;
+	///* world location */
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	//TArray<FTransform> FirstWorldTransformArr;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	//TArray<FTransform> CurrentRestTransformArr;
+
+
 	uint8 bIsCasting : 1;
 	FTimerHandle BulletTimer;
 
-	UFUNCTION(Server, Reliable)
-	void Server_CallReload(int Index);
-	void Server_CallReload_Implementation(int Index);
-
 	void CallReloadAnimation();
+
+	/*UFUNCTION(Server, Reliable)
+	void Server_CallReload(int Index);
+	void Server_CallReload_Implementation(int Index);*/
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_CallReloadAnimation();
+	void NetMulticast_CallReloadAnimation_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_UpdateReloadAnimation(int Index, FTransform TargetTransform, bool End);
 	void NetMulticast_UpdateReloadAnimation_Implementation(int Index, FTransform TargetTransform, bool End);
 
+	void UpdateReloadAnimation(int Index, FTransform TargetTransform, bool End);
 
 
 	// Repair
@@ -164,11 +188,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* FireEffect;
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_SpawnEffect(FVector SpawnLocation);
 	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_FireEffect(FVector SpawnLocation);
 	void NetMulticast_FireEffect_Implementation(FVector SpawnLocation);
 
@@ -181,6 +205,11 @@ public:
 
 	UFUNCTION()
 	void UpdateHPBar();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_InitHPBar(ETeamColor color);
+	void NetMulticast_InitHPBar_Implementation(ETeamColor color);
+
 
 	// Reset Tag (최초에는 BP에서 선택한 값으로 세팅) & Team
 	UFUNCTION(NetMulticast, Reliable)

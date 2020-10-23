@@ -67,6 +67,18 @@ void ABulletBase::SetDamageInfo(AController* Controller, float NewAttackPoint, f
 	Tags.Add(TeamName);
 }
 
+void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation)
+{
+	if (HitEffect)
+	{
+		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitEffect,
+			SpawnLocation
+		);
+	}
+}
+
 //플레이어에 충돌하면
 void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
@@ -77,6 +89,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	// 같은팀이라면 return
 	if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
 	{
+		//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 		Destroy();
 		return;
 	}
@@ -106,22 +119,35 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 			}
+			//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 			Destroy();
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Minion")))
 		{
 			if (RadialType) {
-				TArray<AActor*> Ignores;
-				UGameplayStatics::ApplyRadialDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, AttackRadial, UBulletDamageType::StaticClass(), Ignores, this);
+				UGameplayStatics::ApplyRadialDamage(
+					GetWorld(),
+					AttackPoint,
+					OtherActor->GetActorLocation(),
+					AttackRadial,
+					UBulletDamageType::StaticClass(),
+					TArray<AActor*>(),
+					this,
+					SummonerController,
+					false,
+					ECC_Visibility
+				);
 			}
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 			}
+			//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 			Destroy();
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Tower")))
 		{
 			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+			//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 			Destroy();
 		}
 	}
@@ -131,8 +157,9 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	else if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
+		//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 		Destroy();
-	}	
+	}
 }
 
 void ABulletBase::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)

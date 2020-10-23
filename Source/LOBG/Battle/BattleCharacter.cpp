@@ -368,6 +368,9 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP <= 0) return 0.f;
 
+	if (DamageCauser->ActorHasTag(TeamName)) {
+		return 0.f;
+	}
 
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
@@ -388,18 +391,21 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		else
 		{
 			TempHP -= DamageAmount;
+			UE_LOG(LogTemp, Warning, TEXT("PointDamage:: %f"), DamageAmount);
 		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
+		UE_LOG(LogTemp, Warning, TEXT("RadialDamage:: %f"), DamageAmount);
 
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))
 	{
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
+		UE_LOG(LogTemp, Warning, TEXT("NormalDamage:: %f"), DamageAmount);
 
 	}
 
@@ -437,6 +443,7 @@ void ABattleCharacter::OnRep_CurrentHP()
 
 	//HPHUD업데이트
 	UpdateHPBar();
+	UE_LOG(LogTemp,Warning,TEXT("update HP"));
 }
 
 void ABattleCharacter::Server_SetIronsight_Implementation(bool State)
