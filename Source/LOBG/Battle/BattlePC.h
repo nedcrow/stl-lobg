@@ -76,4 +76,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UGameStartWidgetBase* GameStartWidgetObject;
+
+	void UpdateGSTabArrayData();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		TSubclassOf<class UTabWidgetBase> TabWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UTabWidgetBase* TabWidgetObject;
+
+	void OpenTab();
+	void CloseTab();
 };

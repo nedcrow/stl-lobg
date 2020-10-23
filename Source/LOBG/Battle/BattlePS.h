@@ -8,6 +8,29 @@
 #include "../ChoiceMesh/MeshWidgetBase.h"
 #include "BattlePS.generated.h"
 
+USTRUCT(Atomic, BlueprintType)
+struct FPlayerData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		EMeshType PlayerMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		ETeamColor PlayerTeamColor;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float PlayerAttackData = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float PlayerSpeedData = 300.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		FString PlayerName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float PlayerMoneyData;
+};
 /**
  * 
  */
@@ -55,4 +78,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 		EMeshType PlayerMeshType = EMeshType::None;
+
+	FPlayerData MyPlayerData;
+
 };

@@ -144,8 +144,9 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(RedReSpawnArray[i]);
 						if (ReSpawnObj)
 						{
-							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-							SpawnRotator = ReSpawnObj->GetActorRotation();
+							//SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentToWorld().GetLocation();
+							//SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
 					}
@@ -157,8 +158,9 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(BlueReSpawnArray[i]);
 						if (ReSpawnObj)
 						{
-							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
-							SpawnRotator = ReSpawnObj->GetActorRotation();
+							//SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentToWorld().GetLocation();
+							//SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
 					}
@@ -171,7 +173,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(NoneReSpawnArray[i]);
 						if (ReSpawnObj)
 						{
-							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentLocation();
+							SpawnLocation = ReSpawnObj->ReSpawnArea->GetComponentToWorld().GetLocation();
 							SpawnRotator = ReSpawnObj->GetActorRotation();
 							break;
 						}
@@ -228,6 +230,8 @@ void ABattleGM::SetPSTeamColor()
 					if (PS)
 					{
 						PS->TeamColor = ETeamColor::Red;
+						PS->MyPlayerData.PlayerTeamColor = ETeamColor::Red;
+						
 						break;
 					}
 				}
@@ -241,6 +245,7 @@ void ABattleGM::SetPSTeamColor()
 					if (PS)
 					{
 						PS->TeamColor = ETeamColor::Blue;
+						PS->MyPlayerData.PlayerTeamColor = ETeamColor::Blue;
 						break;
 					}
 				}

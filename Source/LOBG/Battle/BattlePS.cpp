@@ -8,6 +8,7 @@
 #include "BattleWidgetBase.h"
 #include "BattleCharacter.h"
 #include "../Store/StoreWidgetBase.h"
+#include "BattleGS.h"
 
 void ABattlePS::OnRep_Exp()
 {

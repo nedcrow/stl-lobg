@@ -13,6 +13,7 @@
 #include "../Store/StoreItemWidgetBase.h"
 #include "../ChoiceMesh/MeshWidgetBase.h"
 #include "../UI/GameStartWidgetBase.h"
+#include "../UI/TabWidgetBase.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -21,6 +22,8 @@ void ABattlePC::SetupInputComponent()
 	//InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ABattlePC::ReleaseFire);
 
 	InputComponent->BindAction(TEXT("OpenStore"), EInputEvent::IE_Pressed, this, &ABattlePC::PushOpenStore);
+	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Pressed, this, &ABattlePC::OpenTab);
+	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Released, this, &ABattlePC::CloseTab);
 }
 
 void ABattlePC::BeginPlay()
@@ -66,16 +69,22 @@ void ABattlePC::InitPlayerWithTeam()
 		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
 		if (PlayerPawn)
 		{
-			if (PS->TeamColor == ETeamColor::Red)
+			ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
+			if (GS)
 			{
-				PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
+				if (PS->TeamColor == ETeamColor::Red)
+				{
+					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
+					GS->RedTabDataArray.Add(PS->MyPlayerData);
+				}
+				else if (PS->TeamColor == ETeamColor::Blue)
+				{
+					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
+					GS->BlueTabDataArray.Add(PS->MyPlayerData);
+				}
+				PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
+				PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
 			}
-			else if (PS->TeamColor == ETeamColor::Blue)
-			{
-				PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
-			}
-			PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
-			PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
 		}
 	}
 }
@@ -105,6 +114,16 @@ void ABattlePC::Client_TestWidget_Implementation()
 			}
 		}
 
+		if (TabWidgetClass)
+		{
+			TabWidgetObject = CreateWidget<UTabWidgetBase>(this, TabWidgetClass);
+			if (TabWidgetObject)
+			{
+				TabWidgetObject->AddToViewport();
+				TabWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
+
 		if (MeshWidgetClass)
 		{
 			if (MeshWidgetObject)
@@ -118,7 +137,13 @@ void ABattlePC::Client_TestWidget_Implementation()
 void ABattlePC::Server_SetMyUserName_Implementation(const FString& MyName)
 {
 	MyUserName = MyName;
-	
+
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
+	if (PS)
+	{
+		PS->MyPlayerData.PlayerName = MyName;
+	}
+
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
@@ -178,7 +203,6 @@ void ABattlePC::Client_CreateMeshWidget_Implementation()
 				GameStartWidgetObject->AddToViewport();
 				if (HasAuthority())
 				{
-					UE_LOG(LogClass, Warning, TEXT("GetWorld()->IsServer()"));
 					ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
 					if (GS)
 					{
@@ -218,6 +242,11 @@ void ABattlePC::UpdateGameStartTime()
 
 void ABattlePC::Server_MakePlayerInGM_Implementation(const EMeshType& MyMeshType)
 {
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
+	if (PS)
+	{
+		PS->MyPlayerData.PlayerMesh = MyMeshType;
+	}
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
@@ -229,4 +258,53 @@ void ABattlePC::Client_SetGameStartUI_Implementation(const int & StartTime)
 {
 	int GameStartTimeInPC = StartTime;
 	GameStartWidgetObject->SetGameStartTimeText(GameStartTimeInPC);
+}
+
+void ABattlePC::UpdateGSTabArrayData()
+{
+	ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GS)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			if (PS->TeamColor == ETeamColor::Red)
+			{
+				for (int i = 0; i < GS->RedTabDataArray.Num(); ++i)
+				{
+					if (GS->RedTabDataArray[i].PlayerName == PS->MyPlayerData.PlayerName)
+					{
+						GS->RedTabDataArray[i] = PS->MyPlayerData;
+					}
+				}
+			}
+			else if(PS->TeamColor == ETeamColor::Blue)
+			{
+				for (int i = 0; i < GS->BlueTabDataArray.Num(); ++i)
+				{
+					if (GS->BlueTabDataArray[i].PlayerName == PS->MyPlayerData.PlayerName)
+					{
+						GS->BlueTabDataArray[i] = PS->MyPlayerData;
+					}
+				}
+			}
+		}
+	}
+}
+
+void ABattlePC::OpenTab()
+{
+	if (TabWidgetObject)
+	{
+		TabWidgetObject->UpdateSlot();
+		TabWidgetObject->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ABattlePC::CloseTab()
+{
+	if (TabWidgetObject)
+	{
+		TabWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

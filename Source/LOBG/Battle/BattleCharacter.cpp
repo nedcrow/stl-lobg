@@ -188,7 +188,7 @@ void ABattleCharacter::Turn(float Value)
 // Sprint
 void ABattleCharacter::DoSprint()
 {
-	RunSpeed = WalkSpeed + 100.f;
+	RunSpeed = WalkSpeed * 1.25f;
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 	Server_SetMaxWalkSpeed(RunSpeed);
 }
@@ -612,6 +612,13 @@ void ABattleCharacter::Server_SetBooty_Implementation(int Money, float Exp)
 	if (PS)
 	{
 		PS->PlayerMoney += Money;
+		PS->MyPlayerData.PlayerMoneyData = PS->PlayerMoney;
+		ABattlePC* PC = Cast<ABattlePC>(GetController());
+		if (PC)
+		{
+			PC->UpdateGSTabArrayData();
+		}
+
 		PS->OnRep_Money();
 
 		PS->PlayerExp += Exp;
@@ -700,6 +707,12 @@ void ABattleCharacter::Server_ItemAttack_Implementation()
 	if (PS)
 	{
 		PS->AttackPoint += 10.f;
+		PS->MyPlayerData.PlayerAttackData = PS->AttackPoint;
+		ABattlePC* PC = Cast<ABattlePC>(GetController());
+		if (PC)
+		{
+			PC->UpdateGSTabArrayData();
+		}
 	}
 }
 
@@ -709,6 +722,12 @@ void ABattleCharacter::Server_ItemSpeed_Implementation()
 	if (PS)
 	{
 		PS->PlayerSpeed += 100.f;
+		PS->MyPlayerData.PlayerSpeedData = PS->PlayerSpeed;
+		ABattlePC* PC = Cast<ABattlePC>(GetController());
+		if (PC)
+		{
+			PC->UpdateGSTabArrayData();
+		}
 	}
 	WalkSpeed += 100.f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;

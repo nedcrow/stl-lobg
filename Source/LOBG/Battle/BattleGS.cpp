@@ -13,6 +13,8 @@ void ABattleGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABattleGS, GameStartTime);
+	DOREPLIFETIME(ABattleGS, RedTabDataArray);
+	DOREPLIFETIME(ABattleGS, BlueTabDataArray);
 }
 
 void ABattleGS::BeginPlay()
