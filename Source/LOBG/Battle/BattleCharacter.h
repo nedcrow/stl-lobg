@@ -99,8 +99,11 @@ public:
 
 	class UAnimMontage* CurrentFireMontage;
 
+	// Fire
 	void StartFire();
 	void StopFire();
+
+	FTimerHandle BulletTimer;
 
 	//실질적인 총알 발사 함수
 	void OnFire();

@@ -82,6 +82,9 @@ AAIMinionChar::AAIMinionChar()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	Tags.Add(TEXT("Minion"));
 
+	// 초기화
+	CurrentHP = MaxHP;
+	CurrentState = EMinioonState::Normal;
 }
 
 // Called when the game starts or when spawned
@@ -90,14 +93,18 @@ void AAIMinionChar::BeginPlay()
 	Super::BeginPlay();
 
 	// 초기화
-	CurrentHP = MaxHP;
-	SetState(EMinioonState::Normal);
+	InitHPBar();
+	UpdateHPBar();
 
-	if (PawnSensing)
+	if (GetWorld()->IsServer())
 	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &AAIMinionChar::ProcessSeenPawn);
-	}	
+		SetState(CurrentState);
 
+		if (PawnSensing)
+		{
+			PawnSensing->OnSeePawn.AddDynamic(this, &AAIMinionChar::ProcessSeenPawn);
+		}
+	}
 }
 
 // PawnSensing
@@ -223,6 +230,8 @@ void AAIMinionChar::SetTeamName(FName MyTeamName)
 {
 	TeamName = MyTeamName;
 	OnRep_TeamName();
+
+	InitHPBar();
 }
 
 void AAIMinionChar::OnRep_CurrentState()
@@ -234,6 +243,7 @@ void AAIMinionChar::SetState(EMinioonState NewState)
 {
 	CurrentState = NewState;
 
+	// BB 키에 입력.
 	AMinionAIC* MinionAIC = GetController<AMinionAIC>();
 	if (MinionAIC)
 	{
@@ -359,8 +369,17 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CurrentHP <= 0) return DamageAmount;
-	
+	if (CurrentHP <= 0) 
+	{
+		return DamageAmount;
+	}
+	else if (!GetWorld()->IsServer())
+	{
+		// 피격 효과 클라이언트용. 데미지 입력을 받지만 계산은 하지 않는다.
+		BP_HitEffect();
+		return 0.f;
+	}
+
 	// 데미지 계산.
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
@@ -418,6 +437,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 	}
 	else if(EventInstigator)
 	{
+		// 피격시 대응 사격.
 		// 총알을 날린 적이 이미 사망했을 가능성이 있으므로 적이 존재하는지 체크한다.
 		APawn* EnemyPawn = EventInstigator->GetPawn();
 		if (EnemyPawn)
@@ -428,7 +448,8 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 
 	}
 
-
+	// 피격 효과. 서버용.
+	BP_HitEffect();
 
 	return DamageAmount;
 }
@@ -466,6 +487,25 @@ bool AAIMinionChar::Montage_IsPlaying(UAnimMontage * AnimMontage)
 }
 
 // UI
+void AAIMinionChar::InitHPBar()
+{
+	// 위젯 색 변경
+	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		if (TeamName == TEXT("Red"))
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor::Red);
+		}
+		else if (TeamName == TEXT("Blue"))
+		{
+			HPWidget->SetColorAndOpacity(FLinearColor::Blue);
+		}
+	}
+
+}
+
+
 void AAIMinionChar::UpdateHPBar()
 {
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
@@ -474,4 +514,3 @@ void AAIMinionChar::UpdateHPBar()
 		HPWidget->SetHPBar(CurrentHP / MaxHP);
 	}
 }
-

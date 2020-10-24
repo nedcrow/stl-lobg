@@ -122,6 +122,9 @@ public:
 	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void BP_HitEffect();
+
 	// Death
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* DeathMontage;
@@ -129,7 +132,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void NetMulticast_StartDeath(int Index);
 	void NetMulticast_StartDeath_Implementation(int Index);
-	
+
 	void DeathSetting();		// 죽을 때의 설정들
 
 	UFUNCTION(BlueprintCallable)
@@ -141,5 +144,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UWidgetComponent* Widget;
 
+	void InitHPBar();
 	void UpdateHPBar();
 };

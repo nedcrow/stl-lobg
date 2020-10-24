@@ -15,7 +15,7 @@
 AAIManager::AAIManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -353,7 +353,7 @@ void AAIManager::RepeatSpawnMinions()
 		ActiveMinions.Add(NewMinion);
 		
 		// 팀 배정
-		NewMinion->SetTeamName(TeamName);
+		NewMinion->SetTeamName(TeamName);		
 
 		// 스폰한 액터들의 이동 목표 설정
 		NewMinion->WaveCourse = WaveCourse;			// 코스 저장.

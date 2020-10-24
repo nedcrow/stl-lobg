@@ -244,7 +244,7 @@ void ABattleCharacter::OnFire()
 		
 		Server_ProcessFire(StartVector, EndVector);
 	}
-	FTimerHandle BulletTimer;
+
 	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABattleCharacter::OnFire, 0.12f, false);
 }
 
@@ -371,7 +371,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	if (DamageCauser->ActorHasTag(TeamName)) {
 		return 0.f;
 	}
-
+	
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{

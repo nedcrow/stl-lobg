@@ -98,6 +98,11 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 		Destroy();
 		return;
 	}
+	else if(!GetWorld()->IsServer() && OtherActor->ActorHasTag(TEXT("Minion")))
+	{
+		// 클라이언트 피격 이펙트용 가짜 데미지.
+		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+	}
 
 	// 데미지는 서버에서만 계산한다.
 	if (GetWorld()->IsServer())
