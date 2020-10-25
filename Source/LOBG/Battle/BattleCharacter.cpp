@@ -422,7 +422,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	if (CurrentHP <= 0)
 	{
 		NetMulticast_StartDeath(FMath::RandRange(1, 3));
-		CurrentState = EBattleCharacterState::Dead;
+		//CurrentState = EBattleCharacterState::Dead;
 		FTimerHandle DeadTimer;		
 		GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
 	}
@@ -578,11 +578,12 @@ void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 
 void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 {
+	CurrentState = EBattleCharacterState::Dead;
 	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GM)
 	{
 		GM->CallReSpawn(this);
-		Destroy();
+		//Destroy();
 	}
 }
 

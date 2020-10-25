@@ -132,13 +132,14 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Blue"), BlueReSpawnArray);
 
 			TArray<AActor*> NoneReSpawnArray;
-			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("None"), BlueReSpawnArray);
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AReSpawn::StaticClass(), NoneReSpawnArray);
 
 			ABattlePS* PS = Cast<ABattlePS>(Pawn->GetPlayerState());
 			if (PS)
 			{
 				if (PS->TeamColor == ETeamColor::Red)
 				{
+				UE_LOG(LogClass, Warning, TEXT("In PS Red"));
 					for (int i = 0; i < RedReSpawnArray.Num(); ++i)
 					{
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(RedReSpawnArray[i]);
@@ -153,6 +154,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
+				UE_LOG(LogClass, Warning, TEXT("In PS Blue"));
 					for (int i = 0; i < BlueReSpawnArray.Num(); ++i)
 					{
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(BlueReSpawnArray[i]);
@@ -183,6 +185,8 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			
 
 			ABattleCharacter* BattlePlayer = GetWorld()->SpawnActor<ABattleCharacter>(PlayerClass, SpawnLocation, SpawnRotator);
+
+			Pawn->Destroy();
 
 			//플레이어컨트롤러에 연결
 			PC->Possess(BattlePlayer);
