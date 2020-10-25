@@ -57,11 +57,6 @@ void UMeshesRingComponent::RemoveOne()
 {
 	if (GetInstanceCount() > 0) {
 		bool Suc = RemoveInstance(0);
-		UE_LOG(LogTemp, Warning, TEXT("Success: %s"), Suc ? TEXT("True") : TEXT("False"));
-		/*FTransform Temp = SpawnTransforms[0];
-		SpawnTransforms.RemoveAt(0);
-		SpawnTransforms.Emplace(Temp);*/
-
 	}
 }
 
@@ -70,7 +65,6 @@ void UMeshesRingComponent::AddOne(FTransform NewTransform)
 {
 	if (GetInstanceCount() < MaxMeshCount) {
 		AddInstance(NewTransform);
-		//UE_LOG(LogTemp, Warning, TEXT("Spawn location : (%f, %f, %f)"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
 	}
 }
 

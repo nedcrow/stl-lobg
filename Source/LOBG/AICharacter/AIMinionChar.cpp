@@ -414,7 +414,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
 		TempHP -= DamageAmount;
-
+		UE_LOG(LogTemp, Warning, TEXT("Minion RadialDamage:: %f"), DamageAmount);
 
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))

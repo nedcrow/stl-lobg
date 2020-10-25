@@ -117,7 +117,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 					TArray<AActor*>(),
 					this,
 					SummonerController,
-					false,
+					true,
 					ECC_Visibility
 				);
 			}
@@ -139,10 +139,9 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 					TArray<AActor*>(),
 					this,
 					SummonerController,
-					false,
+					true,
 					ECC_Visibility
 				);
-				UE_LOG(LogTemp, Warning, TEXT("Minion apply radial damage"), AttackPoint);
 			}
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());

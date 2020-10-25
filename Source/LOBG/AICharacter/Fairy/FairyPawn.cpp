@@ -114,9 +114,14 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 
 	// 피격 애니메이션 추가 필요
 
-	CurrentHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
-	OnRepCurrentHP();
-	UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
+	TempHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
+	if (CurrentHP != TempHP)
+	{
+		CurrentHP = TempHP;
+		OnRepCurrentHP();
+	}
+	
+	//UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
 		// 죽음 effect 추가 필요
@@ -243,7 +248,6 @@ void AFairyPawn::NetMulticast_RemoveMissile_Implementation()
 	ActiveMeshesRingComp->RemoveOne();
 	ReloadingPercentages[CurrentMissileIndex] = 0;
 	SetNextMissileIndex();
-	UE_LOG(LogTemp, Warning, TEXT("Remove index: %d"), CurrentMissileIndex);
 }
 
 void AFairyPawn::SetNextMissileIndex()
