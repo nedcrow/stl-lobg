@@ -32,6 +32,11 @@ void UMeshesRingComponent::BeginPlay()
 		if (i < MaxMeshCount)AddInstance(FTransform(Rotation, Position, Scale));
 		SpawnTransforms.Add(FTransform(Rotation, Position, Scale));
 	}
+	for (int i = 0; i < VertexCount; i++) {
+		FTransform TempTransform;
+		GetInstanceTransform(i,TempTransform,true);
+		SpawnWorldTransforms.Add(TempTransform);
+	}
 }
 
 void UMeshesRingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,11 +52,16 @@ void UMeshesRingComponent::NetMulticast_StartRotateAround_Implementation()
 	bIsRotatable = true;
 }
 
-// Remove instance from last order
-void UMeshesRingComponent::RemoveOne(int Index)
+// Remove instance & Rotate transform array
+void UMeshesRingComponent::RemoveOne()
 {
 	if (GetInstanceCount() > 0) {
-		RemoveInstance(Index);
+		bool Suc = RemoveInstance(0);
+		UE_LOG(LogTemp, Warning, TEXT("Success: %s"), Suc ? TEXT("True") : TEXT("False"));
+		/*FTransform Temp = SpawnTransforms[0];
+		SpawnTransforms.RemoveAt(0);
+		SpawnTransforms.Emplace(Temp);*/
+
 	}
 }
 

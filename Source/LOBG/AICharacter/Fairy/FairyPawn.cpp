@@ -79,20 +79,7 @@ void AFairyPawn::BeginPlay()
 
 	// init arrays about missile reloading
 	if (ActiveMeshesRingComp) {
-		CurrentMissileIndex = ActiveMeshesRingComp->MaxMeshCount - 1;
-		ReloadingPercentages.Init(-1, ActiveMeshesRingComp->MaxMeshCount);
-		/*FirstLocalTransformArr.Init(FTransform(), ActiveMeshesRingComp->MaxMeshCount);
-		FirstWorldTransformArr.Init(FTransform(), ActiveMeshesRingComp->MaxMeshCount);
-		CurrentRestTransformArr.Init(FTransform(), ActiveMeshesRingComp->MaxMeshCount);
-		for (int i=0; i< ActiveMeshesRingComp->MaxMeshCount; i++) {
-			MissileIndexArr.Emplace(i);
-
-			FTransform TempTransform;
-			RestMeshesRingComp->GetInstanceTransform(i, TempTransform, true);
-			CurrentRestTransformArr[i] = TempTransform;
-		}		
-		CurrentActiveTransformArr = ActiveMeshesRingComp->SpawnTransforms;*/
-		
+		ReloadingPercentages.Init(-1, ActiveMeshesRingComp->MaxMeshCount);	
 	}
 	
 	if (GetWorld()->IsServer()) {
@@ -132,11 +119,12 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 	UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
-		// 죽음 애니메이션(?) 추가 필요
+		// 죽음 effect 추가 필요
 		FName NewTeamName = "None";
 		NewTeamName = GetTeamName(EventInstigator->GetPawn());
-		UE_LOG(LogTemp, Warning, TEXT("Base is under attack (%s Team)"), *NewTeamName.ToString());
-		NetMulticast_ResetTags(NewTeamName);
+		//NetMulticast_ResetTags(NewTeamName);
+
+		Destroy();
 	}
 	
 	return 0.0f;
@@ -194,20 +182,12 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
 	if(ActiveMeshesRingComp && ActiveMeshesRingComp->GetInstanceCount() > 0) {
-		for (int i = ActiveMeshesRingComp->GetInstanceCount(); i > 0; i--) {
-			if (ActiveMeshesRingComp->GetInstanceCount() > CurrentMissileIndex) {
-				FTransform TempTransform;
-				ActiveMeshesRingComp->GetInstanceTransform(CurrentMissileIndex, TempTransform, true);
-				FVector StartLocation = TempTransform.GetLocation();
-				FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
+		FTransform TempTransform;
+		ActiveMeshesRingComp->GetInstanceTransform(0, TempTransform, true);
+		FVector StartLocation = TempTransform.GetLocation();
+		FRotator StartDirection = UKismetMathLibrary::GetDirectionUnitVector(StartLocation, TargetLocation).Rotation();
 
-				Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
-				break;
-			}
-			else {
-				SetNextMissileIndex();
-			}
-		}
+		Server_ProcessFire(StartLocation, StartDirection, TargetLocation);
 	}
 }
 
@@ -234,20 +214,21 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	);
 
 
+	// remove missile
 	if (ActiveMeshesRingComp->GetInstanceCount() > 0) {
-		NetMulticast_RemoveCurrentMissile();
+		NetMulticast_RemoveMissile();
 
+		// reloading
 		if (ActiveMeshesRingComp->GetInstanceCount() < ActiveMeshesRingComp->MaxMeshCount) {
 			if (bIsCasting == false) {
 				bIsCasting = true;
 
-				//NetMulticast_CallReloadAnimation();
-				CallReloadAnimation();
+				NetMulticast_CallReloadAnimation();
 			}
 		}
 	}
 	
-
+	// spawn missile
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
 	{
@@ -255,84 +236,31 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 	}
 
 	NetMulticast_FireEffect(StartLocation);
-	SetNextMissileIndex();
 }
 
-void AFairyPawn::NetMulticast_RemoveCurrentMissile_Implementation()
+void AFairyPawn::NetMulticast_RemoveMissile_Implementation()
 {
-	ActiveMeshesRingComp->RemoveOne(CurrentMissileIndex);
+	ActiveMeshesRingComp->RemoveOne();
 	ReloadingPercentages[CurrentMissileIndex] = 0;
+	SetNextMissileIndex();
+	UE_LOG(LogTemp, Warning, TEXT("Remove index: %d"), CurrentMissileIndex);
 }
 
-void AFairyPawn::Server_AddMissile_Implementation(FTransform NewTransform)
+void AFairyPawn::SetNextMissileIndex()
 {
-	NetMulticast_AddMissile(NewTransform);
-}
-
-void AFairyPawn::NetMulticast_AddMissile_Implementation(FTransform NewTransform)
-{
-	ActiveMeshesRingComp->AddOne(NewTransform);
-	UE_LOG(LogTemp,Warning,TEXT("AddMissile"));
-}
-
-int AFairyPawn::SetNextMissileIndex()
-{
-	if (CurrentMissileIndex > 0) { CurrentMissileIndex--; }
-	else { CurrentMissileIndex = ActiveMeshesRingComp->MaxMeshCount - 1; }
-	return CurrentMissileIndex;
-}
-
-void AFairyPawn::CallReloadAnimation()
-{
-	// About CallReloadAnimation loop
-	bool Nextable = false;
-	float SmoothPoint = 20; // frame per second
-	float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
-
-	float MaxScale = 1;
-	float StartScale = 0.1;
-	
-	// Set scale of each reloading meshes
-	for (int i = 0; i < ReloadingPercentages.Num(); i++) {
-		if (ReloadingPercentages[i] > -1 && ReloadingPercentages[i] < 1) {
-			float Scale = ReloadingPercentages[i] == 0 ? StartScale : MaxScale * ReloadingPercentages[i];
-
-			if (i < RestMeshesRingComp->GetInstanceCount()) {
-				FTransform TempTransform;
-				RestMeshesRingComp->GetInstanceTransform(i, TempTransform, false);
-				TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
-				NetMulticast_UpdateReloadAnimation(i, TempTransform, false);
-
-				Nextable = true;
-			}
-			ReloadingPercentages[i] += 1 / (ReloadingTime * SmoothPoint);
-		}
-		else if(ReloadingPercentages[i] > 1) {
-			FTransform TempTransform;
-			RestMeshesRingComp->GetInstanceTransform(i, TempTransform, false);
-			TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
-			NetMulticast_UpdateReloadAnimation(i, TempTransform, true);
-			NetMulticast_AddMissile(TempTransform);
-
-			FTransform EffectTransform;
-			RestMeshesRingComp->GetInstanceTransform(i, EffectTransform, true);
-			NetMulticast_SpawnEffect(EffectTransform.GetLocation());
-		}
-	}
-
-	if (Nextable) {
-		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::CallReloadAnimation, TimeUnit, false);
-	}
-	else {
-		bIsCasting = false;
-		UE_LOG(LogTemp, Warning, TEXT("End reloading"));
-	}
+	if (CurrentMissileIndex < ActiveMeshesRingComp->MaxMeshCount-1) { CurrentMissileIndex++; }
+	else { CurrentMissileIndex = 0; }
 }
 
 void AFairyPawn::NetMulticast_CallReloadAnimation_Implementation()
 {
+	ReloadAnimation();
+}
+
+void AFairyPawn::ReloadAnimation()
+{
 	// About CallReloadAnimation loop
-	bool Nextable = false;
+	bool Nextable = false; // 하나라도 로딩 중인 미사일이 있으면 true
 	float SmoothPoint = 20; // frame per second
 	float TimeUnit = ReloadingTime / (ReloadingTime * SmoothPoint);
 
@@ -342,34 +270,36 @@ void AFairyPawn::NetMulticast_CallReloadAnimation_Implementation()
 	// Set scale of each reloading meshes
 	for (int i = 0; i < ReloadingPercentages.Num(); i++) {
 		if (ReloadingPercentages[i] > -1 && ReloadingPercentages[i] < 1) {
+
+			// update mesh scale 
 			float Scale = ReloadingPercentages[i] == 0 ? StartScale : MaxScale * ReloadingPercentages[i];
+			FTransform TempTransform = ActiveMeshesRingComp->SpawnTransforms[i];
+			TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
+			RestMeshesRingComp->UpdateInstanceTransform(i, TempTransform, false, true, true);
 
-			if (i < RestMeshesRingComp->GetInstanceCount()) {
-				FTransform TempTransform;
-				RestMeshesRingComp->GetInstanceTransform(i, TempTransform, false);
-				TempTransform.SetScale3D(FVector(Scale, Scale, Scale));
-				UpdateReloadAnimation(i, TempTransform, false);
-
-				Nextable = true;
-			}
+			Nextable = true;
+			
 			ReloadingPercentages[i] += 1 / (ReloadingTime * SmoothPoint);
 		}
 		else if (ReloadingPercentages[i] > 1) {
-			FTransform TempTransform;
-			RestMeshesRingComp->GetInstanceTransform(i, TempTransform, false);
-			TempTransform.SetScale3D(FVector(0.01, 0.01, 0.01));
-			UpdateReloadAnimation(i, TempTransform, true);
-			//NetMulticast_AddMissile(TempTransform);
-			Server_AddMissile(TempTransform);
+			AddMissile(ActiveMeshesRingComp->SpawnTransforms[i]);
 
+			// reset mesh scale
+			FTransform TempTransform = ActiveMeshesRingComp->SpawnTransforms[i];
+			TempTransform.SetScale3D(FVector(0, 0, 0));
+			RestMeshesRingComp->UpdateInstanceTransform(i, TempTransform, false, true, true);
+
+			// effect
 			FTransform EffectTransform;
-			RestMeshesRingComp->GetInstanceTransform(i, EffectTransform, true);
-			//NetMulticast_SpawnEffect(EffectTransform.GetLocation());
+			ActiveMeshesRingComp->GetInstanceTransform(ActiveMeshesRingComp->GetInstanceCount()-1, EffectTransform, true);
+			SpawnSpawnEffect(EffectTransform.GetLocation());
+
+			ReloadingPercentages[i] = -1;
 		}
 	}
 
 	if (Nextable) {
-		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::NetMulticast_CallReloadAnimation, TimeUnit, false);
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::ReloadAnimation, TimeUnit, false);
 	}
 	else {
 		bIsCasting = false;
@@ -377,22 +307,10 @@ void AFairyPawn::NetMulticast_CallReloadAnimation_Implementation()
 	}
 }
 
-void AFairyPawn::NetMulticast_UpdateReloadAnimation_Implementation(int Index, FTransform TargetTransform, bool End)
+void AFairyPawn::AddMissile(FTransform NewTransform)
 {
-	RestMeshesRingComp->UpdateInstanceTransform(Index, TargetTransform, false, true, true);
-	if (End) {
-		ReloadingPercentages[Index] = -1;
-		//UE_LOG(LogTemp, Warning, TEXT("Effect location : %d (%f, %f, %f)"), Index, TargetTransform.GetLocation().X, TargetTransform.GetLocation().Y, TargetTransform.GetLocation().Z);
-	}
-}
-
-void AFairyPawn::UpdateReloadAnimation(int Index, FTransform TargetTransform, bool End)
-{
-	RestMeshesRingComp->UpdateInstanceTransform(Index, TargetTransform, false, true, true);
-	if (End) {
-		ReloadingPercentages[Index] = -1;
-		//UE_LOG(LogTemp, Warning, TEXT("Effect location : %d (%f, %f, %f)"), Index, TargetTransform.GetLocation().X, TargetTransform.GetLocation().Y, TargetTransform.GetLocation().Z);
-	}
+	ActiveMeshesRingComp->AddOne(NewTransform);
+	UE_LOG(LogTemp, Warning, TEXT("AddMissile"));
 }
 
 void AFairyPawn::Repair()
@@ -406,6 +324,18 @@ void AFairyPawn::Repair()
 }
 
 void AFairyPawn::NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation)
+{
+	if (SpawnEffect)
+	{
+		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			SpawnEffect,
+			SpawnLocation
+		);
+	}
+}
+
+void AFairyPawn::SpawnSpawnEffect(FVector SpawnLocation)
 {
 	if (SpawnEffect)
 	{

@@ -56,7 +56,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* HitEffect;
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_HitEffect(FVector SpawnLocation);
 	void NetMulticast_HitEffect_Implementation(FVector SpawnLocation);
 
