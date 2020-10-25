@@ -21,6 +21,14 @@ EBTNodeResult::Type UBTTask_CheckDistance::ExecuteTask(UBehaviorTreeComponent & 
 			{
 				float Distance = FVector::Distance(AIPawn->GetActorLocation(), TargetActor->GetActorLocation());
 
+				if (TargetState == EMinioonState::Battle)
+				{
+					// 공격 전 방향 보정. 총구 위치를 예상 거리를 넣어서 방향을 보정한다.
+					FRotator RelativeRotation = (TargetActor->GetActorLocation() + FVector(0.f, 0.f, 20.f) - AIPawn->GetActorLocation() - AIPawn->GetActorRightVector() * 30.f).Rotation();
+					AIPawn->SetActorRotation(FRotator(0.f, RelativeRotation.Yaw, 0.f));
+					AIPawn->AimPitch = RelativeRotation.Pitch;
+				}
+
 				switch (TargetCondition)
 				{
 				case EArithmeticKeyOperation::Equal:
