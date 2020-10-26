@@ -3,29 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
 #include "ItemDataTable.generated.h"
 
-//UENUM(BlueprintType)
-//enum class EItemType : uint8
-//{
-//	Unknown = 0 UMETA(Display = "Unknown"),
-//	Consume = 1 UMETA(Display = "Consume"),
-//	Equip	= 2 UMETA(Display = "Equip"),
-//};
-//
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	Unknown = 0 UMETA(Display = "Unknown"),
+	Consume = 1 UMETA(Display = "Consume"),
+	Equip = 2 UMETA(Display = "Equip"),
+};
+
 //UENUM(BlueprintType)
 //enum class EItemName : uint8
 //{
 //	SpeedUp = 0		UMETA(Display = "SpeedUp"),
 //	Grip = 1		UMETA(Display = "Grip"),
 //	Ironsight = 2		UMETA(Display = "Ironsight"),
-//	heel = 3		UMETA(Display = "heel"),
-//	bullet = 4		UMETA(Display = "bullet"),
+//	Heel = 3		UMETA(Display = "heel"),
+//	Bullet = 4		UMETA(Display = "bullet"),
 //};
 
 USTRUCT(BlueprintType)
-struct LOBG_API FItemDataTable : public FTableRowBase
+struct LOBG_API FItemDataTableStruct : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
@@ -46,4 +47,23 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TAssetPtr<class UMaterialInstance> ItemImage;
+};
+
+UCLASS()
+class LOBG_API AItemDataTable : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AItemDataTable();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 };

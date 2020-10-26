@@ -4,25 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../Item/ItemDataTableTest.h"
+#include "../Item/ItemDataTable.h"
 #include "StoreItemWidgetBase.generated.h"
 
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-	Unknown = 0 UMETA(Display = "Unknown"),
-	Consume = 1 UMETA(Display = "Consume"),
-	Equip = 2 UMETA(Display = "Equip"),
-};
-
+//UENUM(BlueprintType)
+//enum class EItemType : uint8
+//{
+//	Unknown = 0 UMETA(Display = "Unknown"),
+//	Consume = 1 UMETA(Display = "Consume"),
+//	Equip = 2 UMETA(Display = "Equip"),
+//};
+//
 UENUM(BlueprintType)
 enum class EItemName : uint8
 {
 	SpeedUp = 0		UMETA(Display = "SpeedUp"),
 	Grip = 1		UMETA(Display = "Grip"),
 	Ironsight = 2		UMETA(Display = "Ironsight"),
-	heel = 3		UMETA(Display = "heel"),
-	bullet = 4		UMETA(Display = "bullet"),
+	Heel = 3		UMETA(Display = "heel"),
+	Bullet = 4		UMETA(Display = "bullet"),
 };
 /**
  * 
@@ -44,7 +44,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UTextBlock* ItemMoney;
 
-	EItemName MyItemName;
+	FString MyItemName;
+
+	int MyItemIndex;
 
 	int MyItemMoney;
 

@@ -25,24 +25,24 @@ void UStoreItemWidgetBase::ClickedItemButton()
 	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetOwningPlayerPawn());
 	if (PlayerPawn)
 	{
-		switch (MyItemName)
+		switch (MyItemIndex)
 		{
-		case EItemName::SpeedUp:
+		case 0:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_ItemSpeed();
 			break;
-		case EItemName::Grip:
+		case 1:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_AngleDown();
 			break;
-		case EItemName::Ironsight:
+		case 2:
 			
 			break;
-		case EItemName::heel:
+		case 3:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_ItemHP();
 			break;
-		case EItemName::bullet:
+		case 4:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_ItemAttack();
 			break;
