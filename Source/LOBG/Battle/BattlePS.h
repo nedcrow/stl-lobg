@@ -81,4 +81,6 @@ public:
 
 	FPlayerData MyPlayerData;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float FireBulletAngle = 3.f;
 };

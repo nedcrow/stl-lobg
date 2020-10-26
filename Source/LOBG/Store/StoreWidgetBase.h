@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "StoreItemWidgetBase.h"
+//#include "StoreItemWidgetBase.h"
+//#include "../Item/ItemDataTable.h"
+#include "../Item/ItemDataTableTest.h"
 #include "StoreWidgetBase.generated.h"
 
 /**
@@ -26,8 +28,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
 		TArray<UMaterialInstance*> ItemInstanceArray;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-		TArray<EItemName> ItemNameArray;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
+	//	TArray<EItemName> ItemNameArray;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
 		TArray<int> ItemMoneyArray;
@@ -45,4 +47,8 @@ public:
 		class UScrollBox* ItemBox;
 
 	void CheckSlotActive();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class UDataTable* ItemDataTableTest;
+
 };

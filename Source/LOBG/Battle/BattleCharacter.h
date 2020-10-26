@@ -85,8 +85,8 @@ public:
 		uint8 bIsFire : 1;
 	
 	// 총알이 확산되는 각도. 기본 사격 상태에서의 수치.
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
-		float RandFireAngle = 4.f;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	//	float RandFireAngle = 4.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* FireMontage;
@@ -295,4 +295,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_SetMeshSettings(const EMeshType& MyMeshType);
 	void NetMulticast_SetMeshSettings_Implementation(const EMeshType& MyMeshType);
+
+	UFUNCTION(Server, Reliable)
+		void Server_AngleDown();
+	void Server_AngleDown_Implementation();
 };

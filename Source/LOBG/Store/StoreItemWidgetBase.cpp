@@ -22,31 +22,34 @@ void UStoreItemWidgetBase::NativeConstruct()
 void UStoreItemWidgetBase::ClickedItemButton()
 {
 	if (!bEnoughMoney) return;
-	UE_LOG(LogClass, Warning, TEXT("ClickedItemButton"));
 	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetOwningPlayerPawn());
 	if (PlayerPawn)
 	{
-		ABattlePS* PS = Cast<ABattlePS>(PlayerPawn->GetPlayerState());
-		if (PS)
+		switch (MyItemName)
 		{
-			switch (MyItemName)
-			{
-			case EItemName::AttackPointUp:
-				PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-				PlayerPawn->Server_ItemAttack();
-				break;
-			case EItemName::SpeedUp:
-				PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-				PlayerPawn->Server_ItemSpeed();
-				break;
-			case EItemName::FullHP:
-				PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-				PlayerPawn->Server_ItemHP();
-				break;
-			default:
-				break;
-			}
+		case EItemName::SpeedUp:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_ItemSpeed();
+			break;
+		case EItemName::Grip:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_AngleDown();
+			break;
+		case EItemName::Ironsight:
+			
+			break;
+		case EItemName::heel:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_ItemHP();
+			break;
+		case EItemName::bullet:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_ItemAttack();
+			break;
+		default:
+			break;
 		}
+
 	}
 	
 }

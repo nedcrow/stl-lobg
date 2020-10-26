@@ -4,16 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "../Item/ItemDataTableTest.h"
 #include "StoreItemWidgetBase.generated.h"
+
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	Unknown = 0 UMETA(Display = "Unknown"),
+	Consume = 1 UMETA(Display = "Consume"),
+	Equip = 2 UMETA(Display = "Equip"),
+};
 
 UENUM(BlueprintType)
 enum class EItemName : uint8
 {
-	AttackPointUp = 0		UMETA(DisplayName = "AttackPointUp"),
-	SpeedUp = 1		UMETA(DisplayName = "SpeedUp"),
-	FullHP = 2		UMETA(DisplayName = "FullHP"),
+	SpeedUp = 0		UMETA(Display = "SpeedUp"),
+	Grip = 1		UMETA(Display = "Grip"),
+	Ironsight = 2		UMETA(Display = "Ironsight"),
+	heel = 3		UMETA(Display = "heel"),
+	bullet = 4		UMETA(Display = "bullet"),
 };
-
 /**
  * 
  */

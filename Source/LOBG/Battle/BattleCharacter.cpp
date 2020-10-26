@@ -275,22 +275,25 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 
 
 	// 총알 확산.
-	float FireAngle = RandFireAngle;
-	if (bIsIronsight)
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
 	{
-		//조준 하면 확산각 하락.
-		FireAngle = RandFireAngle / 4.f;
+		
+		float FireAngle = PS->FireBulletAngle;
+		if (bIsIronsight && FireAngle != 0)
+		{
+			//조준 하면 확산각 하락.
+			FireAngle = PS->FireBulletAngle / PS->FireBulletAngle;
+		}
+
+		if (GetCharacterMovement()->IsFalling())
+		{
+			// 점프한 상태면 확산각 증가. 
+			FireAngle *= 2.f;
+		}
+		BulletRoation.Yaw += FMath::FRandRange(-FireAngle, FireAngle);
+		BulletRoation.Pitch += FMath::FRandRange(-FireAngle, FireAngle);
 	}
-
-	if (GetCharacterMovement()->IsFalling())
-	{
-		// 점프한 상태면 확산각 증가. 
-		FireAngle *= 2.f;
-	}
-
-	BulletRoation.Yaw += FMath::FRandRange(-FireAngle, FireAngle);
-	BulletRoation.Pitch += FMath::FRandRange(-FireAngle, FireAngle);
-
 
 
 	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
@@ -768,6 +771,15 @@ void ABattleCharacter::NetMulticast_SetMeshSettings_Implementation(const EMeshTy
 		break;
 	default:
 		break;
+	}
+}
+
+void ABattleCharacter::Server_AngleDown_Implementation()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->FireBulletAngle -= 3.f;
 	}
 }
 
