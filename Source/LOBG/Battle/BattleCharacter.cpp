@@ -245,7 +245,7 @@ void ABattleCharacter::OnFire()
 		Server_ProcessFire(StartVector, EndVector);
 	}
 
-	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABattleCharacter::OnFire, 0.12f, false);
+	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABattleCharacter::OnFire, 0.2f, false);
 }
 
 void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVector EndLine)

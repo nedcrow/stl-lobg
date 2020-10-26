@@ -260,6 +260,7 @@ void ABattleGM::SetPSTeamColor()
 	CreatePlayerMeshWidget();
 }
 
+//현재 안쓰는 함수 혹시 몰라서 남겨둠
 void ABattleGM::PlayerSpawn()
 {
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
@@ -341,6 +342,7 @@ void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller, EMeshType MyMeshType)
 						PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
 					Controller->Possess(PlayerPawn);
 					Controller->InitPlayerWithTeam();
+					Controller->InitTabPlayer();
 					OutputPlayerStart.RemoveAt(i);
 					break;
 				}
@@ -354,6 +356,7 @@ void ABattleGM::PlayerSpawn_Test(ABattlePC* Controller, EMeshType MyMeshType)
 						PlayerClass, OutputPlayerStart[i]->GetActorLocation(), OutputPlayerStart[i]->GetActorRotation());
 					Controller->Possess(PlayerPawn);
 					Controller->InitPlayerWithTeam();
+					Controller->InitTabPlayer();
 					OutputPlayerStart.RemoveAt(i);
 					break;
 				}

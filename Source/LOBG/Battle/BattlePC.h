@@ -87,4 +87,6 @@ public:
 
 	void OpenTab();
 	void CloseTab();
+
+	void InitTabPlayer();
 };

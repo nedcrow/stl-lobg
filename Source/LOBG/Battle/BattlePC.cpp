@@ -75,12 +75,12 @@ void ABattlePC::InitPlayerWithTeam()
 				if (PS->TeamColor == ETeamColor::Red)
 				{
 					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
-					GS->RedTabDataArray.Add(PS->MyPlayerData);
+					//GS->RedTabDataArray.Add(PS->MyPlayerData);
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
 					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
-					GS->BlueTabDataArray.Add(PS->MyPlayerData);
+					//GS->BlueTabDataArray.Add(PS->MyPlayerData);
 				}
 				PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
 				PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
@@ -306,5 +306,25 @@ void ABattlePC::CloseTab()
 	if (TabWidgetObject)
 	{
 		TabWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ABattlePC::InitTabPlayer()
+{
+	ABattlePS* PS = GetPlayerState<ABattlePS>();
+	if (PS)
+	{
+		ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
+		if (GS)
+		{
+			if (PS->TeamColor == ETeamColor::Red)
+			{
+				GS->RedTabDataArray.Add(PS->MyPlayerData);
+			}
+			else if (PS->TeamColor == ETeamColor::Blue)
+			{
+				GS->BlueTabDataArray.Add(PS->MyPlayerData);
+			}
+		}
 	}
 }
