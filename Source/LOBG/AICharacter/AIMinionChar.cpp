@@ -68,6 +68,7 @@ AAIMinionChar::AAIMinionChar()
 	PawnSensing->bOnlySensePlayers = false;
 	PawnSensing->bHearNoises = false;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
+	PawnSensing->SetActive(false);
 
 	// UI
 	HPBarHUD = CreateDefaultSubobject<UHUDBarSceneComponent>(TEXT("HPBarHUD"));
@@ -275,7 +276,8 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 			const FVector SpawnLocation = (Weapon != nullptr) ? Weapon->GetSocketLocation(TEXT("Muzzle")) : GetActorLocation() + GetActorForwardVector() * 100.f;
 			//const FRotator SpawnRotation = GetControlRotation();
-			const FRotator SpawnRotation = (TargetLocation - SpawnLocation).Rotation();
+			//const FRotator SpawnRotation = (TargetLocation - SpawnLocation).Rotation();
+			FRotator SpawnRotation = (Weapon != nullptr) ? FRotator(AimPitch, GetActorRotation().Yaw, 0.f) : FRotator(AimPitch, GetActorRotation().Yaw, 0.f);
 
 
 
@@ -290,7 +292,7 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 
 			FHitResult OutHit;
 
-			bool bResult = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), SpawnLocation, TargetLocation,
+			bool bResult = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), SpawnLocation, SpawnLocation + SpawnRotation.Vector() * 1600.f,
 				ObjectTypes, true, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
 			// 히트 결과가 같은 팀이면 사격
@@ -316,7 +318,9 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 				}
 			}
 
-
+			// 총알 확산.
+			SpawnRotation.Yaw += FMath::FRandRange(-1.f, 1.f);
+			SpawnRotation.Pitch += FMath::FRandRange(-1.f, 1.f);
 
 			// 모든 클라이언트에서 총알 스폰.
 			NetMulticast_ProcessFire(SpawnLocation, SpawnRotation);
@@ -410,7 +414,7 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
 		TempHP -= DamageAmount;
-
+		UE_LOG(LogTemp, Warning, TEXT("Minion RadialDamage:: %f"), DamageAmount);
 
 	}
 	else if (DamageEvent.IsOfType(FDamageEvent::ClassID))

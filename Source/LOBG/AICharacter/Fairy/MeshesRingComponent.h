@@ -25,6 +25,7 @@ public:
 	float OneRadian = 57.2958; // = 180 / pi degree
 
 	TArray<FTransform> SpawnTransforms;
+	TArray<FTransform> SpawnWorldTransforms;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mesh")
 		FRotator MeshRotation = FRotator::ZeroRotator;
@@ -50,7 +51,7 @@ public:
 	void NetMulticast_StartRotateAround_Implementation();
 
 	UFUNCTION()
-	void RemoveOne(int Index);
+	void RemoveOne();
 
 	UFUNCTION()
 	void AddOne(FTransform NewTransform);

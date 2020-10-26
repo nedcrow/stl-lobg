@@ -18,7 +18,7 @@ EBTNodeResult::Type UBTTask_MinionAttack::ExecuteTask(UBehaviorTreeComponent & O
 			AActor* TargetPawn = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPawn")));
 			if (TargetPawn && !TargetPawn->IsActorBeingDestroyed())
 			{
-				// 타겟 액터 or 로케이션. 상체의 로케이션을 전달한다.
+				// 타겟 액터 or 로케이션. 상체의 로케이션을 전달한다. 현재 로케이션을 사용하지 않고 미니언의 사격 방향값을 사용중.
 				AIChar->OnFire(TargetPawn->GetActorLocation() + FVector(0.f, 0.f, 20.f));
 
 				return EBTNodeResult::Succeeded;
