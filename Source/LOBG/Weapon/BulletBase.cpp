@@ -80,22 +80,6 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 			HitEffectScale
 		);
 	}
-
-	// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
-	if (!GetWorld()->IsServer() && AttackRadial > 0.f)
-	{
-		UGameplayStatics::ApplyRadialDamage(
-			GetWorld(),
-			AttackPoint,
-			SpawnLocation,
-			200.f,
-			UBulletDamageType::StaticClass(),
-			TArray<AActor*>(),
-			this,
-			SummonerController,
-			true,
-			ECC_Visibility);
-	}
 }
 
 //플레이어에 충돌하면
@@ -114,12 +98,8 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 	else if (SummonerController && OtherActor == SummonerController->GetPawn())
 	{
+		// 총알을 스폰한 당사자면 무시
 		return;
-	}
-	else if (!GetWorld()->IsServer() && OtherActor->ActorHasTag(TEXT("Minion")))
-	{
-		// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 	}
 
 	// ApplyDamage
@@ -142,38 +122,69 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				true,
 				ECC_Visibility);
 
-			NetMulticast_HitEffect(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
 			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 
-			NetMulticast_HitEffect(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-			Destroy();
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Minion")))
 		{
 			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 
-			NetMulticast_HitEffect(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-			Destroy();
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Tower")))
 		{
 			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-			NetMulticast_HitEffect(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-			Destroy();
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
+	}
+	else if (!GetWorld()->IsServer())
+	{
+		// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
+		if (AttackRadial > 0.f)
+		{
+			UGameplayStatics::ApplyRadialDamage(
+				GetWorld(),
+				AttackPoint,
+				//OtherActor->GetActorLocation(), 
+				SweepResult.ImpactPoint,
+				AttackRadial,
+				UBulletDamageType::StaticClass(),
+				TArray<AActor*>(),
+				this,
+				SummonerController,
+				true,
+				ECC_Visibility);
+
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
+		}
+		else 
+		{
+			if (OtherActor->ActorHasTag(TEXT("Minion")))
+			{
+				// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
+				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+			}
+
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+		}
+
 	}
 
 	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
 	//스스로 사라지지 않도록 Bullet 태그를 검사한다.
-	else if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
-	{
-		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
-		NetMulticast_HitEffect(OtherActor->GetActorLocation(), -SweepResult.ImpactNormal);
-		Destroy();
-	}
+	//if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
+	//{
+	//	UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
+	//	NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+	//	Destroy();
+	//}
+
+	Destroy();
 }
 
 void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -187,12 +198,8 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	}
 	else if (SummonerController && OtherActor == SummonerController->GetPawn())
 	{
+		// 총알을 스폰한 당사자면 무시
 		return;
-	}
-	else if (!GetWorld()->IsServer() && OtherActor->ActorHasTag(TEXT("Minion")))
-	{
-		// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
-		UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 	}
 
 	// ApplyDamage
@@ -234,9 +241,41 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		//	UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 		//	NetMulticast_HitEffect(OtherActor->GetActorLocation(), -Hit.ImpactNormal);
 		//}
-	}
 
-	NetMulticast_HitEffect(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
+		NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
+	}
+	else if (!GetWorld()->IsServer())
+	{	
+		// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
+		if (AttackRadial > 0.f)
+		{
+			UGameplayStatics::ApplyRadialDamage(
+				GetWorld(),
+				AttackPoint,
+				//OtherActor->GetActorLocation(), 
+				Hit.ImpactPoint,
+				AttackRadial,
+				UBulletDamageType::StaticClass(),
+				TArray<AActor*>(),
+				this,
+				SummonerController,
+				true,
+				ECC_Visibility);
+
+			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
+		}
+		else 
+		{
+			if (OtherActor->ActorHasTag(TEXT("Minion")))
+			{
+				// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
+				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+			}
+
+			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -Hit.ImpactNormal);
+		}
+
+	}
 
 
 	// Sound
