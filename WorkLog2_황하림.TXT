@@ -128,6 +128,8 @@
 1026
   Fix battle map (coursePoint)
   Fix about attack BTTasks (Minion, Fairy)
+  Add & Fix effect(tower, bullet)
+  Add BP_FairyPawnBoss
 
   아직 radial damage minion 안먹음
   

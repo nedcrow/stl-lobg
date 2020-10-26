@@ -55,10 +55,12 @@ public:
 	// Effect
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* HitEffect;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	FVector HitEffectScale = FVector::OneVector;
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void NetMulticast_HitEffect(FVector SpawnLocation);
-	void NetMulticast_HitEffect_Implementation(FVector SpawnLocation);
+	void NetMulticast_HitEffect(FVector SpawnLocation, FVector HitRirection);
+	void NetMulticast_HitEffect_Implementation(FVector SpawnLocation, FVector HitDirection);
 
 	// OverlapEvent
 	UFUNCTION()

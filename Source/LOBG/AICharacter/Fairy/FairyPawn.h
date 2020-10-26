@@ -62,6 +62,9 @@ public:
 
 	// Base property
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	uint8 bIsBoss:1;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
 	float MaxHP = 100;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Data")
@@ -154,20 +157,33 @@ public:
 
 
 	// Effect
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UParticleSystem* HeadEffect;
+	class UParticleSystemComponent* HeadEffectComponent;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* SpawnEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* FireEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UParticleSystem* DeathEffect;
+
 	UFUNCTION(NetMulticast, Unreliable)
-	void NetMulticast_SpawnEffect(FVector SpawnLocation);
-	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
+	void NetMulticast_HeadEffect();
+	void NetMulticast_HeadEffect_Implementation();
+	void SpawnHeadEffect();
+
 	void SpawnSpawnEffect(FVector SpawnLocation);
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_FireEffect(FVector SpawnLocation);
 	void NetMulticast_FireEffect_Implementation(FVector SpawnLocation);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulticast_DeadthEffect();
+	void NetMulticast_DeadthEffect_Implementation();
 
 	// HUD
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
