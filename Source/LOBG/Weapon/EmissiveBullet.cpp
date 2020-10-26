@@ -98,6 +98,10 @@ void AEmissiveBullet::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, 
 		Destroy();
 		return;
 	}
+	else if (SummonerController && OtherActor == SummonerController->GetPawn())
+	{
+		return;
+	}
 	else if(!GetWorld()->IsServer() && OtherActor->ActorHasTag(TEXT("Minion")))
 	{
 		// 클라이언트 피격 이펙트용 가짜 데미지.

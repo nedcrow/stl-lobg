@@ -23,7 +23,7 @@
 #include "Components/WidgetComponent.h"
 #include "../UI/HPBarWidgetBase.h"
 #include "../UI/HUDBarSceneComponent.h"
-
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -331,6 +331,9 @@ void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLoca
 		}
 
 		Bullet->SetDamageInfo(GetController(), BulletAttackPoint, 0, TeamName);
+
+		// 총알에 캐릭터의 관성을 추가한다. 적용 취소. 피직스를 키면 총알 물리가 이상해짐;;
+		//Bullet->Sphere->AddImpulse(GetVelocity());			
 	}
 
 
@@ -369,12 +372,17 @@ void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLoca
 float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (CurrentHP <= 0) return 0.f;
 
-	if (DamageCauser->ActorHasTag(TeamName)) {
+	if (CurrentHP <= 0)
+	{
 		return 0.f;
 	}
-	
+
+	if (!GetWorld()->IsServer() || DamageCauser->ActorHasTag(TeamName))
+	{
+		return 0.f;
+	}
+
 	float TempHP = CurrentHP;
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
@@ -383,7 +391,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 
 		//네트워크상에서 CurrentHP동기화를 한번한 하기 위한 장치
-		
+
 
 		FPointDamageEvent* PointDamageEvent = (FPointDamageEvent*)(&DamageEvent);
 		if (PointDamageEvent->HitInfo.BoneName.Compare(TEXT("head")) == 0)

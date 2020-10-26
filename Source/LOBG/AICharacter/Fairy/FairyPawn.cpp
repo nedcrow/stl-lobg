@@ -108,12 +108,18 @@ void AFairyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 }
 
 // 타워를 막타 팀으로 이전
-float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
 	if (CurrentHP <= 0)
 	{
 		return 0.0f;
+	}
+
+	if (!GetWorld()->IsServer() || DamageCauser->ActorHasTag(TeamName))
+	{
+		return 0.f;
 	}
 
 	float TempHP = 0;

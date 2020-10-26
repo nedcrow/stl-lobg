@@ -401,10 +401,15 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 	{
 		return DamageAmount;
 	}
-	else if (!GetWorld()->IsServer())
+	
+	if (!GetWorld()->IsServer())
 	{
-		// 피격 효과 클라이언트용. 데미지 입력을 받지만 계산은 하지 않는다.
-		BP_HitEffect();
+		if (!DamageCauser->ActorHasTag(TeamName))
+		{
+			// 피격 효과 클라이언트용. 데미지 입력을 받지만 계산은 하지 않는다.
+			BP_HitEffect();
+		}
+
 		return 0.f;
 	}
 
