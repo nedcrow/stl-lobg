@@ -61,14 +61,24 @@ public:
 
 
 	// Base property
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	uint8 bIsBoss:1;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
 	float MaxHP = 100;
 
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Data")
 	float CurrentHP = 100;;
 
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
-	float AttackPoint = 11;
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float AttackPoint = 25;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float FairyMoney = 1000;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float FairyExp = 1000;
+
 
 	UFUNCTION()
 	void OnRepCurrentHP();
@@ -78,10 +88,10 @@ public:
 	void Server_CallRotationRingComponent_Implementation();
 
 	// State & AI ref - 변할 수 있는 상태
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 	ETeamColor TeamColor=ETeamColor::None;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 	EFairyState CurrentState;
 
 	UFUNCTION(BlueprintCallable)
@@ -128,7 +138,6 @@ public:
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	float ReloadingTime = 10;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<float> ReloadingPercentages;
 
 	uint8 bIsCasting : 1;
@@ -148,20 +157,33 @@ public:
 
 
 	// Effect
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UParticleSystem* HeadEffect;
+	class UParticleSystemComponent* HeadEffectComponent;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* SpawnEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* FireEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UParticleSystem* DeathEffect;
+
 	UFUNCTION(NetMulticast, Unreliable)
-	void NetMulticast_SpawnEffect(FVector SpawnLocation);
-	void NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation);
+	void NetMulticast_HeadEffect();
+	void NetMulticast_HeadEffect_Implementation();
+	void SpawnHeadEffect();
+
 	void SpawnSpawnEffect(FVector SpawnLocation);
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_FireEffect(FVector SpawnLocation);
 	void NetMulticast_FireEffect_Implementation(FVector SpawnLocation);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulticast_DeadthEffect();
+	void NetMulticast_DeadthEffect_Implementation();
 
 	// HUD
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

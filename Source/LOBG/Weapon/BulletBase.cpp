@@ -30,7 +30,7 @@ ABulletBase::ABulletBase()
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 5.0f;
+	InitialLifeSpan = 3.0f;
 
 	Tags.Add(TEXT("Bullet"));
 }
@@ -67,14 +67,17 @@ void ABulletBase::SetDamageInfo(AController* Controller, float NewAttackPoint, f
 	Tags.Add(TeamName);
 }
 
-void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation)
+void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, FVector HitDirection)
 {
 	if (HitEffect)
 	{
+		FRotator Rotation = HitDirection.Rotation();
 		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			HitEffect,
-			SpawnLocation
+			SpawnLocation,
+			Rotation,
+			HitEffectScale
 		);
 	}
 }
@@ -124,7 +127,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 			}
-			NetMulticast_HitEffect(OtherActor->GetActorLocation());
+			NetMulticast_HitEffect(OtherActor->GetActorLocation(), -SweepResult.ImpactNormal);
 			Destroy();
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Minion")))
@@ -146,13 +149,13 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			else {
 				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 			}
-			NetMulticast_HitEffect(OtherActor->GetActorLocation());
+			NetMulticast_HitEffect(OtherActor->GetActorLocation(), -SweepResult.ImpactNormal);
 			Destroy();
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Tower")))
 		{
 			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-			NetMulticast_HitEffect(OtherActor->GetActorLocation());
+			NetMulticast_HitEffect(OtherActor->GetActorLocation(), -SweepResult.ImpactNormal);
 			Destroy();
 		}
 	}
@@ -162,7 +165,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	else if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
 	{
 		UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
-		NetMulticast_HitEffect(OtherActor->GetActorLocation());
+		NetMulticast_HitEffect(OtherActor->GetActorLocation(), -SweepResult.ImpactNormal);
 		Destroy();
 	}
 }

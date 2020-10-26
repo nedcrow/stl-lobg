@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -82,6 +83,12 @@ void AFairyPawn::BeginPlay()
 		ReloadingPercentages.Init(-1, ActiveMeshesRingComp->MaxMeshCount);	
 	}
 	
+	/*if (bIsBoss) {
+		UE_LOG(LogTemp, Warning, TEXT("Start HeadEffect"));
+
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::SpawnHeadEffect, 2.f, false);
+	}*/
+
 	if (GetWorld()->IsServer()) {
 		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Server_CallRotationRingComponent, 2.f, false);
 	}
@@ -121,7 +128,6 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 		OnRepCurrentHP();
 	}
 	
-	//UE_LOG(LogTemp, Warning, TEXT("Ouch (%f)"), Damage );
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
 		// 죽음 effect 추가 필요
@@ -129,6 +135,21 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 		NewTeamName = GetTeamName(EventInstigator->GetPawn());
 		//NetMulticast_ResetTags(NewTeamName);
 
+		// 죽인게 캐릭터인지 확인
+		ABattlePC* PC = Cast<ABattlePC>(EventInstigator);
+		if (PC)
+		{
+			ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
+			if (Pawn)
+			{
+				Pawn->Server_SetBooty(FairyMoney, FairyExp);
+			}
+		}
+
+		if (bIsBoss) {
+			// game over
+		}
+		NetMulticast_DeadthEffect();
 		Destroy();
 	}
 	
@@ -153,6 +174,9 @@ void AFairyPawn::Server_CallRotationRingComponent_Implementation()
 	if (ActiveMeshesRingComp && RestMeshesRingComp){
 		ActiveMeshesRingComp->NetMulticast_StartRotateAround();
 		RestMeshesRingComp->NetMulticast_StartRotateAround();
+	}
+	if (bIsBoss) {
+		SpawnHeadEffect();
 	}
 }
 
@@ -217,7 +241,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		FLinearColor::Green,
 		5.0f
 	);
-
+	
 
 	// remove missile
 	if (ActiveMeshesRingComp->GetInstanceCount() > 0) {
@@ -232,7 +256,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 			}
 		}
 	}
-	
+
 	// spawn missile
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)
@@ -327,16 +351,29 @@ void AFairyPawn::Repair()
 	}
 }
 
-void AFairyPawn::NetMulticast_SpawnEffect_Implementation(FVector SpawnLocation)
+void AFairyPawn::NetMulticast_HeadEffect_Implementation()
 {
-	if (SpawnEffect)
-	{
+	if (HeadEffect) {
 		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
-			SpawnEffect,
-			SpawnLocation
+			HeadEffect,
+			Head->GetRelativeLocation() + FVector(0, 0, 300.f)
 		);
+		FVector Temp = Head->GetRelativeLocation();
+		UE_LOG(LogTemp, Warning, TEXT("HeadEffect %f, %f, %f"), Temp.X, Temp.Y, Temp.Z);
 	}
+}
+
+void AFairyPawn::SpawnHeadEffect()
+{
+	if (HeadEffect) {
+		FVector Temp = GetActorLocation() + Head->GetRelativeLocation() + FVector(0, 0, 100.f);
+		HeadEffectComponent = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HeadEffect,
+			Temp
+		);
+	}	
 }
 
 void AFairyPawn::SpawnSpawnEffect(FVector SpawnLocation)
@@ -361,6 +398,19 @@ void AFairyPawn::NetMulticast_FireEffect_Implementation(FVector SpawnLocation)
 			SpawnLocation
 		);
 	}
+}
+
+void AFairyPawn::NetMulticast_DeadthEffect_Implementation()
+{
+	if (DeathEffect)
+	{
+		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			DeathEffect,
+			GetActorLocation()
+		);
+	}
+	if(HeadEffectComponent) HeadEffectComponent->DestroyComponent();
 }
 
 void AFairyPawn::UpdateHPBar()
