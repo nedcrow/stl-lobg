@@ -8,6 +8,7 @@
 #include "../Weapon/WeaponComponent.h"
 #include "../Weapon/EmissiveBullet.h"
 #include "../Battle/BattleGM.h"
+#include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
 #include "../UI/HUDBarSceneComponent.h"
 #include "../UI/HPBarWidgetBase.h"
@@ -438,6 +439,17 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		NetMulticast_StartDeath(FMath::RandRange(1, 3));
 		SetState(EMinioonState::Dead);
 		SetLifeSpan(5.f);
+
+		//죽인플레이어에게 보상
+		ABattlePC* PC = Cast<ABattlePC>(EventInstigator);
+		if (PC)
+		{
+			ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
+			if (Pawn)
+			{
+				Pawn->Server_SetBooty(MinionMoney, MinionExp);
+			}
+		}
 	}
 	else if(EventInstigator)
 	{

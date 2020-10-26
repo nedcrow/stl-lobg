@@ -132,7 +132,7 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Blue"), BlueReSpawnArray);
 
 			TArray<AActor*> NoneReSpawnArray;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AReSpawn::StaticClass(), NoneReSpawnArray);
+			UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("None"), NoneReSpawnArray);
 
 			ABattlePS* PS = Cast<ABattlePS>(Pawn->GetPlayerState());
 			if (PS)

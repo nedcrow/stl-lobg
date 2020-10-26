@@ -146,4 +146,10 @@ public:
 
 	void InitHPBar();
 	void UpdateHPBar();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		float MinionExp = 100.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		int MinionMoney = 100;
 };

@@ -664,6 +664,7 @@ void ABattleCharacter::NetMulticast_InitHPBar_Implementation(ETeamColor color)
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{
+		UE_LOG(LogClass, Warning, TEXT("Player HUD is Vaild"));
 		if (color == ETeamColor::Red)
 		{
 			HPWidget->SetColorAndOpacity(ColorRed);
