@@ -125,5 +125,9 @@
   Fix fairy missile reloading - 발사를 순서대로, 로딩 퍼센트 저장공간 인덱스만 갱신
   Fix fairy collision
 
+1026
+  Fix battle map (coursePoint)
+  radial damage minion 안먹음
+
  
    
