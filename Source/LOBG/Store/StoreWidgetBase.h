@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-//#include "StoreItemWidgetBase.h"
-//#include "../Item/ItemDataTable.h"
-#include "../Item/ItemDataTableTest.h"
+#include "../Item/ItemDataTable.h"
 #include "StoreWidgetBase.generated.h"
 
 /**
@@ -22,23 +20,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UBorder* StoreBorder;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-		TArray<FString> ItemTextArray;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-		TArray<UMaterialInstance*> ItemInstanceArray;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-	//	TArray<EItemName> ItemNameArray;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-		TArray<int> ItemMoneyArray;
-
-	//TArray<class UStoreItemWidgetBase*> ItemWidgetArray;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "StoreData")
-		TSubclassOf<class UStoreItemWidgetBase> StoreItemWidgetClass;
-
 	void InitItemArray();
 
 	void SetVisiBilitySlot(ESlateVisibility NewValue);
@@ -49,6 +30,5 @@ public:
 	void CheckSlotActive();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
-		class UDataTable* ItemDataTableTest;
-
+		class UDataTable* ItemDataTable;
 };

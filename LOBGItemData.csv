@@ -1,6 +1,6 @@
-Name,ItemIndex,ItemName,ItemPrice,ItemDescription,ItemImage
-0,0,SpeedUp,200,안녕하세요,
-1,1,Grip,300,설명,
-2,2,Ironsight,400,설명,
-3,3,heel,200,설명,
-4,4,bullet,200,설명,
+,ItemIndex,ItemName,ItemPrice,ItemDescription,ItemImage
+0,0,SpeedUp,200,,
+1,1,Grip,300,,
+2,2,Ironsight,400,,
+3,3,Heel,200,,
+4,4,Bullet,200,,
