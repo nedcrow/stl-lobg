@@ -143,6 +143,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				ECC_Visibility);
 
 			NetMulticast_HitEffect(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+			Destroy();
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Player")))
 		{

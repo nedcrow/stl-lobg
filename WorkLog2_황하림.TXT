@@ -130,8 +130,11 @@
   Fix about attack BTTasks (Minion, Fairy)
   Add & Fix effect(tower, bullet)
   Add BP_FairyPawnBoss
+  Add about game result tab
+    * Material
+    * UIWidgetBase & SlotWidget
+    * OpenResultTab function
 
-  아직 radial damage minion 안먹음
   
 
  
