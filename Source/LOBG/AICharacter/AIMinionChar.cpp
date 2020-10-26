@@ -317,6 +317,29 @@ void AAIMinionChar::OnFire(FVector TargetLocation)
 
 					return;
 				}
+
+				// 나는 평화주의자라 죽은놈은 안 때림. BTTASK에서 선행 체크해서 현재는 사용 안 함.
+				if (OutHit.GetActor()->ActorHasTag("Minion")) {
+					AAIMinionChar* Actor = Cast<AAIMinionChar>(OutHit.GetActor());
+					if (Actor && Actor->CurrentState == EMinioonState::Dead) {
+						SetState(EMinioonState::Normal);
+						return;
+					}
+				}
+				else if (OutHit.GetActor()->ActorHasTag("Player")) {
+					ABattleCharacter* Actor = Cast<ABattleCharacter>(OutHit.GetActor());
+					if (Actor && Actor->CurrentState == EBattleCharacterState::Dead) {
+						SetState(EMinioonState::Normal);
+						return;
+					}
+				}
+				else if (OutHit.GetActor()->ActorHasTag("Tower")) {
+					AFairyPawn* Actor = Cast<AFairyPawn>(OutHit.GetActor());
+					if (Actor && Actor->CurrentState == EFairyState::Death) {
+						SetState(EMinioonState::Normal);
+						return;
+					}
+				}
 			}
 
 			// 총알 확산.

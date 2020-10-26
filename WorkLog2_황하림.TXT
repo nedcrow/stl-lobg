@@ -127,7 +127,10 @@
 
 1026
   Fix battle map (coursePoint)
-  radial damage minion 안먹음
+  Fix about attack BTTasks (Minion, Fairy)
+
+  아직 radial damage minion 안먹음
+  
 
  
    

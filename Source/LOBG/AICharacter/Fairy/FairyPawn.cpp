@@ -129,6 +129,18 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, ACo
 		NewTeamName = GetTeamName(EventInstigator->GetPawn());
 		//NetMulticast_ResetTags(NewTeamName);
 
+		// 죽인게 캐릭터인지 확인
+		ABattlePC* PC = Cast<ABattlePC>(EventInstigator);
+		if (PC)
+		{
+			ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
+			if (Pawn)
+			{
+				Pawn->Server_SetBooty(FairyMoney, FairyExp);
+			}
+		}
+
+
 		Destroy();
 	}
 	
@@ -217,7 +229,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 		FLinearColor::Green,
 		5.0f
 	);
-
+	
 
 	// remove missile
 	if (ActiveMeshesRingComp->GetInstanceCount() > 0) {
@@ -232,7 +244,7 @@ void AFairyPawn::Server_ProcessFire_Implementation(FVector StartLocation, FRotat
 			}
 		}
 	}
-	
+
 	// spawn missile
 	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, StartLocation, StartDirection);
 	if (Bullet)

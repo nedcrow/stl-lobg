@@ -4,6 +4,8 @@
 #include "BTTask_CallFire.h"
 #include "../Fairy/FairyAIController.h"
 #include "../Fairy/FairyPawn.h"
+#include "../AIMinionChar.h"
+#include "../../Battle/BattleCharacter.h"
 #include "BehaviorTree/BlackBoardComponent.h"
 
 EBTNodeResult::Type UBTTask_CallFire::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -17,6 +19,21 @@ EBTNodeResult::Type UBTTask_CallFire::ExecuteTask(UBehaviorTreeComponent& OwnerC
 		if (Pawn && Enemy && Enemy != NULL)
 		{
 			if (Enemy && Enemy != NULL) {
+				// dead state checking.
+				if (Enemy->ActorHasTag("Minion")) {
+					AAIMinionChar* Actor = Cast<AAIMinionChar>(Enemy);
+					if (Actor && Actor->CurrentState == EMinioonState::Dead) {
+						Pawn->SetCurrentState(EFairyState::Idle);
+						return EBTNodeResult::Failed;
+					}
+				}
+				else if (Enemy->ActorHasTag("Player")) {
+					ABattleCharacter* Actor = Cast<ABattleCharacter>(Enemy);
+					if (Actor && Actor->CurrentState == EBattleCharacterState::Dead) {
+						Pawn->SetCurrentState(EFairyState::Idle);
+						return EBTNodeResult::Failed;
+					}
+				}
 				Pawn->StartFireTo(Enemy->GetTransform().GetLocation());
 			}
 		}

@@ -61,14 +61,21 @@ public:
 
 
 	// Base property
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
 	float MaxHP = 100;
 
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRepCurrentHP", EditAnywhere, Category = "Data")
 	float CurrentHP = 100;;
 
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
-	float AttackPoint = 11;
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float AttackPoint = 25;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float FairyMoney = 1000;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Data")
+	float FairyExp = 1000;
+
 
 	UFUNCTION()
 	void OnRepCurrentHP();
@@ -78,10 +85,10 @@ public:
 	void Server_CallRotationRingComponent_Implementation();
 
 	// State & AI ref - 변할 수 있는 상태
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 	ETeamColor TeamColor=ETeamColor::None;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 	EFairyState CurrentState;
 
 	UFUNCTION(BlueprintCallable)
@@ -128,7 +135,6 @@ public:
 	/* Second */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	float ReloadingTime = 10;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<float> ReloadingPercentages;
 
 	uint8 bIsCasting : 1;
