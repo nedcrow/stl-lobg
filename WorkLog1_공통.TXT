@@ -485,3 +485,24 @@ AI캐릭터 위젯 팀 컬러 적용.
 조혁
 상점의 항목들을 csv로 받아와 데이터 테이블을 만들어서 구성
 
+오정원
+ApplyRadialDamage, TakeDamage 함수 수정.
+미사일과 플레이어의 총알이 바닥에 부딛혀도 데미지와 이펙트가 발생하게 수정.
+총알 이펙트 발생지점 잘 보이게 수정.
+
+
+1027
+
+
+------------------------------------------
+Assertion failed: (Index >= 0) & (Index < ArrayNum) [File:C:\Program Files\Epic Games\UE_4.25\Engine\Source\Runtime\Core\Public\Containers/Array.h] [Line: 674] Array index out of bounds: 0 from an array of size 0
+
+UE4Editor_Core
+UE4Editor_Core
+UE4Editor_LOBG_0004!DispatchCheckVerify<void,<lambda_75d32c0187d82cd024b484426986fc10> >() [C:\Program Files\Epic Games\UE_4.25\Engine\Source\Runtime\Core\Public\Misc\AssertionMacros.h:162]
+UE4Editor_LOBG_0004!AFairyPawn::NetMulticast_RemoveMissile_Implementation() [D:\WorkTemp\sba\SBA20_Project\stl-lobg\Source\LOBG\AICharacter\Fairy\FairyPawn.cpp:279]
+
+테스트 하림맵에서 가끔 이런 오류가 나옵니다.
+이 부분은 확인후 지워주세요.
+------------------------------------------
+
