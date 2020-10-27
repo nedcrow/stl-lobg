@@ -216,6 +216,11 @@ void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 // Fire
 void AFairyPawn::StartFireTo(FVector TargetLocation)
 {
+	// ActiveMeshesRingComp 생성이 늦어진 경우 대비
+	if (ReloadingPercentages.Num() < ActiveMeshesRingComp->MaxMeshCount) {
+		ReloadingPercentages.Init(-1, ActiveMeshesRingComp->MaxMeshCount);
+	}
+
 	if(ActiveMeshesRingComp && ActiveMeshesRingComp->GetInstanceCount() > 0) {
 		FTransform TempTransform;
 		ActiveMeshesRingComp->GetInstanceTransform(0, TempTransform, true);

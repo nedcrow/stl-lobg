@@ -14,6 +14,7 @@
 #include "../ChoiceMesh/MeshWidgetBase.h"
 #include "../UI/GameStartWidgetBase.h"
 #include "../UI/TabWidgetBase.h"
+#include "../UI/GameResultWidgetBase.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -129,6 +130,16 @@ void ABattlePC::Client_TestWidget_Implementation()
 			if (MeshWidgetObject)
 			{
 				MeshWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
+
+		if (ResultWidgetClass)
+		{
+			ResultWidgetObject = CreateWidget<UGameResultWidgetBase>(this, ResultWidgetClass);
+			if (ResultWidgetObject)
+			{
+				ResultWidgetObject->AddToViewport();
+				ResultWidgetObject->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
@@ -326,5 +337,13 @@ void ABattlePC::InitTabPlayer()
 				GS->BlueTabDataArray.Add(PS->MyPlayerData);
 			}
 		}
+	}
+}
+
+void ABattlePC::OpenResultTab()
+{
+	if (ResultWidgetObject) {
+		ResultWidgetObject->SetMVP();
+		ResultWidgetObject->SetVisibility(ESlateVisibility::Visible);
 	}
 }

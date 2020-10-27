@@ -77,8 +77,7 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 			HitEffect,
 			SpawnLocation,
 			Rotation,
-			HitEffectScale
-		);
+			HitEffectScale);		
 	}
 }
 
@@ -89,9 +88,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	UE_LOG(LogClass, Warning, TEXT("Other Actor : %s %s"), *OtherActor->GetName(), *SweepResult.BoneName.ToString());
 
-	// 같은팀이라면 return
-	if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
+	if (!bCanHit)
 	{
+		//공격 판정은 한번만 발생. 관통 공격이 추가될 경우 수정할 필요가 있다.
+		return;
+	}
+	else if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
+	{
+		// 같은팀이라면 return
 		//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 		Destroy();
 		return;
@@ -101,6 +105,8 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		// 총알을 스폰한 당사자면 무시
 		return;
 	}
+
+	bCanHit = false;
 
 	// ApplyDamage
 	//bool RadialType = AttackRadial > 0 ? true : false;
@@ -121,12 +127,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				SummonerController,
 				true,
 				ECC_Visibility);
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 1111111111111"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
 			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 2222222222222"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
@@ -159,6 +167,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				SummonerController,
 				true,
 				ECC_Visibility);
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 333333333333"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
 		}
@@ -169,6 +178,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
 				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 			}
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 4444444444444"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
@@ -189,9 +199,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// 같은팀이라면 return
-	if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
+	if (!bCanHit)
 	{
+		//공격 판정은 한번만 발생. 관통 공격이 추가될 경우 수정할 필요가 있다.
+		return;
+	}
+	else if (OtherActor == NULL || OtherActor->ActorHasTag(TeamName))
+	{
+		// 같은팀이라면 return
 		//NetMulticast_HitEffect(OtherActor->GetActorLocation());
 		Destroy();
 		return;
@@ -201,6 +216,8 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		// 총알을 스폰한 당사자면 무시
 		return;
 	}
+
+	bCanHit = false;
 
 	// ApplyDamage
 	//bool RadialType = AttackRadial > 0 ? true : false;
@@ -241,6 +258,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		//	UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 		//	NetMulticast_HitEffect(OtherActor->GetActorLocation(), -Hit.ImpactNormal);
 		//}
+		UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 555555555555"));
 
 		NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
 	}
@@ -261,6 +279,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 				SummonerController,
 				true,
 				ECC_Visibility);
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 6666666666666666"));
 
 			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
 		}
@@ -271,6 +290,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 				// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
 				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 			}
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 77777777777777777"));
 
 			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -Hit.ImpactNormal);
 		}

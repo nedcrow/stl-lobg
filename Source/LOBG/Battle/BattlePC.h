@@ -89,4 +89,13 @@ public:
 	void CloseTab();
 
 	void InitTabPlayer();
+
+	// Result
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	TSubclassOf<class UGameResultWidgetBase> ResultWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	class UGameResultWidgetBase* ResultWidgetObject;
+
+	void OpenResultTab();
 };
