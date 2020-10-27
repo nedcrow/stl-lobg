@@ -791,3 +791,21 @@ void ABattleCharacter::Server_AngleDown_Implementation()
 	}
 }
 
+void ABattleCharacter::Server_SetPSFOV_Implementation()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->PlayerFOV = 30.f;
+	}
+}
+
+void ABattleCharacter::SetPSFOV()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->PlayerFOV = 30.f;
+	}
+}
+

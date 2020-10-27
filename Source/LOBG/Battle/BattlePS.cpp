@@ -61,4 +61,6 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, NewExp);
 	DOREPLIFETIME(ABattlePS, TeamColor);
 	DOREPLIFETIME(ABattlePS, PlayerMeshType);
+	DOREPLIFETIME(ABattlePS, FireBulletAngle);
+	DOREPLIFETIME(ABattlePS, PlayerFOV);
 }

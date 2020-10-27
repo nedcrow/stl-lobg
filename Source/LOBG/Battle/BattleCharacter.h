@@ -299,4 +299,10 @@ public:
 	UFUNCTION(Server, Reliable)
 		void Server_AngleDown();
 	void Server_AngleDown_Implementation();
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetPSFOV();
+	void Server_SetPSFOV_Implementation();
+
+	void SetPSFOV();
 };

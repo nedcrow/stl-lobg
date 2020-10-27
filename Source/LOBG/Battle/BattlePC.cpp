@@ -167,6 +167,7 @@ void ABattlePC::PushOpenStore()
 {
 	if (IsLocalPlayerController() && bStoreOpen)
 	{
+	UE_LOG(LogClass, Warning, TEXT("OpenStore"));
 		//범위 안에서 보여져 있다면 안보이게 만들고 return
 		if (StoreWidgetObject->GetVisibility() == ESlateVisibility::Visible)
 		{

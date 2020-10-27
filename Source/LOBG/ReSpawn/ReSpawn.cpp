@@ -21,14 +21,17 @@ AReSpawn::AReSpawn()
 	RootComponent = Root;
 	ReSpawnArea->SetupAttachment(RootComponent);
 	Sphere->SetupAttachment(RootComponent);
+
+	Root->OnComponentBeginOverlap.AddDynamic(this, &AReSpawn::BeginOverlapProcess);
+	Root->OnComponentEndOverlap.AddDynamic(this, &AReSpawn::EndOverlapProcess);
+
 }
 
 // Called when the game starts or when spawned
 void AReSpawn::BeginPlay()
 {
 	Super::BeginPlay();
-	Root->OnComponentBeginOverlap.AddDynamic(this, &AReSpawn::BeginOverlapProcess);
-	Root->OnComponentEndOverlap.AddDynamic(this, &AReSpawn::EndOverlapProcess);
+	
 }
 
 // Called every frame
@@ -45,15 +48,20 @@ void AReSpawn::BeginOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
-	if (PlayerPawn)
+				UE_LOG(LogClass, Warning, TEXT("bStoreOpen is true"));
+	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
-		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
-		if (PC)
+		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
+		if (PlayerPawn)
 		{
-			PC->bStoreOpen = true;
+			ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
+			if (PC)
+			{
+				PC->bStoreOpen = true;
+			}
 		}
 	}
+	
 }
 
 void AReSpawn::EndOverlapProcess(UPrimitiveComponent* OverlappedComponent,
@@ -67,6 +75,7 @@ void AReSpawn::EndOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
 		if (PC)
 		{
+			UE_LOG(LogClass, Warning, TEXT("bStoreOpen is false"));
 			PC->bStoreOpen = false;
 		}
 	}

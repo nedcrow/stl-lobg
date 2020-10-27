@@ -2,20 +2,26 @@
 
 
 #include "Battle_PCM.h"
-
+#include "BattlePC.h"
 #include "BattleCharacter.h"
+#include "BattlePS.h"
 
 void ABattle_PCM::UpdateCamera(float DeltaTime)
 {
-	APlayerController* PC = GetOwningPlayerController();
+	ABattlePC* PC = Cast<ABattlePC>(GetOwningPlayerController());
 	if (PC && PC->IsValidLowLevelFast())
 	{
 		ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
 		if (Pawn && Pawn->IsValidLowLevelFast())
 		{
-			TargetFOV = Pawn->bIsIronsight ? IronsightFOV : NormalFOV;
+			ABattlePS* PS = PC->GetPlayerState<ABattlePS>();
+			if (PS)
+			{
+				TargetFOV = Pawn->bIsIronsight ? PS->PlayerFOV : NormalFOV;
+			}
 			if (GetFOVAngle() != TargetFOV)
 			{
+				
 				SetFOV(FMath::FInterpTo(GetFOVAngle(), TargetFOV, DeltaTime, 15.0f));
 			}
 		}

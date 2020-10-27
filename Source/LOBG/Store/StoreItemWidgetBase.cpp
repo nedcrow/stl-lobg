@@ -36,7 +36,9 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			PlayerPawn->Server_AngleDown();
 			break;
 		case 2:
-			
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_SetPSFOV();
+			//PlayerPawn->SetPSFOV();
 			break;
 		case 3:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
