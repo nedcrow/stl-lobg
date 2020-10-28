@@ -205,7 +205,5 @@ public:
 	void NetMulticast_ResetTags(const FName& TeamTag);
 	void NetMulticast_ResetTags_Implementation(const FName& TeamTag);
 	
-	UFUNCTION()
-	FName GetTeamName(APawn * Pawn);
 	FName TeamName;
 };

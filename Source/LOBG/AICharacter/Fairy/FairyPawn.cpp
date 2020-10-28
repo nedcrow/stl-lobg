@@ -132,31 +132,36 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
 
-		FName NewTeamName = "None";
-		NewTeamName = GetTeamName(EventInstigator->GetPawn());
-		//NetMulticast_ResetTags(NewTeamName);
+		FName AttackerTeamName =	DamageCauser->ActorHasTag("Blue") ? "Blue" :
+									DamageCauser->ActorHasTag("Red") ? "Red" : 
+									"None";
+		//NetMulticast_ResetTags(AttackerTeamName);
+
 
 		// 죽인게 캐릭터인지 확인
-		ABattlePC* PC = Cast<ABattlePC>(EventInstigator);
-		if (PC)
+		ABattlePC* AttackerPC = Cast<ABattlePC>(EventInstigator);
+		if (AttackerPC)
 		{
-			ABattleCharacter* Pawn = Cast<ABattleCharacter>(PC->GetPawn());
+			ABattleCharacter* Pawn = Cast<ABattleCharacter>(AttackerPC->GetPawn());
 			if (Pawn)
 			{
 				Pawn->Server_SetBooty(FairyMoney, FairyExp);
 			}
 		}
 
-		if (bIsBoss) {
-			UE_LOG(LogTemp, Warning, TEXT("Game Over"));
-			ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
-			if (GM)
+		if (bIsBoss && GetWorld() && CurrentState != EFairyState::Death) {
+			ABattleGM* GM = Cast<ABattleGM>(GetWorld()->GetAuthGameMode());
+			ABattlePC* PC = Cast<ABattlePC>(GetWorld()->GetFirstPlayerController());
+			if (GM && GetWorld()->IsServer())
 			{
 				GM->CountTower(TeamColor);
 			}
+			if (PC) {
+				PC->OpenResultTab(AttackerTeamName == "Blue" ? ETeamColor::Blue : ETeamColor::Red);
+			}
 		}
 		NetMulticast_DeadthEffect();
-
+		SetCurrentState(EFairyState::Death);
 		
 
 		Destroy();
@@ -204,7 +209,9 @@ void AFairyPawn::SetCurrentState(EFairyState NewState)
 void AFairyPawn::ProcessSeenPawn(APawn * Pawn)
 {
 	if (CurrentState == EFairyState::Idle) {
-		FName EnemyTeamName = GetTeamName(Pawn);
+		FName EnemyTeamName =	Pawn->ActorHasTag("Blue") ? "Blue" :
+								Pawn->ActorHasTag("Red") ? "Red" :
+								"None";
 		if (EnemyTeamName != TeamName) {
 			AFairyAIController* AIC = GetController<AFairyAIController>();
 			if (AIC && AIC->CurrentEnermy != Pawn)
@@ -477,21 +484,6 @@ void AFairyPawn::NetMulticast_ResetTags_Implementation(const FName & TeamTag)
 		TeamName = TeamTag;
 	}
 
-}
-
-FName AFairyPawn::GetTeamName(APawn * Pawn)
-{
-	FName NewTeamName = "None";
-	if (Pawn->ActorHasTag(TEXT("Player"))) {
-		NewTeamName = Cast<ABattleCharacter>(Pawn)->TeamName;
-	}
-	else if(Pawn->ActorHasTag(TEXT("Minion"))) {
-		NewTeamName = Cast<AAIMinionChar>(Pawn)->TeamName;
-	}
-	else if (Pawn->ActorHasTag(TEXT("Tower"))) {
-		NewTeamName = Cast<AFairyPawn>(Pawn)->TeamName;
-	}
-	return NewTeamName;
 }
 
 

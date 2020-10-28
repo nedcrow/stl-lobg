@@ -35,36 +35,6 @@ void ABattleGM::BeginPlay()
 	FindPlayerStart();
 
 	FindTowers();
-
-	//5초 실행되도록 함수로 옮김
-	// GS의 시간 변수가 0이 되면 GM의 StartAIMinion() 실행
-
-	// AIManager Spawn.
-	//if (AIManagerClass)
-	//{
-	//	for (int i = 0; i < 6; i++)
-	//	{
-	//		AAIManager * AIM = GetWorld()->SpawnActor<AAIManager>(AIManagerClass);
-	//		if (AIM)
-	//		{
-	//			AIManagers.Emplace(AIM);
-	//			int index = i%2;
-	//			if (index == 0) {
-	//				AIM->TeamName = TEXT("Red");
-	//			}
-	//			else {
-	//				AIM->TeamName = TEXT("Blue");
-	//			}
-	//			AIM->WaveCourse = FMath::FloorToInt(i/2) + 1;	// Manager 마다 WaveCourse 할당
-	//			AIM->SeachCoursePoints2();
-	//		}
-	//	}
-	//
-	//	if (SpawnAINumber > 0)
-	//	{
-	//		RepeatMinionsWave();
-	//	}
-	//}
 }
 
 void ABattleGM::PostLogin(APlayerController* NewPlayer)

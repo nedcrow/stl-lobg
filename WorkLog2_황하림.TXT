@@ -135,11 +135,16 @@
     * UIWidgetBase & SlotWidget
     * OpenResultTab function
 
+1027
+  Fix bulletbase
+  Fix respawn actor collision
+
 1028
   Fix BulletBase.cpp (destroy effet)
   Fix Landscape
   Fix BulletBase.cpp (destroy effet 2)
-  남은일: 결과창 팝업, AIM위치 조정
+  Fix ABattleGM::StartAIMinion()
+  Test Result tab (ing - 현재 서버만 반응)
   
 
  

@@ -31,11 +31,11 @@ void UGameResultWidgetBase::ExitBattle() {
 	GM->GoLobby();
 }
 
-void UGameResultWidgetBase::SetMVP() {
+void UGameResultWidgetBase::SetMVP(ETeamColor WinColor) {
 	ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
 	if (GS && MVPScrollBox) {
 		TArray<FPlayerData> PlayerDataArr = GS->RedTabDataArray += GS->BlueTabDataArray;
-
+		UE_LOG(LogTemp, Warning, TEXT("GameOver number : %d"), PlayerDataArr.Num());
 		// 레벨 내림차순 정렬
 		PlayerDataArr.Sort(
 			[](const FPlayerData& A, const FPlayerData& B) {
@@ -43,25 +43,38 @@ void UGameResultWidgetBase::SetMVP() {
 			}
 		);
 
-		bool BlueWin = true;
-		for (int i = 0; MVPScrollBox->GetChildrenCount(); i++)
+		bool BlueWin = WinColor == ETeamColor::Blue ? true : false;
+
+		for (int i = 0; i < MVPScrollBox->GetChildrenCount(); i++)
 		{
-			UMVPSlot* Child = Cast<UMVPSlot>(MVPScrollBox->GetChildAt(i));
+			if (i < PlayerDataArr.Num()) {
+				UMVPSlot* Child = Cast<UMVPSlot>(MVPScrollBox->GetChildAt(i));
+				// 레벨
+				Child->UserLVText->SetText(FText::FromString(FString::FromInt(PlayerDataArr[i].PlayerLevel)));
 
-			// 레벨
-			Child->UserLVText->SetText(FText::FromString(""));
+				// 이름
+				Child->UserIDText->SetText(FText::FromString(PlayerDataArr[i].PlayerName));
 
-			// 이름
-			Child->UserIDText->SetText(FText::FromString(PlayerDataArr[i].PlayerName));
+				// 팀 컬러 아이콘 및 승리여부
+				if (PlayerDataArr[i].PlayerTeamColor == ETeamColor::Blue && BlueMVP) {
+					ResultTitle->SetText(FText::FromString(BlueWin ? "= WIN =" : "- LOSE -"));
+					Child->MVPIcon->SetBrush(Cast<UImage>(BlueMVP->GetChildAt(i))->Brush);
+				}
+				else if (PlayerDataArr[i].PlayerTeamColor == ETeamColor::Red && RedMVP) {
+					ResultTitle->SetText(FText::FromString(BlueWin ? "- LOSE -" : "- WIN -"));
+					Child->MVPIcon->SetBrush(Cast<UImage>(RedMVP->GetChildAt(i))->Brush);
+				}
 
-			// 팀 컬러 아이콘
-			if(PlayerDataArr[i].PlayerTeamColor == ETeamColor::Blue && BlueMVP){
-				ResultTitle->SetText(FText::FromString(BlueWin ? "= WIN =": "- LOSE -"));
-				Child->MVPIcon->SetBrush(Cast<UImage>(BlueMVP->GetChildAt(i))->Brush);
-			} else if(PlayerDataArr[i].PlayerTeamColor == ETeamColor::Red && RedMVP){
-				ResultTitle->SetText(FText::FromString(BlueWin ? "- LOSE -" : "- WIN -"));
-				Child->MVPIcon->SetBrush(Cast<UImage>(RedMVP->GetChildAt(i))->Brush);
+				UE_LOG(LogTemp, Warning, TEXT("GameOver: %d"), i);
+			}
+			else {
+				UMVPSlot* Child = Cast<UMVPSlot>(MVPScrollBox->GetChildAt(i));
+				Child->SetVisibility(ESlateVisibility::Collapsed);
+
+				UE_LOG(LogTemp, Warning, TEXT("GameOver: %d"), i);
 			}
 		}
+		BlueMVP->SetVisibility(ESlateVisibility::Collapsed);
+		RedMVP->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }

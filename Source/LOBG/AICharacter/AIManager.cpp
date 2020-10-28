@@ -150,16 +150,17 @@ void AAIManager::SeachCoursePoints2()
 		{				
 			CoursePoints.Add(CurrentElement);
 			OutActors.RemoveAt(i);
-			i--;			
+			i--;
 		}
 	}
+
 	// Sort
 	CoursePoints.Sort([](const AWaveCoursePoint& A, const AWaveCoursePoint& B) {
 		return A.CourseNumber < B.CourseNumber;
 	});
 
 	// Push first & end actors at CoursePoints 
-	for (int i = 0; i < OutActors.Num(); i++)
+	/*for (int i = 0; i < OutActors.Num(); i++)
 	{
 		CurrentElement = Cast<AWaveCoursePoint>(OutActors[i]);
 		if ((int)CurrentElement->WaveCourse == 0) {
@@ -168,7 +169,7 @@ void AAIManager::SeachCoursePoints2()
 		else if ((int)CurrentElement->WaveCourse == 4) {
 			CoursePoints.Add(CurrentElement);
 		}
-	}
+	}*/
 
 	if (TeamName == TEXT("Blue")) {
 		ReverseCoursePoints();

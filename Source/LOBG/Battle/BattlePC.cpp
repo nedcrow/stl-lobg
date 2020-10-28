@@ -340,10 +340,10 @@ void ABattlePC::InitTabPlayer()
 	}
 }
 
-void ABattlePC::OpenResultTab()
+void ABattlePC::OpenResultTab(ETeamColor WinColor)
 {
 	if (ResultWidgetObject) {
-		ResultWidgetObject->SetMVP();
+		ResultWidgetObject->SetMVP(WinColor);
 		ResultWidgetObject->SetVisibility(ESlateVisibility::Visible);
 	}
 }

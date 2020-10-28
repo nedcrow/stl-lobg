@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "../LOBGGameInstance.h"
+
 #include "GameResultWidgetBase.generated.h"
 
 /**
@@ -39,6 +42,6 @@ public:
 
 	void ExitBattle();
 
-	void SetMVP();
+	void SetMVP(ETeamColor WinColor);
 
 };
