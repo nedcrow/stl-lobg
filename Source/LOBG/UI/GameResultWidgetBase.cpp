@@ -10,6 +10,7 @@
 
 #include "MVPSlot.h"
 #include "../Battle/BattleGS.h"
+#include "../Battle/BattleGM.h"
 #include "Kismet/GameplayStatics.h"
 
 void UGameResultWidgetBase::NativeConstruct() {
@@ -26,7 +27,8 @@ void UGameResultWidgetBase::NativeConstruct() {
 }
 
 void UGameResultWidgetBase::ExitBattle() {
-    // Lobby
+	ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+	GM->GoLobby();
 }
 
 void UGameResultWidgetBase::SetMVP() {
@@ -35,10 +37,11 @@ void UGameResultWidgetBase::SetMVP() {
 		TArray<FPlayerData> PlayerDataArr = GS->RedTabDataArray += GS->BlueTabDataArray;
 
 		// 레벨 내림차순 정렬
-		//PlayerDataArr.Sort([](const FPlayerData& A, const FPlayerData& B) {
-			//return A.level > B.Level;
-			//return A < B.Len();
-		//});
+		PlayerDataArr.Sort(
+			[](const FPlayerData& A, const FPlayerData& B) {
+				return A.PlayerLevel > B.PlayerLevel;
+			}
+		);
 
 		bool BlueWin = true;
 		for (int i = 0; MVPScrollBox->GetChildrenCount(); i++)

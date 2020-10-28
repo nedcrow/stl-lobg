@@ -420,10 +420,13 @@ void AFairyPawn::NetMulticast_DeadthEffect_Implementation()
 {
 	if (DeathEffect)
 	{
-		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+		//UParticleSystemComponent* Particle = 
+		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			DeathEffect,
-			GetActorLocation()
+			GetActorLocation(),
+			FRotator::ZeroRotator,
+			FVector(2,2,2)
 		);
 	}
 	if(HeadEffectComponent) HeadEffectComponent->DestroyComponent();

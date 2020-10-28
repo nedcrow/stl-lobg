@@ -43,6 +43,8 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 		TSubclassOf<class UBulletDamageType> DamageType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	FTimerHandle BulletTimer;
 
 	// Effect
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
@@ -54,6 +56,8 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_HitEffect(FVector SpawnLocation, FVector HitRirection);
 	void NetMulticast_HitEffect_Implementation(FVector SpawnLocation, FVector HitDirection);
+
+	void DestroyHitEffect();
 
 	// 이펙트 중복 실행 방지.
 	// bulletbase가 공격판정이 오버랩으로 되고 있어서 오버랩된 스켈레탈메시의 본마다 오버랩 함수를 실행하는 문제를 막기위해 추가.

@@ -138,6 +138,8 @@
 1028
   Fix BulletBase.cpp (destroy effet)
   Fix Landscape
+  Fix BulletBase.cpp (destroy effet 2)
+  남은일: 결과창 팝업, AIM위치 조정
   
 
  

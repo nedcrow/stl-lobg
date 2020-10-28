@@ -85,6 +85,11 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 	}
 }
 
+void ABulletBase::DestroyHitEffect()
+{
+	if (HitEffectComponent) HitEffectComponent->DestroyComponent();
+}
+
 //플레이어에 충돌하면
 void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
@@ -130,12 +135,14 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				SummonerController,
 				true,
 				ECC_Visibility);
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 1111111111111"));
 
 			NetMulticast_HitEffect(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
 		}
 		else if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
 			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 2222222222222"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
@@ -160,12 +167,13 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				// 클라이언트 미니언 피격 이펙트용 가짜 데미지.
 				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 			}
+			UE_LOG(LogClass, Warning, TEXT("NetMulticast_HitEffect_Implementation 4444444444444"));
 
 			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
 		}
 	}
 
-	//if (HitEffectComponent) HitEffectComponent->DestroyComponent();
+	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	Destroy();
 }
 
@@ -229,8 +237,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 
 	// Sound
-	//if(HitEffectComponent) HitEffectComponent->DestroyComponent();
-	//GetWorldTimerManager().SetTimer(nullptr, this, &AFairyPawn::ReloadAnimation, HitEff, false);
+	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	Destroy();
 }
 
