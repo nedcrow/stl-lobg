@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float PlayerMoneyData;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float PlayerLevel;
 };
 /**
  * 

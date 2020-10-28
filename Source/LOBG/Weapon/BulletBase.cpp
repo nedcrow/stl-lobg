@@ -12,6 +12,7 @@
 #include "../AICharacter/Fairy/FairyPawn.h"
 #include "../AICharacter/AIMinionChar.h"
 #include "Net/UnrealNetwork.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 ABulletBase::ABulletBase()
@@ -72,7 +73,8 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 	if (HitEffect)
 	{
 		FRotator Rotation = HitDirection.Rotation();
-		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+		//UParticleSystemComponent* Particle =
+		HitEffectComponent = UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			HitEffect,
 			SpawnLocation,
@@ -173,6 +175,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	//	Destroy();
 	//}
 
+	if (HitEffectComponent) HitEffectComponent->DestroyComponent();
 	Destroy();
 }
 
@@ -237,6 +240,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	// Sound
 	// Effect Multicast_SpawnHitEffectAndDecal(OutHit);
+	if(HitEffectComponent) HitEffectComponent->DestroyComponent();
 	Destroy();
 }
 

@@ -135,6 +135,8 @@
     * UIWidgetBase & SlotWidget
     * OpenResultTab function
 
+1028
+  Fix BulletBase.cpp (destroy effet)
   
 
  
