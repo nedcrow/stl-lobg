@@ -13,6 +13,8 @@
 #include "../AICharacter/AIMinionChar.h"
 #include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "GameFramework/Actor.h"
+
 
 // Sets default values
 ABulletBase::ABulletBase()
@@ -166,16 +168,7 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		}
 	}
 
-	//맞은게 플레이어가 아닌 다른 액터라면 사라진다.
-	//스스로 사라지지 않도록 Bullet 태그를 검사한다.
-	//if (!OtherActor->ActorHasTag(TEXT("Bullet")) && !OtherComp->ComponentHasTag(TEXT("Weapon")))
-	//{
-	//	UE_LOG(LogClass, Warning, TEXT("Other Actor : %s"), *OtherActor->GetName());
-	//	NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-	//	Destroy();
-	//}
-
-	if (HitEffectComponent) HitEffectComponent->DestroyComponent();
+	//if (HitEffectComponent) HitEffectComponent->DestroyComponent();
 	Destroy();
 }
 
@@ -239,8 +232,8 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 
 	// Sound
-	// Effect Multicast_SpawnHitEffectAndDecal(OutHit);
-	if(HitEffectComponent) HitEffectComponent->DestroyComponent();
+	//if(HitEffectComponent) HitEffectComponent->DestroyComponent();
+	//GetWorldTimerManager().SetTimer(nullptr, this, &AFairyPawn::ReloadAnimation, HitEff, false);
 	Destroy();
 }
 
