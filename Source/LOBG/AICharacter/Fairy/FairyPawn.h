@@ -170,9 +170,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UParticleSystem* DeathEffect;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void NetMulticast_HeadEffect();
-	void NetMulticast_HeadEffect_Implementation();
+	//UFUNCTION(NetMulticast, Unreliable)
+	//void NetMulticast_HeadEffect();
+	//void NetMulticast_HeadEffect_Implementation();
 	void SpawnHeadEffect();
 
 	void SpawnSpawnEffect(FVector SpawnLocation);

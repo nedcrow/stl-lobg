@@ -82,12 +82,6 @@ void AFairyPawn::BeginPlay()
 	if (ActiveMeshesRingComp) {
 		ReloadingPercentages.Init(-1, ActiveMeshesRingComp->MaxMeshCount);	
 	}
-	
-	/*if (bIsBoss) {
-		UE_LOG(LogTemp, Warning, TEXT("Start HeadEffect"));
-
-		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::SpawnHeadEffect, 2.f, false);
-	}*/
 
 	if (GetWorld()->IsServer()) {
 		GetWorldTimerManager().SetTimer(BulletTimer, this, &AFairyPawn::Server_CallRotationRingComponent, 2.f, false);
@@ -136,7 +130,7 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 	
 	if (CurrentHP <= 0 && EventInstigator != NULL)
 	{
-		// 죽음 effect 추가 필요
+
 		FName NewTeamName = "None";
 		NewTeamName = GetTeamName(EventInstigator->GetPawn());
 		//NetMulticast_ResetTags(NewTeamName);
@@ -153,7 +147,7 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 		}
 
 		if (bIsBoss) {
-			// game over
+			UE_LOG(LogTemp, Warning, TEXT("Game Over"));
 		}
 		NetMulticast_DeadthEffect();
 		Destroy();
@@ -362,18 +356,18 @@ void AFairyPawn::Repair()
 	}
 }
 
-void AFairyPawn::NetMulticast_HeadEffect_Implementation()
-{
-	if (HeadEffect) {
-		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			HeadEffect,
-			Head->GetRelativeLocation() + FVector(0, 0, 300.f)
-		);
-		FVector Temp = Head->GetRelativeLocation();
-		UE_LOG(LogTemp, Warning, TEXT("HeadEffect %f, %f, %f"), Temp.X, Temp.Y, Temp.Z);
-	}
-}
+//void AFairyPawn::NetMulticast_HeadEffect_Implementation()
+//{
+//	if (HeadEffect) {
+//		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+//			GetWorld(),
+//			HeadEffect,
+//			Head->GetRelativeLocation() + FVector(0, 0, 300.f)
+//		);
+//		FVector Temp = Head->GetRelativeLocation();
+//		UE_LOG(LogTemp, Warning, TEXT("HeadEffect %f, %f, %f"), Temp.X, Temp.Y, Temp.Z);
+//	}
+//}
 
 void AFairyPawn::SpawnHeadEffect()
 {
@@ -391,7 +385,8 @@ void AFairyPawn::SpawnSpawnEffect(FVector SpawnLocation)
 {
 	if (SpawnEffect)
 	{
-		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+		// UParticleSystemComponent* Particle = 
+		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			SpawnEffect,
 			SpawnLocation
@@ -403,7 +398,8 @@ void AFairyPawn::NetMulticast_FireEffect_Implementation(FVector SpawnLocation)
 {
 	if (FireEffect)
 	{
-		UParticleSystemComponent* Particle = UGameplayStatics::SpawnEmitterAtLocation(
+		// UParticleSystemComponent* Particle = 
+		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			FireEffect,
 			SpawnLocation

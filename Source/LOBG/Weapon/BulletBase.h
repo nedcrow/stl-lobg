@@ -47,6 +47,7 @@ public:
 	// Effect
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	class UParticleSystem* HitEffect;
+	class UParticleSystemComponent* HitEffectComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	FVector HitEffectScale = FVector::OneVector;
 
