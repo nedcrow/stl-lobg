@@ -305,4 +305,10 @@ public:
 	void Server_SetPSFOV_Implementation();
 
 	void SetPSFOV();
+
+	void GoHome();
+
+	UFUNCTION(Server, Reliable)
+	void Server_GoHome();
+	void Server_GoHome_Implementation();
 };

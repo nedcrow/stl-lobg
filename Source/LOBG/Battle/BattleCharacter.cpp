@@ -123,6 +123,8 @@ void ABattleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("LeanLeft"), IE_Released, this, &ABattleCharacter::StopLeanLeft);
 	PlayerInputComponent->BindAction(TEXT("LeanRight"), IE_Pressed, this, &ABattleCharacter::StartLeanRight);
 	PlayerInputComponent->BindAction(TEXT("LeanRight"), IE_Released, this, &ABattleCharacter::StopLeanRight);
+
+	PlayerInputComponent->BindAction(TEXT("GoHome"), IE_Pressed, this, &ABattleCharacter::GoHome);
 }
 
 void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -807,5 +809,16 @@ void ABattleCharacter::SetPSFOV()
 	{
 		PS->PlayerFOV = 30.f;
 	}
+}
+
+void ABattleCharacter::GoHome()
+{
+	Server_GoHome();
+}
+
+void ABattleCharacter::Server_GoHome_Implementation()
+{
+	//FVector HomeLocation = 
+	//SetActorRelativeLocation()
 }
 
