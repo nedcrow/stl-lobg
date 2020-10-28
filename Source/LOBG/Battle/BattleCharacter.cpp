@@ -818,7 +818,30 @@ void ABattleCharacter::GoHome()
 
 void ABattleCharacter::Server_GoHome_Implementation()
 {
-	//FVector HomeLocation = 
-	//SetActorRelativeLocation()
+	FVector HomeLocation;
+
+	TArray<AActor*> RedReSpawnArray;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Red"), RedReSpawnArray);
+
+	TArray<AActor*> BlueReSpawnArray;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AReSpawn::StaticClass(), TEXT("Blue"), BlueReSpawnArray);
+
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		switch (PS->TeamColor)
+		{
+		case ETeamColor::Red :
+			HomeLocation = RedReSpawnArray[0]->GetActorLocation();
+			break;
+		case ETeamColor::Blue :
+			HomeLocation = BlueReSpawnArray[0]->GetActorLocation();
+			break;
+		default:
+			break;
+		}
+	}
+
+	SetActorRelativeLocation(HomeLocation);
 }
 

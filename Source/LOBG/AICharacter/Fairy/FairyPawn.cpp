@@ -22,6 +22,7 @@
 #include "../../UI/HPBarWidgetBase.h"
 #include "../../Weapon/BulletDamageType.h" 
 #include "GameFramework/Actor.h"
+#include "../../Battle/BattleGM.h"
 
 //#include "../../Weapon/BulletBase.h"
 
@@ -148,8 +149,16 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 
 		if (bIsBoss) {
 			UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+			ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (GM)
+			{
+				GM->CountTower(TeamColor);
+			}
 		}
 		NetMulticast_DeadthEffect();
+
+		
+
 		Destroy();
 	}
 	

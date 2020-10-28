@@ -1,6 +1,6 @@
 ,ItemIndex,ItemName,ItemPrice,ItemDescription,ItemImage
-0,0,SpeedUp,200,,
-1,1,Grip,300,,
-2,2,Ironsight,400,,
-3,3,Heel,200,,
-4,4,Bullet,200,,
+0,0,SpeedUp,200,속도를 100올려줍니다,“'/Game/UI/Consume/SpeedUp/SpeedUpRenderTarget_Mat_Inst.SpeedUpRenderTarget_Mat_Inst'”
+1,1,Grip,300,반동을 줄입니다,“'/Game/UI/Guns/Grip/GripRenderTarget_Tex_Mat_Inst.GripRenderTarget_Tex_Mat_Inst'”
+2,2,Ironsight,400,더 멀리 보는 조준경,“'/Game/UI/Guns/Ironsight/IronsightRenderTarget_Mat_Inst.IronsightRenderTarget_Mat_Inst'”
+3,3,Heel,200,체력을 회복합니다,“'/Game/UI/Consume/Potion/PotionRenderTarget_Mat_Inst.PotionRenderTarget_Mat_Inst'”
+4,4,Bullet,200,강한총알입니다,“'/Game/UI/Guns/Bullet/BulletRenderTarget_Tex_Mat_Inst.BulletRenderTarget_Tex_Mat_Inst'”

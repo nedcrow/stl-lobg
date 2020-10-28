@@ -47,7 +47,7 @@ float ATempTower::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 		ABattleGM* GM = Cast<ABattleGM>(UGameplayStatics::GetGameMode(GetWorld()));
 		if (GM)
 		{
-			GM->CountTower();
+			//GM->CountTower();
 		}
 		UE_LOG(LogClass, Warning, TEXT("Destroy Tower!!"));
 		Destroy();

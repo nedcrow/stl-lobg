@@ -49,10 +49,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object")
 		TSubclassOf<class ATempTower> TempTowerClass;
 
-	//맵상의 타워가 줄어들면 -카운트하고 타워가 0이면 GoLobby실행
-	void CountTower();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object")
+		TSubclassOf<class AFairyPawn> FairyTowerClass;
 
-	int TowerCount;
+	void FindTowers();
+
+	//맵상의 타워가 줄어들면 -카운트하고 타워가 0이면 GoLobby실행
+	void CountTower(ETeamColor DestroyTowerColor);
+
+	int RedTowerCount = 1;
+	int BlueTowerCount = 1;
 
 	//로비로 돌아가기
 	void GoLobby();

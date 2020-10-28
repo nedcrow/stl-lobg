@@ -16,6 +16,13 @@ void ABattlePS::OnRep_Exp()
 	{
 		NextExp = PlayerExp * 2.f;
 		PlayerLevel += 1;
+		MyPlayerData.PlayerLevel += 1;
+		ABattlePC* PC = Cast<ABattlePC>(GetOwner());
+		if (PC)
+		{
+			PC->UpdateGSTabArrayData();
+		}
+
 		NewExp = 0;
 		OnRep_Level();
 		TempExp = PlayerExp;

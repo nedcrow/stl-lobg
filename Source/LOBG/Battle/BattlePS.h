@@ -32,7 +32,7 @@ public:
 		float PlayerMoneyData;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float PlayerLevel;
+		int PlayerLevel;
 };
 /**
  * 

@@ -14,6 +14,7 @@
 #include "../LOBGGameInstance.h"
 #include "GameFramework/PlayerStart.h"
 #include "AIController.h"
+#include "../AICharacter/Fairy/FairyPawn.h"
 
 void ABattleGM::BeginPlay()
 {
@@ -32,6 +33,8 @@ void ABattleGM::BeginPlay()
 		}
 	}
 	FindPlayerStart();
+
+	FindTowers();
 
 	//5초 실행되도록 함수로 옮김
 	// GS의 시간 변수가 0이 되면 GM의 StartAIMinion() 실행
@@ -67,10 +70,6 @@ void ABattleGM::BeginPlay()
 void ABattleGM::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
-	TArray<AActor*> OutTowers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), TempTowerClass, OutTowers);
-	TowerCount = OutTowers.Num();
 }
 
 // AI매니저
@@ -198,11 +197,38 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 	}
 }
 
-void ABattleGM::CountTower()
+void ABattleGM::FindTowers()
 {
-	TowerCount--;
+	TArray<AActor*> RedOutTowers;
+	TArray<AActor*> BlueOutTowers;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), FairyTowerClass, TEXT("Red"), RedOutTowers);
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), FairyTowerClass, TEXT("Blue"), BlueOutTowers);
+	//RedTowerCount = RedOutTowers.Num();
+	//BlueTowerCount = BlueOutTowers.Num();
+}
 
-	if (TowerCount == 0)
+void ABattleGM::CountTower(ETeamColor DestroyTowerColor)
+{
+	switch (DestroyTowerColor)
+	{
+	case ETeamColor::None:
+		break;
+	case ETeamColor::Red:
+		RedTowerCount--;
+		break;
+	case ETeamColor::Blue:
+		BlueTowerCount--;
+		break;
+	default:
+		break;
+	}
+
+	if (RedTowerCount == 0)
+	{
+		FTimerHandle GameOverTimer;
+		GetWorldTimerManager().SetTimer(GameOverTimer, this, &ABattleGM::GoLobby, 3.f);
+	}
+	else if (BlueTowerCount == 0)
 	{
 		FTimerHandle GameOverTimer;
 		GetWorldTimerManager().SetTimer(GameOverTimer, this, &ABattleGM::GoLobby, 3.f);
