@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../Item/ItemDataTable.h"
+#include "../Data/ItemDataTable.h"
 #include "StoreWidgetBase.generated.h"
 
 /**

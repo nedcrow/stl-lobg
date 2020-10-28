@@ -138,7 +138,6 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 			{
 				if (PS->TeamColor == ETeamColor::Red)
 				{
-				UE_LOG(LogClass, Warning, TEXT("In PS Red"));
 					for (int i = 0; i < RedReSpawnArray.Num(); ++i)
 					{
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(RedReSpawnArray[i]);
@@ -153,7 +152,6 @@ void ABattleGM::CallReSpawn(ABattleCharacter* Pawn)
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
-				UE_LOG(LogClass, Warning, TEXT("In PS Blue"));
 					for (int i = 0; i < BlueReSpawnArray.Num(); ++i)
 					{
 						AReSpawn* ReSpawnObj = Cast<AReSpawn>(BlueReSpawnArray[i]);
@@ -418,7 +416,6 @@ void ABattleGM::CreatePlayerMeshWidget()
 
 void ABattleGM::SetGameStartTimeWidget(int GameTime)
 {
-	UE_LOG(LogClass, Warning, TEXT("OnRep_GameStartTimeInGM"));
 	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
 	{
 		ABattlePC* PC = Cast<ABattlePC>(*Iter);

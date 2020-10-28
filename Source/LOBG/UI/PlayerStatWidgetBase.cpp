@@ -17,6 +17,5 @@ void UPlayerStatWidgetBase::SetStatText(int AttackPoint, int SpeedPoint, int Mon
 {
 	AttackStat->SetText(UKismetTextLibrary::Conv_IntToText(AttackPoint));
 	SpeedStat->SetText(UKismetTextLibrary::Conv_IntToText(SpeedPoint));
-	UE_LOG(LogClass, Warning, TEXT("MoneyPoint is %d"), MoneyPoint);
 	MoneyStat->SetText(UKismetTextLibrary::Conv_IntToText(MoneyPoint));
 }

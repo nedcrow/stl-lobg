@@ -49,7 +49,6 @@ float ATempTower::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 		{
 			//GM->CountTower();
 		}
-		UE_LOG(LogClass, Warning, TEXT("Destroy Tower!!"));
 		Destroy();
 	}
 	return 0.0f;

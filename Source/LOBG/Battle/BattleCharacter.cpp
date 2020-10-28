@@ -28,7 +28,7 @@
 // Sets default values
 ABattleCharacter::ABattleCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Collision
@@ -64,14 +64,14 @@ ABattleCharacter::ABattleCharacter()
 
 	Tags.Add(TEXT("Player"));
 
-	
+
 }
 
 // Called when the game starts or when spawned
 void ABattleCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	CurrentHP = MaxHP;
 	CurrentState = EBattleCharacterState::Normal;
 
@@ -243,7 +243,7 @@ void ABattleCharacter::OnFire()
 		//라인트레이스 인자들
 		FVector StartVector = CameraLocation;
 		FVector EndVector = StartVector + (CrosshairWorldDirection * 99999.f);
-		
+
 		Server_ProcessFire(StartVector, EndVector);
 	}
 
@@ -260,7 +260,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 
 
 
-	
+
 	// 액터가 할당되지 않은 경우 : 하늘에 쐈을 때 = EndLine끝을 향해 쏜다.
 	// 하늘에 쏴도 도중에 아무 액터나 맞을 때를 대비해서 OutHit를 전해준다.	
 	FVector EndVector(EndLine);
@@ -270,7 +270,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	{
 		EndVector = OutHit.ImpactPoint;
 	}
-	
+
 	//Muzzle에서 트레이스 Point까지의 회전값
 	FRotator BulletRoation = (EndVector - Weapon->GetSocketLocation(TEXT("Muzzle"))).Rotation();
 
@@ -280,7 +280,7 @@ void ABattleCharacter::Server_ProcessFire_Implementation(FVector StartLine, FVec
 	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 	if (PS)
 	{
-		
+
 		float FireAngle = PS->FireBulletAngle;
 		if (bIsIronsight && FireAngle != 0)
 		{
@@ -404,7 +404,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		else
 		{
 			TempHP -= DamageAmount;
-			UE_LOG(LogTemp, Warning, TEXT("PointDamage:: %f"), DamageAmount);
 		}
 	}
 	else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
@@ -418,7 +417,6 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 	{
 		NetMulticast_StartHitMontage(FMath::RandRange(1, 4));
 		TempHP -= DamageAmount;
-		UE_LOG(LogTemp, Warning, TEXT("NormalDamage:: %f"), DamageAmount);
 
 	}
 
@@ -429,14 +427,14 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 		//서버도 실행되게
 		OnRep_CurrentHP();
 	}
-	
+
 
 	//죽었을때
 	if (CurrentHP <= 0)
 	{
 		NetMulticast_StartDeath(FMath::RandRange(1, 3));
 		//CurrentState = EBattleCharacterState::Dead;
-		FTimerHandle DeadTimer;		
+		FTimerHandle DeadTimer;
 		GetWorldTimerManager().SetTimer(DeadTimer, this, &ABattleCharacter::Server_CallReSpawnToGM, 5.0f, false);
 	}
 
@@ -456,7 +454,6 @@ void ABattleCharacter::OnRep_CurrentHP()
 
 	//HPHUD업데이트
 	UpdateHPBar();
-	UE_LOG(LogTemp,Warning,TEXT("update HP"));
 }
 
 void ABattleCharacter::Server_SetIronsight_Implementation(bool State)
@@ -545,7 +542,8 @@ void ABattleCharacter::NetMulticast_StartDeath_Implementation(int Index)
 		break;
 	}
 
-	if (CurrentDeathMontage) {
+	if (CurrentDeathMontage)
+	{
 
 		FString DeathSectionName = FString::Printf(TEXT("Death%d"), Index);
 		PlayAnimMontage(CurrentDeathMontage, 1.f, FName(DeathSectionName));
@@ -557,14 +555,14 @@ void ABattleCharacter::Server_SetReload_Implementation(bool NewState)
 {
 	bIsReload = NewState;
 	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	
+
 }
 
 void ABattleCharacter::StartReload()
 {
 	bIsReload = true;
 	Server_SetReload(true);
-	
+
 }
 
 void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
@@ -583,7 +581,8 @@ void ABattleCharacter::NetMulticast_StartHitMontage_Implementation(int Number)
 	default:
 		break;
 	}
-	if (HitActionMontage) {
+	if (HitActionMontage)
+	{
 		FString HitSectionName = FString::Printf(TEXT("Hit%d"), Number);
 		PlayAnimMontage(CurrentHitActionMontage, 1.f, FName(HitSectionName));
 	}
@@ -617,10 +616,10 @@ void ABattleCharacter::DeathSetting()
 {
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
-	
+
 	// 사망시 입력 막기
 	//GetController()->UnPossess();
-	DisableInput(GetController<APlayerController>());	
+	DisableInput(GetController<APlayerController>());
 	//GetController<APlayerController>()->SetInputMode(FInputModeUIOnly());
 
 	bIsFire = false;
@@ -677,7 +676,6 @@ void ABattleCharacter::NetMulticast_InitHPBar_Implementation(ETeamColor color)
 	UHPBarWidgetBase* HPWidget = Cast<UHPBarWidgetBase>(Widget->GetUserWidgetObject());
 	if (HPWidget)
 	{
-		UE_LOG(LogClass, Warning, TEXT("Player HUD is Vaild"));
 		if (color == ETeamColor::Red)
 		{
 			HPWidget->SetColorAndOpacity(ColorRed);
@@ -766,7 +764,7 @@ void ABattleCharacter::Server_ItemHP_Implementation()
 void ABattleCharacter::NetMulticast_SetMeshSettings_Implementation(const EMeshType& MyMeshType)
 {
 	PlayerMeshType = MyMeshType;
-	
+
 	switch (PlayerMeshType)
 	{
 	case EMeshType::None:
@@ -831,10 +829,10 @@ void ABattleCharacter::Server_GoHome_Implementation()
 	{
 		switch (PS->TeamColor)
 		{
-		case ETeamColor::Red :
+		case ETeamColor::Red:
 			HomeLocation = RedReSpawnArray[0]->GetActorLocation();
 			break;
-		case ETeamColor::Blue :
+		case ETeamColor::Blue:
 			HomeLocation = BlueReSpawnArray[0]->GetActorLocation();
 			break;
 		default:

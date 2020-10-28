@@ -14,7 +14,7 @@ void ABattlePS::OnRep_Exp()
 {
 	if (PlayerExp >= NextExp)
 	{
-		NextExp = PlayerExp * 2.f;
+		SetNextExp();
 		PlayerLevel += 1;
 		MyPlayerData.PlayerLevel += 1;
 		ABattlePC* PC = Cast<ABattlePC>(GetOwner());
@@ -25,17 +25,20 @@ void ABattlePS::OnRep_Exp()
 
 		NewExp = 0;
 		OnRep_Level();
-		TempExp = PlayerExp;
 	}
 
 	ABattlePC* PC = Cast<ABattlePC>(GetOwner());
 	if (PC && PC->IsLocalController() && PC->BattleWidgetObject)
 	{
-		float totalExp = NextExp - TempExp;
+		float totalExp = NextExp - GetStartExpInCurrentLevel();
 		PC->BattleWidgetObject->SetExpBar(NewExp / totalExp);
-		UE_LOG(LogClass, Warning, TEXT("New Exp : %f, TotalExp : %f"), NewExp, totalExp);
 	}
 
+}
+
+void ABattlePS::BeginPlay()
+{
+	SetNextExp();
 }
 
 void ABattlePS::OnRep_Level()
@@ -70,4 +73,24 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, PlayerMeshType);
 	DOREPLIFETIME(ABattlePS, FireBulletAngle);
 	DOREPLIFETIME(ABattlePS, PlayerFOV);
+}
+
+void ABattlePS::SetNextExp()
+{
+	LevelIndex++;
+	FLevelStruct * LevelTable = LevelDataTable->FindRow<FLevelStruct>(FName(*(FString::FormatAsNumber(LevelIndex))), TEXT(""));
+	if (LevelTable)
+	{
+		NextExp = (*LevelTable).ExpforNextLevel;
+	}
+}
+
+int ABattlePS::GetStartExpInCurrentLevel()
+{
+	FLevelStruct * LevelTable = LevelDataTable->FindRow<FLevelStruct>(FName(*(FString::FormatAsNumber(LevelIndex))), TEXT(""));
+	if (LevelTable)
+	{
+		return (*LevelTable).Exp;
+	}
+	return 0;
 }

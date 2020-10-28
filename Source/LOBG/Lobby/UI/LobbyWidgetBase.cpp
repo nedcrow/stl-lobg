@@ -166,12 +166,10 @@ void ULobbyWidgetBase::SetGITeamColor(ETeamColor Color)
 		{
 		case ETeamColor::Red:
 			GI->TeamColor = ETeamColor::Red;
-			UE_LOG(LogClass, Warning, TEXT("RED"));
 			break;
 
 		case ETeamColor::Blue:
 			GI->TeamColor = ETeamColor::Blue;
-			UE_LOG(LogClass, Warning, TEXT("Blue"));
 			break;
 		default:
 			break;

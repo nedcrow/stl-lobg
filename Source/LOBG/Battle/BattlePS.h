@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "../LOBGGameInstance.h"
 #include "../ChoiceMesh/MeshWidgetBase.h"
+#include "../Data/LevelDataTable.h"
 #include "BattlePS.generated.h"
 
 USTRUCT(Atomic, BlueprintType)
@@ -43,6 +44,8 @@ class LOBG_API ABattlePS : public APlayerState
 	GENERATED_BODY()
 	
 public:
+	virtual void BeginPlay()override;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing="OnRep_Level", Category = "State")
 	int PlayerLevel;
 
@@ -67,8 +70,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 		float PlayerSpeed = 300.f;
 
-	float NextExp = 200;
-	float TempExp = 0;
+	float NextExp;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
@@ -92,4 +94,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "State")
 		float PlayerFOVClient;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UDataTable* LevelDataTable;
+
+	int LevelIndex = 0;
+
+	void SetNextExp();
+
+	int GetStartExpInCurrentLevel();
 };

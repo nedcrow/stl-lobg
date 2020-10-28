@@ -89,7 +89,6 @@ bool UStoreItemWidgetBase::InitSlotByMoney()
 	{
 		if (PS->PlayerMoney < MyItemMoney)
 		{
-			UE_LOG(LogClass, Warning, TEXT("Not Enough Money"));
 			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 0.3f));
 			FSlateBrush MyHorvered;
 			MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0);
@@ -98,7 +97,6 @@ bool UStoreItemWidgetBase::InitSlotByMoney()
 		}
 		else
 		{
-			UE_LOG(LogClass, Warning, TEXT("Enough Money"));
 			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
 			FSlateBrush MyHorvered;
 			MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.5f);

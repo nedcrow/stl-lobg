@@ -55,7 +55,6 @@ float ATempMinion::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	{
 		CurrentHP -= DamageAmount;
 		OnRep_CurrentHP();
-		UE_LOG(LogClass, Warning, TEXT("Minion Current HP : %f"), CurrentHP);
 	}
 	
 	if (CurrentHP <= 0)

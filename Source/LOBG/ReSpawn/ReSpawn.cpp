@@ -48,7 +48,6 @@ void AReSpawn::BeginOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-				UE_LOG(LogClass, Warning, TEXT("bStoreOpen is true"));
 	if (OtherActor->ActorHasTag(TEXT("Player")))
 	{
 		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
@@ -75,7 +74,6 @@ void AReSpawn::EndOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
 		if (PC)
 		{
-			UE_LOG(LogClass, Warning, TEXT("bStoreOpen is false"));
 			PC->bStoreOpen = false;
 		}
 	}
