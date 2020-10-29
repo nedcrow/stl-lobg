@@ -35,7 +35,6 @@ void UGameResultWidgetBase::SetMVP(ETeamColor WinColor) {
 	ABattleGS* GS = Cast<ABattleGS>(UGameplayStatics::GetGameState(GetWorld()));
 	if (GS && MVPScrollBox) {
 		TArray<FPlayerData> PlayerDataArr = GS->RedTabDataArray += GS->BlueTabDataArray;
-		UE_LOG(LogTemp, Warning, TEXT("GameOver number : %d"), PlayerDataArr.Num());
 		// 레벨 내림차순 정렬
 		PlayerDataArr.Sort(
 			[](const FPlayerData& A, const FPlayerData& B) {

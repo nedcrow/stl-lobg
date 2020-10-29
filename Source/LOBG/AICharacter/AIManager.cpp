@@ -360,6 +360,7 @@ void AAIManager::RepeatSpawnMinions()
 		NewMinion->WaveCourse = WaveCourse;			// 코스 저장.
 
 		AAIController* AIC = NewMinion->GetController<AAIController>();
+		ReadyMinionControlls.Add(AIC);
 		if (AIC)
 		{
 			ChangeNextTarget(AIC);		// BB 키에 목표 로케이션 입력
@@ -375,12 +376,19 @@ void AAIManager::RepeatSpawnMinions()
 	// 스폰 Repeat
 	if (LeftSpawnNumber > 0)
 	{
-		GetWorldTimerManager().SetTimer(RepeatSpawnHandle, this, &AAIManager::RepeatSpawnMinions, 0.5f, false);
+		GetWorldTimerManager().SetTimer(RepeatSpawnHandle, this, &AAIManager::RepeatSpawnMinions, 0.25f, false);
 
 		if (CurrentRotatingNumber == 0)
 		{
 			CurrentRotatingNumber = 1;
 		}
+	}
+	else {
+		for (int i=0; i< ReadyMinionControlls.Num(); i++) {
+			UBlackboardComponent* BBComp = ReadyMinionControlls[i]->GetBlackboardComponent();
+			BBComp->SetValueAsBool(TEXT("IsAllReady"), true);
+		}
+		ReadyMinionControlls.Empty();
 	}
 }
 

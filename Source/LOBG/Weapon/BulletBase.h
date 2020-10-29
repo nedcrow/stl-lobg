@@ -79,4 +79,6 @@ public:
 	// Team
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	FName TeamName;
+
+	void DestroyThis();
 };

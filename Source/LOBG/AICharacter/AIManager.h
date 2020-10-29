@@ -42,6 +42,7 @@ public:
 
 	// MinionsArray
 	TArray<AAIMinionChar*> ActiveMinions;
+	TArray<AAIController*> ReadyMinionControlls;
 	
 	void AddMinion(AAIMinionChar* AddMinion);
 	void RemoveMinion(AAIMinionChar* RemoveMinion);
