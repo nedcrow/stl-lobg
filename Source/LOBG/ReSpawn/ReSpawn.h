@@ -25,13 +25,13 @@ public:
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class USphereComponent* Root;
+		class UBoxComponent* Box;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class USceneComponent* ReSpawnArea;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UStaticMeshComponent* Sphere;
+		class UStaticMeshComponent* Body;
 
 
 	UFUNCTION()

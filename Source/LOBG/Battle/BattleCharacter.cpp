@@ -83,6 +83,7 @@ void ABattleCharacter::BeginPlay()
 		PS->OnRep_Exp();
 		PS->OnRep_Money();
 		//WalkSpeed = PS->PlayerSpeed;
+		NetMulticast_InitHPBar_Implementation(PS->TeamColor);
 	}
 
 }
@@ -595,6 +596,8 @@ void ABattleCharacter::Server_CallReSpawnToGM_Implementation()
 	if (GM)
 	{
 		GM->CallReSpawn(this);
+
+		//GM의 함수로 가서 Pawn의 컨트롤러도 가져오고 CurrentState도 검사해야하는데 Destroy()되면 할 수 없기 때문
 		//Destroy();
 	}
 }

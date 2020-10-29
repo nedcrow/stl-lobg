@@ -4,7 +4,7 @@
 #include "ReSpawn.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "../Battle/BattlePC.h"
 #include "../Battle/BattleCharacter.h"
 
@@ -14,16 +14,20 @@ AReSpawn::AReSpawn()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	Root = CreateDefaultSubobject<USphereComponent>(TEXT("Root"));
+	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	Box->SetBoxExtent(FVector(250.f, 200.f, 132.f));
+	RootComponent = Box;
+
+	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
+	Body->SetupAttachment(RootComponent);
+	Body->SetRelativeLocation(FVector(-87.f, 0, -100.f));
+
 	ReSpawnArea = CreateDefaultSubobject<USceneComponent>(TEXT("ReSpawnArea"));
-	Sphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sphere"));
+	ReSpawnArea->SetupAttachment(Body);
+	//ReSpawnArea->SetRelativeLocation(FVector())
 
-	RootComponent = Root;
-	ReSpawnArea->SetupAttachment(RootComponent);
-	Sphere->SetupAttachment(RootComponent);
-
-	Root->OnComponentBeginOverlap.AddDynamic(this, &AReSpawn::BeginOverlapProcess);
-	Root->OnComponentEndOverlap.AddDynamic(this, &AReSpawn::EndOverlapProcess);
+	Box->OnComponentBeginOverlap.AddDynamic(this, &AReSpawn::BeginOverlapProcess);
+	Box->OnComponentEndOverlap.AddDynamic(this, &AReSpawn::EndOverlapProcess);
 
 }
 

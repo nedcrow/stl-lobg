@@ -76,12 +76,10 @@ void ABattlePC::InitPlayerWithTeam()
 				if (PS->TeamColor == ETeamColor::Red)
 				{
 					PlayerPawn->NetMulticast_AddTag(TEXT("Red"));
-					//GS->RedTabDataArray.Add(PS->MyPlayerData);
 				}
 				else if (PS->TeamColor == ETeamColor::Blue)
 				{
 					PlayerPawn->NetMulticast_AddTag(TEXT("Blue"));
-					//GS->BlueTabDataArray.Add(PS->MyPlayerData);
 				}
 				PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
 				PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
