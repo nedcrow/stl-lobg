@@ -150,14 +150,11 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 		}
 
 		if (bIsBoss && GetWorld() && CurrentState != EFairyState::Death) {
-			ABattleGM* GM = Cast<ABattleGM>(GetWorld()->GetAuthGameMode());
-			ABattlePC* PC = Cast<ABattlePC>(GetWorld()->GetFirstPlayerController());
+			ABattleGM* GM = Cast<ABattleGM>(GetWorld()->GetAuthGameMode());\
 			if (GM && GetWorld()->IsServer())
 			{
 				GM->CountTower(TeamColor);
-			}
-			if (PC) {
-				PC->OpenResultTab(AttackerTeamName == "Blue" ? ETeamColor::Blue : ETeamColor::Red);
+				GM->CallOpenResultTab(AttackerTeamName == "Blue" ? ETeamColor::Blue : ETeamColor::Red);
 			}
 		}
 		NetMulticast_DeadthEffect();

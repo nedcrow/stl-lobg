@@ -86,4 +86,6 @@ public:
 	void SetGameStartTimeWidget(int GameTime);
 
 	void StartAIMinion();
+
+	void CallOpenResultTab(ETeamColor WinColor);
 };

@@ -97,5 +97,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 	class UGameResultWidgetBase* ResultWidgetObject;
 
-	void OpenResultTab(ETeamColor WinColor);
+	UFUNCTION(Client, Reliable)
+	void Client_OpenResultTab(ETeamColor WinColor);
+	void Client_OpenResultTab_Implementation(ETeamColor WinColor);
 };
