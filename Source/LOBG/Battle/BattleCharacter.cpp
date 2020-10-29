@@ -790,7 +790,7 @@ void ABattleCharacter::Server_AngleDown_Implementation()
 	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
 	if (PS)
 	{
-		PS->FireBulletAngle -= 3.f;
+		PS->FireBulletAngle = 0.f;
 	}
 }
 
