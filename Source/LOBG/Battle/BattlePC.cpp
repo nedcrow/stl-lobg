@@ -340,10 +340,15 @@ void ABattlePC::InitTabPlayer()
 	}
 }
 
-void ABattlePC::OpenResultTab(ETeamColor WinColor)
+void ABattlePC::Client_OpenResultTab_Implementation(ETeamColor WinColor)
 {
+	UE_LOG(LogTemp,Warning,TEXT("SetMVP"));
 	if (ResultWidgetObject) {
 		ResultWidgetObject->SetMVP(WinColor);
 		ResultWidgetObject->SetVisibility(ESlateVisibility::Visible);
+		bShowMouseCursor = true;
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Havent ResultWidgetObject"));
 	}
 }

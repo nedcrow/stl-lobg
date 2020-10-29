@@ -145,6 +145,9 @@
   Fix BulletBase.cpp (destroy effet 2)
   Fix ABattleGM::StartAIMinion()
   Test Result tab (ing - 현재 서버만 반응)
+
+1029
+  Complite Result tab
   
 
  

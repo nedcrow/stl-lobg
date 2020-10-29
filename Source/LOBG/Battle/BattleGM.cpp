@@ -427,3 +427,15 @@ void ABattleGM::StartAIMinion()
 	}
 }
 
+void ABattleGM::CallOpenResultTab(ETeamColor WinColor)
+{
+	for (auto Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC)
+		{
+			PC->Client_OpenResultTab(WinColor);
+		}
+	}
+}
+

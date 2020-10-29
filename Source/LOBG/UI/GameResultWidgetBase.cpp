@@ -64,14 +64,10 @@ void UGameResultWidgetBase::SetMVP(ETeamColor WinColor) {
 					ResultTitle->SetText(FText::FromString(BlueWin ? "- LOSE -" : "- WIN -"));
 					Child->MVPIcon->SetBrush(Cast<UImage>(RedMVP->GetChildAt(i))->Brush);
 				}
-
-				UE_LOG(LogTemp, Warning, TEXT("GameOver: %d"), i);
 			}
 			else {
 				UMVPSlot* Child = Cast<UMVPSlot>(MVPScrollBox->GetChildAt(i));
 				Child->SetVisibility(ESlateVisibility::Collapsed);
-
-				UE_LOG(LogTemp, Warning, TEXT("GameOver: %d"), i);
 			}
 		}
 		BlueMVP->SetVisibility(ESlateVisibility::Collapsed);

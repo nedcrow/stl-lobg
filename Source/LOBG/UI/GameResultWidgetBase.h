@@ -40,6 +40,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MI")
 	TArray<UMaterialInstance*> RedMVPArr;
 
+	UFUNCTION()
 	void ExitBattle();
 
 	void SetMVP(ETeamColor WinColor);

@@ -33,6 +33,7 @@ void ULobbyWidgetBase::NativeConstruct()
 
 	if (StartGameButton)
 	{
+		if(!GetWorld()->IsServer()) StartGameButton->SetVisibility(ESlateVisibility::Collapsed);
 		StartGameButton->OnClicked.AddDynamic(this, &ULobbyWidgetBase::OnStartGameButton);
 	}
 
