@@ -100,4 +100,8 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_OpenResultTab(ETeamColor WinColor);
 	void Client_OpenResultTab_Implementation(ETeamColor WinColor);
+
+	UFUNCTION(Client, Reliable)
+		void Client_AddPotionSlot(int DataNumber);
+	void Client_AddPotionSlot_Implementation(int DataNumber);
 };

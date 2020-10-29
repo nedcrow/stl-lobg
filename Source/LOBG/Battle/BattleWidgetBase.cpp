@@ -4,6 +4,7 @@
 #include "BattleWidgetBase.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Components/Border.h"
 #include "Kismet/KismetTextLibrary.h"
 
 void UBattleWidgetBase::NativeConstruct()
@@ -15,6 +16,7 @@ void UBattleWidgetBase::NativeConstruct()
 	CountPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("CountPlayerText")));
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
 	ExpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ExpBar")));
+	PotionSlot = Cast<UBorder>(GetWidgetFromName(TEXT("PotionSlot")));
 }
 
 void UBattleWidgetBase::SetHPBar(float Percent)
@@ -40,4 +42,22 @@ void UBattleWidgetBase::SetMoney(int AddMoney)
 void UBattleWidgetBase::SetLevel(int AddLevel)
 {
 	Level->SetText(UKismetTextLibrary::Conv_IntToText(AddLevel));
+}
+
+void UBattleWidgetBase::SetPotionSlot(UMaterialInstance * NewMaterial)
+{
+	if (PotionSlot)
+	{
+		PotionSlot->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
+		PotionSlot->SetBrushFromMaterial(NewMaterial);
+	}
+}
+
+void UBattleWidgetBase::EmptyPotionSlot()
+{
+	if (PotionSlot)
+	{
+		PotionSlot->SetBrushColor(FLinearColor(0.f, 0.f, 0.f, 0.3f));
+		PotionSlot->SetBrushFromMaterial(nullptr);
+	}
 }

@@ -24,6 +24,8 @@
 #include "../UI/HPBarWidgetBase.h"
 #include "../UI/HUDBarSceneComponent.h"
 #include "Components/SphereComponent.h"
+#include "../Store/StoreWidgetBase.h"
+#include "Engine/StreamableManager.h"
 
 // Sets default values
 ABattleCharacter::ABattleCharacter()
@@ -126,6 +128,8 @@ void ABattleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("LeanRight"), IE_Released, this, &ABattleCharacter::StopLeanRight);
 
 	PlayerInputComponent->BindAction(TEXT("GoHome"), IE_Pressed, this, &ABattleCharacter::GoHome);
+
+	PlayerInputComponent->BindAction(TEXT("EatPotion"), IE_Pressed, this, &ABattleCharacter::EatPotion);
 }
 
 void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -758,7 +762,7 @@ void ABattleCharacter::Server_ItemSpeed_Implementation()
 	RunSpeed += 100.f;
 }
 
-void ABattleCharacter::Server_ItemHP_Implementation()
+void ABattleCharacter::Server_FullHP_Implementation()
 {
 	CurrentHP = MaxHP;
 	OnRep_CurrentHP();
@@ -844,5 +848,35 @@ void ABattleCharacter::Server_GoHome_Implementation()
 	}
 
 	SetActorRelativeLocation(HomeLocation);
+}
+
+void ABattleCharacter::SetPotionSlot()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC)
+	{
+		for (int i = 0; i < 5; ++i)
+		{
+			//FString PotionItemName = 
+			if (PC->StoreWidgetObject->GetItemData(i).ItemName == FString("Potion"))
+			{
+				UE_LOG(LogClass, Warning, TEXT("FindPotion"));
+				//PC->Client_AddPotionSlot(i);
+				FStreamableManager loader;
+				PC->BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(PC->StoreWidgetObject->GetItemData(i).ItemImage));
+			}
+		}
+	}
+}
+
+void ABattleCharacter::EatPotion()
+{
+	Server_FullHP();
+
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC)
+	{
+		PC->BattleWidgetObject->EmptyPotionSlot();
+	}
 }
 

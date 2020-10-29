@@ -87,3 +87,8 @@ void UStoreWidgetBase::CheckSlotActive()
 		}
 	}
 }
+
+FItemDataTableStruct UStoreWidgetBase::GetItemData(int Index) const
+{
+	return *ItemDataTable->FindRow<FItemDataTableStruct>(*FString::FromInt(Index), TEXT("ItemIndex"));
+}

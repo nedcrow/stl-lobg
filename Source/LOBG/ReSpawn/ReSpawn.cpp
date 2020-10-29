@@ -57,7 +57,11 @@ void AReSpawn::BeginOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 		ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
 		if (PlayerPawn)
 		{
-	UE_LOG(LogClass, Warning, TEXT("BeginOverlap"));
+			if (HasAuthority())
+			{
+				PlayerPawn->Server_FullHP();
+			}
+
 			ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
 			if (PC)
 			{
@@ -75,7 +79,6 @@ void AReSpawn::EndOverlapProcess(UPrimitiveComponent* OverlappedComponent,
 	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(OtherActor);
 	if (PlayerPawn)
 	{
-	UE_LOG(LogClass, Warning, TEXT("EndOverlap"));
 		ABattlePC* PC = Cast<ABattlePC>(PlayerPawn->GetController());
 		if (PC)
 		{

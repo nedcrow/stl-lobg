@@ -274,8 +274,8 @@ public:
 	void Server_ItemSpeed_Implementation();
 
 	UFUNCTION(Server, Reliable)
-	void Server_ItemHP();
-	void Server_ItemHP_Implementation();
+	void Server_FullHP();
+	void Server_FullHP_Implementation();
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "MeshType")
@@ -311,4 +311,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_GoHome();
 	void Server_GoHome_Implementation();
+
+	void SetPotionSlot();
+
+	void EatPotion();
 };

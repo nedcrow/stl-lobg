@@ -15,6 +15,7 @@
 #include "../UI/GameStartWidgetBase.h"
 #include "../UI/TabWidgetBase.h"
 #include "../UI/GameResultWidgetBase.h"
+#include "Engine/StreamableManager.h"
 
 void ABattlePC::SetupInputComponent()
 {
@@ -349,4 +350,10 @@ void ABattlePC::Client_OpenResultTab_Implementation(ETeamColor WinColor)
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Havent ResultWidgetObject"));
 	}
+}
+
+void ABattlePC::Client_AddPotionSlot_Implementation(int DataNumber)
+{
+	FStreamableManager loader;
+	BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(StoreWidgetObject->GetItemData(DataNumber).ItemImage));
 }

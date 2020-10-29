@@ -30,6 +30,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UTextBlock* CountPlayer;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
+		class UBorder* PotionSlot;
+
 	virtual void NativeConstruct()override;
 
 	void SetHPBar(float Percent);
@@ -42,4 +45,7 @@ public:
 
 	void SetLevel(int AddLevel);
 
+	void SetPotionSlot(UMaterialInstance* NewMaterial);
+
+	void EmptyPotionSlot();
 };

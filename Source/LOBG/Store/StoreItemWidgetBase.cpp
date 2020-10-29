@@ -7,6 +7,7 @@
 #include "Components/Border.h"
 #include "../Battle/BattleCharacter.h"
 #include "../Battle/BattlePS.h"
+#include "../Battle/BattlePC.h"
 #include "Styling/WidgetStyle.h"
 
 void UStoreItemWidgetBase::NativeConstruct()
@@ -42,7 +43,8 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			break;
 		case 3:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_ItemHP();
+			PlayerPawn->Server_FullHP();
+			PlayerPawn->SetPotionSlot();
 			break;
 		case 4:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);

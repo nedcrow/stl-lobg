@@ -31,4 +31,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UDataTable* ItemDataTable;
+
+	UFUNCTION(BlueprintCallable)
+		FItemDataTableStruct GetItemData(int Index) const;
 };
