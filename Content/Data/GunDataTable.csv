@@ -1,0 +1,6 @@
+,GunName,GunImage
+0,AR4,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_AR4_Tex_Mat_Inst.RT_AR4_Tex_Mat_Inst'
+1,KA47,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA47_Tex_Mat_Inst.RT_KA47_Tex_Mat_Inst'
+2,KA74,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA74_Tex_Mat_Inst.RT_KA74_Tex_Mat_Inst'
+3,KAVal,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA_Val_Tex_Mat_Inst.RT_KA_Val_Tex_Mat_Inst'
+4,SMG,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_SMG_Tex_Mat_Inst.RT_SMG_Tex_Mat_Inst'
