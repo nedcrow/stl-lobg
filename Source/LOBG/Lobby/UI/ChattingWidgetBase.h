@@ -20,6 +20,8 @@ public:
 		class UEditableTextBox* ChatInput;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UScrollBox* ChatScrollBox;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UBorder* ChatBG;
 	UFUNCTION()
 		void ProcessTextCommited(const FText& Text, ETextCommit::Type Method);
 		void AddMessage(FText Message);

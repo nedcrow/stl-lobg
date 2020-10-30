@@ -15,17 +15,19 @@
 #include "../UI/GameStartWidgetBase.h"
 #include "../UI/TabWidgetBase.h"
 #include "../UI/GameResultWidgetBase.h"
+#include "../Lobby/UI/ChattingWidgetBase.h"
+#include "Components/EditableTextBox.h"
+#include "Components/Border.h"
 #include "Engine/StreamableManager.h"
 
 void ABattlePC::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	//InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ABattlePC::ClickFire);
-	//InputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ABattlePC::ReleaseFire);
-
 	InputComponent->BindAction(TEXT("OpenStore"), EInputEvent::IE_Pressed, this, &ABattlePC::PushOpenStore);
 	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Pressed, this, &ABattlePC::OpenTab);
 	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Released, this, &ABattlePC::CloseTab);
+	InputComponent->BindAction(TEXT("Enter"), EInputEvent::IE_Pressed, this, &ABattlePC::OnGameCursor);
+	//InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &ABattlePC::OffGameCursor);
 }
 
 void ABattlePC::BeginPlay()
@@ -356,4 +358,41 @@ void ABattlePC::Client_AddPotionSlot_Implementation(int DataNumber)
 {
 	FStreamableManager loader;
 	BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(StoreWidgetObject->GetItemData(DataNumber).ItemImage));
+}
+
+void ABattlePC::OnGameCursor()
+{
+	if (IsLocalPlayerController() && BattleWidgetObject && BattleWidgetObject->ChattingWidget) {
+		BattleWidgetObject->ChattingWidget->ChatInput->SetVisibility(ESlateVisibility::Visible);
+		BattleWidgetObject->ChattingWidget->ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0.4f));
+		BattleWidgetObject->ChattingWidget->ChatInput->SetFocus();
+		UE_LOG(LogTemp,Warning,TEXT("OnGameCursor"));
+	}
+}
+
+void ABattlePC::OffGameCursor()
+{
+	if (IsLocalPlayerController() && BattleWidgetObject && BattleWidgetObject->ChattingWidget) {
+		BattleWidgetObject->ChattingWidget->ChatInput->SetVisibility(ESlateVisibility::Collapsed);
+		BattleWidgetObject->ChattingWidget->ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
+	}
+}
+
+// From all client to server
+void ABattlePC::Server_SendMessageInBattle_Implementation(const FText& Message)
+{
+	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; Iter++) {
+		ABattlePC* PC = Cast<ABattlePC>(*Iter);
+		if (PC) {
+			PC->Client_SendMessageInBattle(Message);
+		}
+	}
+}
+
+// Control client widget
+void ABattlePC::Client_SendMessageInBattle_Implementation(const FText& Message)
+{
+	if (BattleWidgetObject) {
+		BattleWidgetObject->ChattingWidget->AddMessage(Message);
+	}
 }

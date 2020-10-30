@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/Border.h"
+#include "../Lobby/UI/ChattingWidgetBase.h"
 #include "Kismet/KismetTextLibrary.h"
 
 void UBattleWidgetBase::NativeConstruct()
@@ -17,6 +18,7 @@ void UBattleWidgetBase::NativeConstruct()
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HPBar")));
 	ExpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ExpBar")));
 	PotionSlot = Cast<UBorder>(GetWidgetFromName(TEXT("PotionSlot")));
+	ChattingWidget = Cast<UChattingWidgetBase>(GetWidgetFromName(TEXT("ChattingWidget")));
 }
 
 void UBattleWidgetBase::SetHPBar(float Percent)

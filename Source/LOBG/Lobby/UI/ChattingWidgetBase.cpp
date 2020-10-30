@@ -3,20 +3,30 @@
 
 #include "ChattingWidgetBase.h"
 #include "../LobbyPC.h"
+#include "../../Battle/BattlePC.h"
 #include "../../LOBGGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 
 void UChattingWidgetBase::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ChatInput = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("ChatInput")));
 	ChatScrollBox = Cast<UScrollBox>(GetWidgetFromName(TEXT("ChatScrollBox")));
+	ChatBG = Cast<UBorder>(GetWidgetFromName(TEXT("ChatBG")));
 
 	if (ChatInput) {
 		ChatInput->OnTextCommitted.AddDynamic(this, &UChattingWidgetBase::ProcessTextCommited);
+		TArray<FString> TempArr;
+		FString LevelName = GetWorld()->GetName();
+		LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
+		if (TempArr[0] == "Step03") {
+			ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
+			ChatInput->SetVisibility(ESlateVisibility::Collapsed);
+		}
 	}
 }
 
@@ -28,13 +38,36 @@ void UChattingWidgetBase::ProcessTextCommited(const FText& Text, ETextCommit::Ty
 	{
 	case ETextCommit::OnEnter:
 	{
-		ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
-		if (PC) {
-			ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-			if (GI) {
-				FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
-				PC->Server_SendMessage(FText::FromString(Temp));
-				ChatInput->SetText(FText::FromString(TEXT("")));
+		if (ChatInput->Text.ToString() == "") {
+			ChatInput->SetVisibility(ESlateVisibility::Collapsed);
+			ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
+			UE_LOG(LogTemp,Warning,TEXT("EndChatting"));
+		}
+		else {
+			TArray<FString> TempArr;
+			FString LevelName = GetWorld()->GetName();
+			LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
+			if (TempArr[0] == "Step02") {
+				ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
+				if (PC) {
+					ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+					if (GI) {
+						FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
+						PC->Server_SendMessage(FText::FromString(Temp));
+						ChatInput->SetText(FText::FromString(TEXT("")));
+					}
+				}
+			}
+			else if (TempArr[0] == "Step03") {
+				ABattlePC* PC = GetOwningPlayer<ABattlePC>();
+				if (PC) {
+					ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+					if (GI) {
+						FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
+						PC->Server_SendMessageInBattle(FText::FromString(Temp));
+						ChatInput->SetText(FText::FromString(TEXT("")));
+					}
+				}
 			}
 		}
 	}
