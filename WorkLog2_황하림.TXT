@@ -150,6 +150,10 @@
   Complite Result tab
   Fix spawn timing at AIManager
   Add particle blueprint
+
+1030
+  Fix minion spawn location at AIManager
+  Add chatting ui in battle
   
 
  

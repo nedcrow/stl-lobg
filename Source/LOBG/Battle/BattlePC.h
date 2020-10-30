@@ -104,4 +104,19 @@ public:
 	UFUNCTION(Client, Reliable)
 		void Client_AddPotionSlot(int DataNumber);
 	void Client_AddPotionSlot_Implementation(int DataNumber);
+
+
+	// Chatting
+	uint8 bIsChattingMode:1;
+	void OnGameCursor();
+	void OffGameCursor();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SendMessageInBattle(const FText& Message);
+	void Server_SendMessageInBattle_Implementation(const FText& Message);
+
+	UFUNCTION(Client, Reliable)
+	void Client_SendMessageInBattle(const FText& Message);
+	void Client_SendMessageInBattle_Implementation(const FText& Message);
+
 };

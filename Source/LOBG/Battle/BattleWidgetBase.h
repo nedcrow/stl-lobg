@@ -33,6 +33,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
 		class UBorder* PotionSlot;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UChattingWidgetBase* ChattingWidget;
+
+
 	virtual void NativeConstruct()override;
 
 	void SetHPBar(float Percent);

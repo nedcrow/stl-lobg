@@ -287,22 +287,22 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 		// 스폰 포인트 찾기
 		CurrentSpawnLocation = CoursePoints[0]->GetActorLocation();
 
-		//CurrentRotatingNumber = 0;		// 스폰 회전 위치 초기화
-		switch (WaveCourse)		// 다중 AI매니저로 스폰 위치가 겹치는 걸 막기위해 스폰 회전 수 분산.
-		{
-		case 1:
-			CurrentRotatingNumber = 0;
-			break;
-		case 2:
-			CurrentRotatingNumber = 2;
-			break;
-		case 3:
-			CurrentRotatingNumber = 3;
-			break;
-		default:
-			CurrentRotatingNumber = 0;
-			break;
-		}
+		CurrentRotatingNumber = 0;		// 스폰 회전 위치 초기화
+		//switch (WaveCourse)		// 다중 AI매니저로 스폰 위치가 겹치는 경우, 미니언도 겹치지 않도록 회전 수 분산.
+		//{
+		//case 1:
+		//	CurrentRotatingNumber = 0;
+		//	break;
+		//case 2:
+		//	CurrentRotatingNumber = 2;
+		//	break;
+		//case 3:
+		//	CurrentRotatingNumber = 3;
+		//	break;
+		//default:
+		//	CurrentRotatingNumber = 0;
+		//	break;
+		//}
 
 		//WaveCourse = FMath::RandRange(1, 3);		// 웨이브 랜덤 할당
 
@@ -321,6 +321,7 @@ void AAIManager::SetSpawnQuantity(int MinionQuantity)
 void AAIManager::RepeatSpawnMinions()
 {
 	// 스폰 위치 조정
+
 	if (CurrentRotatingNumber <= 0)		// 숫자가 0 이하면 초기화
 	{
 		CurrentRotatingNumber = 0;
