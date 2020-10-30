@@ -33,7 +33,7 @@ ABulletBase::ABulletBase()
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	//InitialLifeSpan = 3.0f;
 
 	Tags.Add(TEXT("Bullet"));
 }
@@ -45,7 +45,7 @@ void ABulletBase::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
 	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
-	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyThis, 0.5f, false);
+	SetLifeSpan(LifeSpanTime);
 }
 
 // Called every frame
@@ -236,11 +236,6 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	// Sound
 	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
-	Destroy();
-}
-
-void ABulletBase::DestroyThis()
-{
 	Destroy();
 }
 

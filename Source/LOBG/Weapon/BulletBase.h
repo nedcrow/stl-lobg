@@ -80,5 +80,5 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	FName TeamName;
 
-	void DestroyThis();
+	float LifeSpanTime = 0.6f;
 };
