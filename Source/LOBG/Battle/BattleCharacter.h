@@ -315,4 +315,8 @@ public:
 	void SetPotionSlot();
 
 	void EatPotion();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ChangeGunMesh();
+	void Server_ChangeGunMesh_Implementation();
 };

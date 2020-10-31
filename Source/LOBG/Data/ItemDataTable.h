@@ -10,9 +10,9 @@
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
-	Unknown = 0 UMETA(Display = "Unknown"),
-	Consume = 1 UMETA(Display = "Consume"),
-	Equip = 2 UMETA(Display = "Equip"),
+	Gun = 0 UMETA(Display = "Gun"),
+	Upgrade = 1 UMETA(Display = "Upgrade"),
+	Consume = 2 UMETA(Display = "Consume"),
 };
 
 //UENUM(BlueprintType)
@@ -36,8 +36,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		FString ItemName;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//	EItemName ItemName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		EItemType ItemType;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		int ItemPrice;

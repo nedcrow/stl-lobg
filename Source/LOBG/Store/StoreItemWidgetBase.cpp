@@ -12,6 +12,8 @@
 
 void UStoreItemWidgetBase::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	ItemBorder = Cast<UBorder>(GetWidgetFromName(TEXT("ItemBorder")));
 	ItemButton = Cast<UButton>(GetWidgetFromName(TEXT("ItemButton")));
 	ItemText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemText")));
@@ -23,6 +25,13 @@ void UStoreItemWidgetBase::NativeConstruct()
 void UStoreItemWidgetBase::ClickedItemButton()
 {
 	if (!bEnoughMoney) return;
+	ABattlePS* PS = Cast<ABattlePS>(GetOwningPlayerState());
+
+	if (PS)
+	{
+		if (PS->PlayerMoney < MyItemMoney) return;
+	}
+
 	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetOwningPlayerPawn());
 	if (PlayerPawn)
 	{
@@ -34,7 +43,8 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			break;
 		case 1:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_AngleDown();
+			PlayerPawn->Server_FullHP();
+			PlayerPawn->SetPotionSlot();
 			break;
 		case 2:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
@@ -43,12 +53,11 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			break;
 		case 3:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_FullHP();
-			PlayerPawn->SetPotionSlot();
+			PlayerPawn->Server_AngleDown();
 			break;
 		case 4:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_ItemAttack();
+			PlayerPawn->Server_ChangeGunMesh();
 			break;
 		default:
 			break;

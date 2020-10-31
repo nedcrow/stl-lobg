@@ -862,8 +862,8 @@ void ABattleCharacter::SetPotionSlot()
 			{
 				UE_LOG(LogClass, Warning, TEXT("FindPotion"));
 				//PC->Client_AddPotionSlot(i);
-				FStreamableManager loader;
-				PC->BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(PC->StoreWidgetObject->GetItemData(i).ItemImage));
+				//FStreamableManager loader;
+				//PC->BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(PC->StoreWidgetObject->GetItemData(i).ItemImage));
 			}
 		}
 	}
@@ -878,5 +878,9 @@ void ABattleCharacter::EatPotion()
 	{
 		PC->BattleWidgetObject->EmptyPotionSlot();
 	}
+}
+
+void ABattleCharacter::Server_ChangeGunMesh_Implementation()
+{
 }
 

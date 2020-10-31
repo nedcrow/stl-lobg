@@ -8,6 +8,7 @@
 #include "BattleWidgetBase.h"
 #include "BattleCharacter.h"
 #include "../Store/StoreWidgetBase.h"
+#include "../Store/StoreItemBoxWidgetBase.h"
 #include "BattleGS.h"
 
 void ABattlePS::OnRep_Exp()
@@ -56,7 +57,7 @@ void ABattlePS::OnRep_Money()
 	if (PC && PC->IsLocalController())
 	{
 		PC->BattleWidgetObject->SetMoney(PlayerMoney);
-		PC->StoreWidgetObject->CheckSlotActive();
+		PC->StoreWidgetObject->ItemBox->CheckAllSlotActive();
 	}
 }
 

@@ -20,14 +20,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UBorder* StoreBorder;
 
-	void InitItemArray();
-
 	void SetVisiBilitySlot(ESlateVisibility NewValue);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-		class UScrollBox* ItemBox;
-
-	void CheckSlotActive();
+		class UStoreItemBoxWidgetBase* ItemBox;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UDataTable* ItemDataTable;

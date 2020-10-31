@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Store/StoreWidgetBase.h"
 #include "../Store/StoreItemWidgetBase.h"
+#include "../Store/StoreItemBoxWidgetBase.h"
 #include "../ChoiceMesh/MeshWidgetBase.h"
 #include "../UI/GameStartWidgetBase.h"
 #include "../UI/TabWidgetBase.h"
@@ -178,7 +179,7 @@ void ABattlePC::PushOpenStore()
 		}
 		//숨겨져 있는 상태라면 보이게 만든다
 		StoreWidgetObject->SetVisiBilitySlot(ESlateVisibility::Visible);
-		
+		StoreWidgetObject->ItemBox->CheckAllSlotActive();
 
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeGameAndUI());
