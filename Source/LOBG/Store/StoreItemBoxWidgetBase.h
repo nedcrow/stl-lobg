@@ -56,4 +56,7 @@ public:
 	void CheckAllSlotActive();
 
 	void SetVisiblityItemSlot(class UScrollBox* NewScrollBox);
+
+	UFUNCTION(BlueprintCallable)
+		FItemDataTableStruct GetItemData(int Index) const;
 };

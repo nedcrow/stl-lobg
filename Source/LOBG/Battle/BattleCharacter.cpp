@@ -25,6 +25,7 @@
 #include "../UI/HUDBarSceneComponent.h"
 #include "Components/SphereComponent.h"
 #include "../Store/StoreWidgetBase.h"
+#include "../Store/StoreItemBoxWidgetBase.h"
 #include "Engine/StreamableManager.h"
 
 // Sets default values
@@ -757,9 +758,14 @@ void ABattleCharacter::Server_ItemSpeed_Implementation()
 		}
 	}
 	WalkSpeed += 100.f;
+}
+
+void ABattleCharacter::ItemSpeed()
+{
+	WalkSpeed += 100.f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	Server_SetMaxWalkSpeed(WalkSpeed);
-	RunSpeed += 100.f;
+	Server_ItemSpeed();
 }
 
 void ABattleCharacter::Server_FullHP_Implementation()
@@ -857,13 +863,10 @@ void ABattleCharacter::SetPotionSlot()
 	{
 		for (int i = 0; i < 5; ++i)
 		{
-			//FString PotionItemName = 
-			if (PC->StoreWidgetObject->GetItemData(i).ItemName == FString("Potion"))
+			if (PC->StoreWidgetObject->ItemBox->GetItemData(i).ItemName == FString("Potion"))
 			{
-				UE_LOG(LogClass, Warning, TEXT("FindPotion"));
-				//PC->Client_AddPotionSlot(i);
-				//FStreamableManager loader;
-				//PC->BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(PC->StoreWidgetObject->GetItemData(i).ItemImage));
+				FStreamableManager loader;
+				PC->BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(PC->StoreWidgetObject->ItemBox->GetItemData(i).ItemImage));
 			}
 		}
 	}
@@ -880,7 +883,31 @@ void ABattleCharacter::EatPotion()
 	}
 }
 
-void ABattleCharacter::Server_ChangeGunMesh_Implementation()
+void ABattleCharacter::Server_ChangeGunMesh_Implementation(USkeletalMesh* GunMesh)
 {
+	NetMulticast_ChangeGunMesh(GunMesh);
+}
+
+void ABattleCharacter::NetMulticast_ChangeGunMesh_Implementation(USkeletalMesh* GunMesh)
+{
+	Weapon->SetSkeletalMesh(GunMesh);
+}
+
+void ABattleCharacter::ChangeGunMesh(const FString& GunItemName)
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetController());
+	if (PC)
+	{
+		for (int i = 0; i < 9; ++i)
+		{
+			if (PC->StoreWidgetObject->ItemBox->GetItemData(i).ItemName == GunItemName)
+			{
+				FStreamableManager loader;
+				Weapon->SetSkeletalMesh(loader.LoadSynchronous<USkeletalMesh>(PC->StoreWidgetObject->ItemBox->GetItemData(i).GunMesh));
+				Server_ChangeGunMesh(loader.LoadSynchronous<USkeletalMesh>(PC->StoreWidgetObject->ItemBox->GetItemData(i).GunMesh));
+				break;
+			}
+		}
+	}
 }
 

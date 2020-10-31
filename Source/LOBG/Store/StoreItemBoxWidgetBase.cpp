@@ -127,3 +127,8 @@ void UStoreItemBoxWidgetBase::SetVisiblityItemSlot(UScrollBox* NewScrollBox)
 {
 	NewScrollBox->SetVisibility(ESlateVisibility::Visible);
 }
+
+FItemDataTableStruct UStoreItemBoxWidgetBase::GetItemData(int Index) const
+{
+	return *ItemDataTable->FindRow<FItemDataTableStruct>(*FString::FromInt(Index), TEXT("ItemIndex"));
+}

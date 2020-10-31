@@ -273,6 +273,8 @@ public:
 	void Server_ItemSpeed();
 	void Server_ItemSpeed_Implementation();
 
+	void ItemSpeed();
+
 	UFUNCTION(Server, Reliable)
 	void Server_FullHP();
 	void Server_FullHP_Implementation();
@@ -317,6 +319,12 @@ public:
 	void EatPotion();
 
 	UFUNCTION(Server, Reliable)
-	void Server_ChangeGunMesh();
-	void Server_ChangeGunMesh_Implementation();
+	void Server_ChangeGunMesh(class USkeletalMesh* GunMesh);
+	void Server_ChangeGunMesh_Implementation(class USkeletalMesh* GunMesh);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void NetMulticast_ChangeGunMesh(class USkeletalMesh* GunMesh);
+	void NetMulticast_ChangeGunMesh_Implementation(class USkeletalMesh* GunMesh);
+
+	void ChangeGunMesh(const FString& GunItemName);
 };

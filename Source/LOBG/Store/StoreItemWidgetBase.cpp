@@ -39,7 +39,7 @@ void UStoreItemWidgetBase::ClickedItemButton()
 		{
 		case 0:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_ItemSpeed();
+			PlayerPawn->ItemSpeed();
 			break;
 		case 1:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
@@ -55,9 +55,9 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_AngleDown();
 			break;
-		case 4:
+		case 4: case 5: case 6: case 7: case 8:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
-			PlayerPawn->Server_ChangeGunMesh();
+			PlayerPawn->ChangeGunMesh(MyItemName);
 			break;
 		default:
 			break;

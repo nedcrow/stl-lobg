@@ -17,6 +17,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TAssetPtr<class UMaterialInstance> GunImage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TAssetPtr<class USkeletalMesh> GunMesh;
+
 };
 
 UCLASS()
