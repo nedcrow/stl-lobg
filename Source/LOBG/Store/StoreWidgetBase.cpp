@@ -7,6 +7,7 @@
 #include "Components/VerticalBox.h"
 #include "StoreItemWidgetBase.h"
 #include "StoreItemBoxWidgetBase.h"
+#include "GunDetailWidgetBase.h"
 #include "Components/ScrollBox.h"
 #include "Engine/StreamableManager.h"
 
@@ -16,11 +17,22 @@ void UStoreWidgetBase::NativeConstruct()
 
 	ItemBox = Cast<UStoreItemBoxWidgetBase>(GetWidgetFromName(TEXT("StoreItemBox")));
 	StoreBorder = Cast<UBorder>(GetWidgetFromName(TEXT("StoreBorder")));
+	StoreGunDetail = Cast<UGunDetailWidgetBase>(GetWidgetFromName(TEXT("StoreGunDetail")));
+
+	if (StoreGunDetail)
+	{
+		StoreGunDetail->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UStoreWidgetBase::SetVisiBilitySlot(ESlateVisibility NewValue)
 {
 	SetVisibility(NewValue);
+
+	if (StoreGunDetail)
+	{
+		StoreGunDetail->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 FItemDataTableStruct UStoreWidgetBase::GetItemData(int Index) const

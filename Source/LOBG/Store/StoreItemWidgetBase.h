@@ -38,8 +38,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UButton* ItemButton;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-		class UTextBlock* ItemText;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	//	class UTextBlock* ItemText;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
 		class UTextBlock* ItemMoney;
@@ -64,4 +64,11 @@ public:
 	bool InitSlotByMoney();
 
 	bool bEnoughMoney = false;
+
+	UFUNCTION()
+	void HoveredItemButton();
+
+	UMaterialInstance* MyItemImage;
+
+	FString MyItemDescription;
 };

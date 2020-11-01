@@ -103,4 +103,11 @@ public:
 	void SetNextExp();
 
 	int GetStartExpInCurrentLevel();
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+	UPROPERTY(Replicated)
+		float MaxHP = 100.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+		float BulletSpeed = 2000.f;
 };

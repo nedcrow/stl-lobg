@@ -50,6 +50,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TAssetPtr<class USkeletalMesh> GunMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int GunAPU1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int GunAPU2;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int GunAPU3;
 };
 
 UCLASS()

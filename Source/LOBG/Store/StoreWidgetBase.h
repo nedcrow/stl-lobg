@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FItemDataTableStruct GetItemData(int Index) const;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+		class UGunDetailWidgetBase* StoreGunDetail;
 };

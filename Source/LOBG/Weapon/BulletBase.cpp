@@ -31,9 +31,8 @@ ABulletBase::ABulletBase()
 	StaticMesh->CastShadow = false;			// Disallow mesh to cast other shadows
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-
 	// Die after 3 seconds by default
-	InitialLifeSpan = 5.0f;
+	InitialLifeSpan = 5.f;
 
 	Tags.Add(TEXT("Bullet"));
 }
@@ -46,6 +45,8 @@ void ABulletBase::BeginPlay()
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
 	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
 	//SetLifeSpan(LifeSpanTime);
+
+	UE_LOG(LogClass, Warning, TEXT("BulletSpeed is %f"), Movement->InitialSpeed);
 }
 
 // Called every frame
@@ -250,4 +251,12 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	//GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	Destroy();
 }
+
+void ABulletBase::AddSpeed(float newSpeed)
+{
+	Movement->InitialSpeed = newSpeed;
+	Movement->MaxSpeed = newSpeed;
+}
+
+
 

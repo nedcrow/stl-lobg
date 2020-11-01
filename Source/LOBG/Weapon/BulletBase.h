@@ -81,4 +81,10 @@ public:
 	FName TeamName;
 
 	//float LifeSpanTime = 0.6f;
+
+	void AddSpeed(float newSpeed);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Meta = (ExposeOnSpawn = true), Category = "Data")
+	float MyBulletSpeed;
+
 };

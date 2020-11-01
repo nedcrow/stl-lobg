@@ -125,8 +125,9 @@ public:
 	UFUNCTION()
 		void OnRep_CurrentHP();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
-		float MaxHP = 100.f;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	UPROPERTY(Replicated)
+		float MaxHP;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
 		float AttackPoint = 5.f;
@@ -327,4 +328,15 @@ public:
 	void NetMulticast_ChangeGunMesh_Implementation(class USkeletalMesh* GunMesh);
 
 	void ChangeGunMesh(const FString& GunItemName);
+
+	UFUNCTION(Server, Reliable)
+		void Server_MaxHPUp();
+	void Server_MaxHPUp_Implementation();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	float BulletSpeed = 4500.f;
+
+	UFUNCTION(Server, Reliable)
+		void Server_BulletSpeedUp();
+	void Server_BulletSpeedUp_Implementation();
 };

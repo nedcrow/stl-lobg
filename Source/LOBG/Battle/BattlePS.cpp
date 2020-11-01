@@ -74,6 +74,8 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, PlayerMeshType);
 	DOREPLIFETIME(ABattlePS, FireBulletAngle);
 	DOREPLIFETIME(ABattlePS, PlayerFOV);
+	DOREPLIFETIME(ABattlePS, MaxHP);
+	DOREPLIFETIME(ABattlePS, BulletSpeed);
 }
 
 void ABattlePS::SetNextExp()

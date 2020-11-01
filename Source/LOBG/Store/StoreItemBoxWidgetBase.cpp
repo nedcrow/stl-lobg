@@ -67,15 +67,18 @@ void UStoreItemBoxWidgetBase::InitSlot(UScrollBox* NewScrollBox, EItemType MyIte
 		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(NewScrollBox->GetChildAt(i));
 		if (ItemSlot)
 		{
-			ItemSlot->SetItemText(ItemArray[i]->ItemDescription);
+			//ItemSlot->SetItemText(ItemArray[i]->ItemDescription);
 			ItemSlot->SetItemMoney(ItemArray[i]->ItemPrice);
 
 			FStreamableManager loader;
-			ItemSlot->SetItemBorder(loader.LoadSynchronous<UMaterialInstance>(ItemArray[i]->ItemImage));
+			UMaterialInstance* MI = loader.LoadSynchronous<UMaterialInstance>(ItemArray[i]->ItemImage);
+			ItemSlot->SetItemBorder(MI);
+			ItemSlot->MyItemImage = MI;
 
 			ItemSlot->MyItemName = ItemArray[i]->ItemName;
 			ItemSlot->MyItemIndex = ItemArray[i]->ItemIndex;
 			ItemSlot->MyItemMoney = ItemArray[i]->ItemPrice;
+			ItemSlot->MyItemDescription = ItemArray[i]->ItemDescription;
 			ItemSlot->InitSlotByMoney();
 		}
 	}

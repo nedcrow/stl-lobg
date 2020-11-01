@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -75,12 +76,17 @@ void ABattleCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentHP = MaxHP;
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		MaxHP = PS->MaxHP;
+
+		CurrentHP = MaxHP;
+	}
 	CurrentState = EBattleCharacterState::Normal;
 
 	//UI초기화 및 유무 확인
 	OnRep_CurrentHP();
-	ABattlePS* PS = GetPlayerState<ABattlePS>();
 	if (PS)
 	{
 		PS->OnRep_Exp();
@@ -144,6 +150,7 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, CurrentState);
 	DOREPLIFETIME(ABattleCharacter, WalkSpeed);
 	DOREPLIFETIME(ABattleCharacter, RunSpeed);
+	DOREPLIFETIME(ABattleCharacter, BulletSpeed);
 }
 
 // Move
@@ -323,25 +330,41 @@ void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLoca
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ActorSpawnParams.Owner = this;
 
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		BulletSpeed = PS->BulletSpeed;
+	}
 	// 총알 스폰
-	ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	//ABulletBase* Bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	
+	FTransform BulletTransform = FTransform(SpawnRotation, SpawnLocation);
 
+	ABulletBase* Bullet = Cast<ABulletBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), BulletClass, BulletTransform));
+	
+	
 	// 총알 초기값 설정.
 	if (Bullet)
 	{
-		float BulletAttackPoint = 0.f;
+		//총알 속도 설정
+		Bullet->AddSpeed(BulletSpeed);
 
-		ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+		float BulletAttackPoint = 0.f;
+	
 		if (PS)
 		{
 			BulletAttackPoint = PS->AttackPoint;
 		}
-
+	
 		Bullet->SetDamageInfo(GetController(), BulletAttackPoint, 0, TeamName);
-
+	
 		// 총알에 캐릭터의 관성을 추가한다. 적용 취소. 피직스를 키면 총알 물리가 이상해짐;;
-		//Bullet->Sphere->AddImpulse(GetVelocity());			
+		//Bullet->Sphere->AddImpulse(GetVelocity());
+
+		//스폰 후 초기설정 후 완료작업 : DererredActor를 실행한 후 반드시 필요하다
+		UGameplayStatics::FinishSpawningActor(Bullet, BulletTransform);
 	}
 
 
@@ -426,7 +449,7 @@ float ABattleCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const
 
 	}
 
-	TempHP = FMath::Clamp(TempHP, 0.f, 100.f);
+	TempHP = FMath::Clamp(TempHP, 0.f, MaxHP);
 	if (CurrentHP != TempHP)
 	{
 		CurrentHP = TempHP;
@@ -677,6 +700,13 @@ void ABattleCharacter::NetMulticast_AddTag_Implementation(const FName & PlayerTa
 
 void ABattleCharacter::NetMulticast_InitHPBar_Implementation(ETeamColor color)
 {
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		MaxHP = PS->MaxHP;
+		CurrentHP = MaxHP;
+	}
+
 	FLinearColor ColorRed = FLinearColor(1.f, 0, 0, 1.f);
 	FLinearColor ColorBlue = FLinearColor(0, 0, 1.f, 1.f);
 
@@ -770,8 +800,16 @@ void ABattleCharacter::ItemSpeed()
 
 void ABattleCharacter::Server_FullHP_Implementation()
 {
-	CurrentHP = MaxHP;
-	OnRep_CurrentHP();
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		MaxHP = PS->MaxHP;
+		UE_LOG(LogClass, Warning, TEXT("InReSpawn MaxHP is %f"), MaxHP);
+		CurrentHP = PS->MaxHP;
+		UE_LOG(LogClass, Warning, TEXT("InReSpawn CurrentHP is %f"), CurrentHP);
+		OnRep_CurrentHP();
+	}
+	//CurrentHP = MaxHP;
 }
 
 void ABattleCharacter::NetMulticast_SetMeshSettings_Implementation(const EMeshType& MyMeshType)
@@ -909,5 +947,28 @@ void ABattleCharacter::ChangeGunMesh(const FString& GunItemName)
 			}
 		}
 	}
+}
+
+void ABattleCharacter::Server_MaxHPUp_Implementation()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->MaxHP += 50.f;
+	}
+
+	MaxHP += 50.f;
+	CurrentHP = MaxHP;
+	OnRep_CurrentHP();
+}
+
+void ABattleCharacter::Server_BulletSpeedUp_Implementation()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->BulletSpeed += 10000.f;
+	}
+	//BulletSpeed += 200.f;
 }
 

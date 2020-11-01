@@ -9,6 +9,8 @@
 #include "../Battle/BattlePS.h"
 #include "../Battle/BattlePC.h"
 #include "Styling/WidgetStyle.h"
+#include "GunDetailWidgetBase.h"
+#include "StoreWidgetBase.h"
 
 void UStoreItemWidgetBase::NativeConstruct()
 {
@@ -16,10 +18,11 @@ void UStoreItemWidgetBase::NativeConstruct()
 
 	ItemBorder = Cast<UBorder>(GetWidgetFromName(TEXT("ItemBorder")));
 	ItemButton = Cast<UButton>(GetWidgetFromName(TEXT("ItemButton")));
-	ItemText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemText")));
+	//ItemText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemText")));
 	ItemMoney = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemMoney")));
 
 	ItemButton->OnClicked.AddDynamic(this, &UStoreItemWidgetBase::ClickedItemButton);
+	ItemButton->OnHovered.AddDynamic(this, &UStoreItemWidgetBase::HoveredItemButton);
 }
 
 void UStoreItemWidgetBase::ClickedItemButton()
@@ -59,6 +62,14 @@ void UStoreItemWidgetBase::ClickedItemButton()
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->ChangeGunMesh(MyItemName);
 			break;
+		case 9:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_BulletSpeedUp();
+			break;
+		case 10:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->Server_MaxHPUp();
+			break;
 		default:
 			break;
 		}
@@ -69,10 +80,10 @@ void UStoreItemWidgetBase::ClickedItemButton()
 
 void UStoreItemWidgetBase::SetItemText(FString newText)
 {
-	if (ItemText)
-	{
-		ItemText->SetText(FText::FromString(newText));
-	}
+	//if (ItemText)
+	//{
+	//	ItemText->SetText(FText::FromString(newText));
+	//}
 }
 
 void UStoreItemWidgetBase::SetItemBorder(UMaterialInstance* NewMaterial)
@@ -116,4 +127,16 @@ bool UStoreItemWidgetBase::InitSlotByMoney()
 		}
 	}
 	return false;
+}
+
+void UStoreItemWidgetBase::HoveredItemButton()
+{
+	ABattlePC* PC = Cast<ABattlePC>(GetOwningPlayer());
+	if (PC)
+	{
+		PC->StoreWidgetObject->StoreGunDetail->SetGunImage(MyItemImage);
+		PC->StoreWidgetObject->StoreGunDetail->SetGunName(MyItemName);
+		PC->StoreWidgetObject->StoreGunDetail->SetGunDescription(MyItemDescription);
+		PC->StoreWidgetObject->StoreGunDetail->SetVisibility(ESlateVisibility::Visible);
+	}
 }
