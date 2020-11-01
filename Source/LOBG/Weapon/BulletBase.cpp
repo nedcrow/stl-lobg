@@ -33,7 +33,7 @@ ABulletBase::ABulletBase()
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 	// Die after 3 seconds by default
-	//InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 5.0f;
 
 	Tags.Add(TEXT("Bullet"));
 }
@@ -45,7 +45,7 @@ void ABulletBase::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
 	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
-	SetLifeSpan(LifeSpanTime);
+	//SetLifeSpan(LifeSpanTime);
 }
 
 // Called every frame
@@ -68,9 +68,10 @@ void ABulletBase::SetDamageInfo(AController* Controller, float NewAttackPoint, f
 	AttackPoint = NewAttackPoint;
 	AttackRadial = NewAttackRadial;
 	TeamName = NewTeamName;
-	Tags.Add(TeamName);
+	Tags.Add(NewTeamName);
 }
 
+// HitEffect
 void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, FVector HitDirection)
 {
 	if (HitEffect)
@@ -83,12 +84,17 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 			SpawnLocation,
 			Rotation,
 			HitEffectScale);		
+
+		GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	}
 }
 
 void ABulletBase::DestroyHitEffect()
 {
-	if (HitEffectComponent) HitEffectComponent->DestroyComponent();
+	if (HitEffectComponent && !HitEffectComponent->IsBeingDestroyed())
+	{
+		HitEffectComponent->DestroyComponent();
+	}
 }
 
 //플레이어에 충돌하면
@@ -139,22 +145,24 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 
 			NetMulticast_HitEffect(SweepResult.ImpactPoint + SweepResult.ImpactNormal * 20.f, -SweepResult.ImpactNormal);
 		}
-		else if (OtherActor->ActorHasTag(TEXT("Player")))
+		else 
 		{
-			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			if (OtherActor->ActorHasTag(TEXT("Player")))
+			{
+				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 
-			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-		}
-		else if (OtherActor->ActorHasTag(TEXT("Minion")))
-		{
-			UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
+			}
+			else if (OtherActor->ActorHasTag(TEXT("Minion")))
+			{
+				UGameplayStatics::ApplyPointDamage(OtherActor, AttackPoint, -SweepResult.ImpactNormal, SweepResult, SummonerController, this, UBulletDamageType::StaticClass());
 
-			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
-		}
-		else if (OtherActor->ActorHasTag(TEXT("Tower")))
-		{
-			UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
-			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+			}
+			else if (OtherActor->ActorHasTag(TEXT("Tower")))
+			{
+				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
+			}
+
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + GetVelocity().GetSafeNormal() * -20.f, -SweepResult.ImpactNormal);
 		}
 	}
 	else if (!GetWorld()->IsServer())
@@ -167,11 +175,11 @@ void ABulletBase::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 			}
 
-			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -SweepResult.ImpactNormal);
+			NetMulticast_HitEffect_Implementation(SweepResult.ImpactPoint + GetVelocity().GetSafeNormal() * -20.f, -SweepResult.ImpactNormal);
 		}
 	}
 
-	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
+	//GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	Destroy();
 }
 
@@ -218,6 +226,10 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 			);
 			NetMulticast_HitEffect(Hit.ImpactPoint + Hit.ImpactNormal * 20.f, -Hit.ImpactNormal);
 		}
+		else
+		{
+			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + GetVelocity().GetSafeNormal() * -20.f, -Hit.ImpactNormal);
+		}
 	}
 	else if (!GetWorld()->IsServer())
 	{	
@@ -229,13 +241,13 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 				UGameplayStatics::ApplyDamage(OtherActor, AttackPoint, SummonerController, this, UBulletDamageType::StaticClass());
 			}
 
-			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + -GetVelocity().GetSafeNormal() * 20.f, -Hit.ImpactNormal);
+			NetMulticast_HitEffect_Implementation(Hit.ImpactPoint + GetVelocity().GetSafeNormal() * -20.f, -Hit.ImpactNormal);
 		}
 	}
 
 
 	// Sound
-	GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
+	//GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
 	Destroy();
 }
 

@@ -136,6 +136,12 @@ ApplyRadialDamage, TakeDamage 함수 수정.
 bullebase 히트이펙트 함수 오프라인으로 발생하도록 수정.
 bullebase가 오버랩으로 판정을 해서 여러개의 본에 동시에 반응하여 오버랩 함수가 중복 실행되는 문제를 bool 변수로 막음.
 
+1101
+bullebase가 바닥에 히트될 경우 이펙트가 나오지 않는 문제 수정.
+bullebase의 setlifespan 부분 정상 작동하도록 수정.
+
+
+
 
 
 
