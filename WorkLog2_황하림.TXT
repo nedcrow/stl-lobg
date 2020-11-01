@@ -157,7 +157,8 @@
   
 
 1101
-  Fix Chatting module
+  Fix Chatting module (exit input box, erase chat log)
+  Fix Lobby UI (anchor, alpha)
 
  
    
