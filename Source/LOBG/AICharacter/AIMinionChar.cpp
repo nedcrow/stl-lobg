@@ -488,8 +488,20 @@ float AAIMinionChar::TakeDamage(float DamageAmount, FDamageEvent const & DamageE
 		{
 			// 피격시 폰센싱 반응 함수로 노멀 스테이트일 때만 BB에 폰을 등록하고 조준하도록 바꾼다.
 			ProcessSeenPawn(EnemyPawn);
-		}
 
+			// 플레이어에게 피격될 경우 공격중에도 타겟을 플레이어로 바꾼다.
+			if (EnemyPawn->ActorHasTag(TEXT("Player")))
+			{
+				// 자극을 준 폰을 BB에 입력한다.
+				AMinionAIC* MinionAIC = Cast<AMinionAIC>(GetController());
+				if (MinionAIC && !MinionAIC->IsActorBeingDestroyed())
+				{
+					MinionAIC->SetValueTargetPawn(EnemyPawn);
+
+					SetState(EMinioonState::Chase);
+				}
+			}
+		}
 	}
 
 	// 피격 효과. 서버용.
