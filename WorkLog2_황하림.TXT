@@ -156,5 +156,8 @@
   Add chatting ui in battle
   
 
+1101
+  Fix Chatting module
+
  
    

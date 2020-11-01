@@ -25,4 +25,6 @@ public:
 	UFUNCTION()
 		void ProcessTextCommited(const FText& Text, ETextCommit::Type Method);
 		void AddMessage(FText Message);
+		void EraseMessage();
+		void ExitInputBox(APlayerController * PC);
 };

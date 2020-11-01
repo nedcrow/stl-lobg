@@ -14,6 +14,7 @@
 #include "BattleGM.h"
 #include "BattlePS.h"
 #include "BattleWidgetBase.h"
+#include "../Lobby/UI/ChattingWidgetBase.h"
 #include "CharacterAnimInstance.h"
 #include "../Weapon/BulletBase.h"
 #include "../ReSpawn/ReSpawn.h"
@@ -21,6 +22,7 @@
 #include "../LOBGGameInstance.h"
 #include "../Weapon/WeaponComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/EditableTextBox.h"
 #include "../UI/HPBarWidgetBase.h"
 #include "../UI/HUDBarSceneComponent.h"
 #include "Components/SphereComponent.h"
@@ -216,6 +218,11 @@ void ABattleCharacter::StartFire()
 {
 	bIsFire = true;
 	OnFire();
+	
+	ABattlePC* PC = GetController<ABattlePC>();
+	if (PC && PC->BattleWidgetObject->ChattingWidget->ChatInput->Visibility == ESlateVisibility::Visible) {
+		PC->BattleWidgetObject->ChattingWidget->ExitInputBox(PC);
+	}
 }
 
 void ABattleCharacter::StopFire()
@@ -471,6 +478,10 @@ void ABattleCharacter::StartIronsight()
 {
 	bIsIronsight = true;
 	Server_SetIronsight(true);
+	ABattlePC* PC = GetController<ABattlePC>();
+	if (PC && PC->BattleWidgetObject->ChattingWidget->ChatInput->Visibility == ESlateVisibility::Visible) {
+		PC->BattleWidgetObject->ChattingWidget->ExitInputBox(PC);
+	}
 }
 
 void ABattleCharacter::StopIronsight()
