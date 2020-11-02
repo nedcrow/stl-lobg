@@ -156,5 +156,9 @@
   Add chatting ui in battle
   
 
+1101
+  Fix Chatting module (exit input box, erase chat log)
+  Fix Lobby UI (anchor, alpha)
+
  
    

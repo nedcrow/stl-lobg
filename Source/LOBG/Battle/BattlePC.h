@@ -108,7 +108,7 @@ public:
 
 	// Chatting
 	uint8 bIsChattingMode:1;
-	void OnGameCursor();
+	void OnFocusChattingWidget();
 	void OffGameCursor();
 
 	UFUNCTION(Server, Reliable)

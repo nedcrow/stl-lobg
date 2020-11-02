@@ -19,6 +19,7 @@
 #include "../Lobby/UI/ChattingWidgetBase.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Border.h"
+#include "Components/ScrollBox.h"
 #include "Engine/StreamableManager.h"
 
 void ABattlePC::SetupInputComponent()
@@ -27,7 +28,7 @@ void ABattlePC::SetupInputComponent()
 	InputComponent->BindAction(TEXT("OpenStore"), EInputEvent::IE_Pressed, this, &ABattlePC::PushOpenStore);
 	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Pressed, this, &ABattlePC::OpenTab);
 	InputComponent->BindAction(TEXT("Tab"), EInputEvent::IE_Released, this, &ABattlePC::CloseTab);
-	InputComponent->BindAction(TEXT("Enter"), EInputEvent::IE_Pressed, this, &ABattlePC::OnGameCursor);
+	InputComponent->BindAction(TEXT("Enter"), EInputEvent::IE_Pressed, this, &ABattlePC::OnFocusChattingWidget);
 	//InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &ABattlePC::OffGameCursor);
 }
 
@@ -361,10 +362,11 @@ void ABattlePC::Client_AddPotionSlot_Implementation(int DataNumber)
 	BattleWidgetObject->SetPotionSlot(loader.LoadSynchronous<UMaterialInstance>(StoreWidgetObject->GetItemData(DataNumber).ItemImage));
 }
 
-void ABattlePC::OnGameCursor()
+void ABattlePC::OnFocusChattingWidget()
 {
 	if (IsLocalPlayerController() && BattleWidgetObject && BattleWidgetObject->ChattingWidget) {
 		BattleWidgetObject->ChattingWidget->ChatInput->SetVisibility(ESlateVisibility::Visible);
+		BattleWidgetObject->ChattingWidget->ChatScrollBox->SetVisibility(ESlateVisibility::Visible);
 		BattleWidgetObject->ChattingWidget->ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0.4f));
 		BattleWidgetObject->ChattingWidget->ChatInput->SetFocus();
 		UE_LOG(LogTemp,Warning,TEXT("OnGameCursor"));

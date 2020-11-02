@@ -38,31 +38,30 @@ void UChattingWidgetBase::ProcessTextCommited(const FText& Text, ETextCommit::Ty
 	{
 	case ETextCommit::OnEnter:
 	{
-		if (ChatInput->Text.ToString() == "") {
-			ChatInput->SetVisibility(ESlateVisibility::Collapsed);
-			ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
-			UE_LOG(LogTemp,Warning,TEXT("EndChatting"));
-		}
-		else {
-			TArray<FString> TempArr;
-			FString LevelName = GetWorld()->GetName();
-			LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
-			if (TempArr[0] == "Step02") {
-				ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
-				if (PC) {
-					ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-					if (GI) {
-						FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
-						PC->Server_SendMessage(FText::FromString(Temp));
-						ChatInput->SetText(FText::FromString(TEXT("")));
-					}
+
+		TArray<FString> TempArr;
+		FString LevelName = GetWorld()->GetName();
+		LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
+		if (TempArr[0] == "Step02") {
+			ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
+			if (PC) {
+				ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+				if (GI) {
+					FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
+					PC->Server_SendMessage(FText::FromString(Temp));
+					ChatInput->SetText(FText::FromString(TEXT("")));
 				}
 			}
-			else if (TempArr[0] == "Step03") {
-				ABattlePC* PC = GetOwningPlayer<ABattlePC>();
-				if (PC) {
-					ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-					if (GI) {
+		}
+		else if (TempArr[0] == "Step03") {
+			ABattlePC* PC = GetOwningPlayer<ABattlePC>();
+			if (PC) {
+				ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+				if (GI) {
+					if (ChatInput->Text.ToString() == "") {
+						ExitInputBox(PC);
+					}
+					else {
 						FString Temp = FString::Printf(TEXT("%s : %s"), *GI->GetUserID(), *Text.ToString());
 						PC->Server_SendMessageInBattle(FText::FromString(Temp));
 						ChatInput->SetText(FText::FromString(TEXT("")));
@@ -88,6 +87,27 @@ void UChattingWidgetBase::AddMessage(FText Message)
 			TempTextBlock->SetText(Message);
 			ChatScrollBox->AddChild(TempTextBlock);
 			ChatScrollBox->ScrollToEnd();
+			APlayerController* PC = GetOwningPlayer<APlayerController>();
+
+			FTimerHandle EraseHandle;
+			PC->GetWorldTimerManager().SetTimer(EraseHandle, this, &UChattingWidgetBase::EraseMessage, 3.f, false);
 		}
 	}
+}
+
+void UChattingWidgetBase::EraseMessage() {
+	if (ChatInput->Visibility == ESlateVisibility::Collapsed) {
+		ChatScrollBox->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UChattingWidgetBase::ExitInputBox(APlayerController * PC)
+{
+	SetUserFocus(PC);
+	ChatInput->SetVisibility(ESlateVisibility::Collapsed);
+	ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
+	PC->SetInputMode(FInputModeGameOnly());
+
+	FTimerHandle EraseHandle;
+	PC->GetWorldTimerManager().SetTimer(EraseHandle, this, &UChattingWidgetBase::EraseMessage, 3.f, false);
 }
