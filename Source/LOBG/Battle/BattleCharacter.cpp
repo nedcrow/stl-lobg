@@ -185,6 +185,8 @@ void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABattleCharacter, WalkSpeed);
 	DOREPLIFETIME(ABattleCharacter, RunSpeed);
 	DOREPLIFETIME(ABattleCharacter, BulletSpeed);
+	DOREPLIFETIME(ABattleCharacter, bIsLeanLeft);
+	DOREPLIFETIME(ABattleCharacter, bIsLeanRight);
 }
 
 // Move
@@ -382,7 +384,6 @@ void ABattleCharacter::NetMulticast_ProcessFire_Implementation(FVector SpawnLoca
 	FTransform BulletTransform = FTransform(SpawnRotation, SpawnLocation);
 
 	ABulletBase* Bullet = Cast<ABulletBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), BulletClass, BulletTransform));
-	
 	
 	// 총알 초기값 설정.
 	if (Bullet)

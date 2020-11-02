@@ -120,7 +120,13 @@ float AFairyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 	float TempHP = 0;
 	TempHP = CurrentHP - Damage;
 
-	// 피격 애니메이션 추가 필요
+	// 피격 Sound
+	if (HitSound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			HitSound,
+			GetActorLocation()
+		);
+	}
 
 	TempHP = FMath::Clamp(TempHP, 0.0f, MaxHP);
 	if (CurrentHP != TempHP)
@@ -405,6 +411,12 @@ void AFairyPawn::SpawnSpawnEffect(FVector SpawnLocation)
 			SpawnLocation
 		);
 	}
+	if (ReloadSound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			ReloadSound,
+			SpawnLocation
+		);
+	}
 }
 
 void AFairyPawn::NetMulticast_FireEffect_Implementation(FVector SpawnLocation)
@@ -434,6 +446,12 @@ void AFairyPawn::NetMulticast_DeadthEffect_Implementation()
 		);
 	}
 	if(HeadEffectComponent) HeadEffectComponent->DestroyComponent();
+	if (DestroySound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			DestroySound,
+			GetActorLocation()
+		);
+	}
 }
 
 void AFairyPawn::UpdateHPBar()

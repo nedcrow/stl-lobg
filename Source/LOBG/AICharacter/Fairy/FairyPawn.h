@@ -55,6 +55,11 @@ public:
 
 	// Damage
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Date_Sound")
+	USoundBase* HitSound;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data_Sound")
+	USoundBase* DestroySound;
 
 	// Store
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -148,6 +153,9 @@ public:
 	void NetMulticast_CallReloadAnimation_Implementation();
 	void ReloadAnimation();
 	void AddMissile(FTransform NewTransform);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data_Sound")
+	USoundBase* ReloadSound;
 
 	// Repair
 	float RepairPerSec = 10.f;

@@ -160,5 +160,9 @@
   Fix Chatting module (exit input box, erase chat log)
   Fix Lobby UI (anchor, alpha)
 
+1102
+  Add Sound effect(BulletBase, Minion, Fairy)
+  Add Bullet(ToyCow)
+
  
    

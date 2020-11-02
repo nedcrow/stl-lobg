@@ -112,6 +112,8 @@ public:
 		TSubclassOf<class AEmissiveBullet> ProjectileClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
 		class UAnimMontage* FireMontage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data")
+		class USoundBase* FireSound;
 
 	void OnFire(FVector TargetLocation);
 

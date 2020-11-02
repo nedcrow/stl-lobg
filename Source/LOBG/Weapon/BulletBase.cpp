@@ -44,6 +44,12 @@ void ABulletBase::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
 	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
+	if (FireSound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			FireSound,
+			GetActorLocation()
+		);
+	}
 	//SetLifeSpan(LifeSpanTime);
 }
 
@@ -85,6 +91,12 @@ void ABulletBase::NetMulticast_HitEffect_Implementation(FVector SpawnLocation, F
 			HitEffectScale);		
 
 		GetWorldTimerManager().SetTimer(BulletTimer, this, &ABulletBase::DestroyHitEffect, 1.5f, false);
+	}
+	if (HitSound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			HitSound,
+			SpawnLocation
+		);
 	}
 }
 
