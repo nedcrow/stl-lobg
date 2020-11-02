@@ -33,10 +33,10 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	float MaxHP = 20.f;
+	float MaxHP = 200.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = "OnRep_CurrentHP", Category = "Status")
-	float CurrentHP = 20.f;
+	float CurrentHP = 200.f;
 
 	UFUNCTION()
 		void OnRep_CurrentHP();

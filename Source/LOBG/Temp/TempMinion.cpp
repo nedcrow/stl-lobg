@@ -69,7 +69,7 @@ float ATempMinion::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 				//Pawn->SetBooty(MinionMoney, MinionExp);
 			}
 		}
-		CurrentHP = 20.0f;
+		CurrentHP = 200.0f;
 		OnRep_CurrentHP();
 	}
 	return 0.0f;
