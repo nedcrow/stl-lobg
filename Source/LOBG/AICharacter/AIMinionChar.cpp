@@ -380,6 +380,12 @@ void AAIMinionChar::NetMulticast_ProcessFire_Implementation(FVector SpawnLocatio
 
 
 	// 소리 스폰
+	if (FireSound) {
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+			FireSound,
+			GetActorLocation()
+		);
+	}
 
 	// 사격 몽타주 재생
 	if (FireMontage)

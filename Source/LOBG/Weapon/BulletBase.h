@@ -52,6 +52,10 @@ public:
 	class UParticleSystemComponent* HitEffectComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
 	FVector HitEffectScale = FVector::OneVector;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class USoundBase* FireSound;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Bullet")
+	class USoundBase* HitSound;
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void NetMulticast_HitEffect(FVector SpawnLocation, FVector HitRirection);

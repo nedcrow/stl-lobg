@@ -129,7 +129,7 @@ public:
 	UPROPERTY(Replicated)
 		float MaxHP;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		float AttackPoint = 5.f;
 
 	// Ironsight
