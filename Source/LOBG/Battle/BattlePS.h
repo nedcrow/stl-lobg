@@ -35,6 +35,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		int PlayerLevel;
 };
+
+USTRUCT(Atomic, BlueprintType)
+struct FGunUpgradeData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FString GunName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int UpgradeCount;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int DataTableIndex;
+};
+
 /**
  * 
  */
@@ -110,4 +126,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 		float BulletSpeed = 2000.f;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
+	TArray<FGunUpgradeData> GunDataArray;
 };

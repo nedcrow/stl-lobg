@@ -71,4 +71,6 @@ public:
 	UMaterialInstance* MyItemImage;
 
 	FString MyItemDescription;
+
+	bool bIsSleep = false;
 };

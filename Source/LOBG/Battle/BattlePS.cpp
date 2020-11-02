@@ -76,6 +76,7 @@ void ABattlePS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABattlePS, PlayerFOV);
 	DOREPLIFETIME(ABattlePS, MaxHP);
 	DOREPLIFETIME(ABattlePS, BulletSpeed);
+	//DOREPLIFETIME(ABattlePS, GunDataArray);
 }
 
 void ABattlePS::SetNextExp()

@@ -28,6 +28,7 @@ void UStoreItemWidgetBase::NativeConstruct()
 void UStoreItemWidgetBase::ClickedItemButton()
 {
 	if (!bEnoughMoney) return;
+	if (bIsSleep) return;
 	ABattlePS* PS = Cast<ABattlePS>(GetOwningPlayerState());
 
 	if (PS)
@@ -69,6 +70,10 @@ void UStoreItemWidgetBase::ClickedItemButton()
 		case 10:
 			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_MaxHPUp();
+			break;
+		case 11:
+			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->GunUpgrade();
 			break;
 		default:
 			break;

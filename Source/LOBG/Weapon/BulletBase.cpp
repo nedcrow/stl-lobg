@@ -45,8 +45,6 @@ void ABulletBase::BeginPlay()
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ABulletBase::OnBeginOverlap);
 	Sphere->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);
 	//SetLifeSpan(LifeSpanTime);
-
-	UE_LOG(LogClass, Warning, TEXT("BulletSpeed is %f"), Movement->InitialSpeed);
 }
 
 // Called every frame

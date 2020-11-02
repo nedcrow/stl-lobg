@@ -59,6 +59,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		int GunAPU3;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int UpgradePriceOne;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int UpgradePriceTwo;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int UpgradePriceThree;
 };
 
 UCLASS()

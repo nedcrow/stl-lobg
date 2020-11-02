@@ -59,4 +59,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FItemDataTableStruct GetItemData(int Index) const;
+
+	void SetUpgradeGunUpdate(FString CurrentGunName, int DataIndex);
+
+	void CheckSleepSlot();
+
+	void WakeUpSlot();
 };

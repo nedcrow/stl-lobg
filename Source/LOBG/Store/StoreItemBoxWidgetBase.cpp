@@ -2,10 +2,13 @@
 
 
 #include "StoreItemBoxWidgetBase.h"
+#include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/ScrollBox.h"
 #include "StoreItemWidgetBase.h"
 #include "Engine/StreamableManager.h"
+#include "../Battle/BattleCharacter.h"
+#include "../Battle/BattlePS.h"
 
 void UStoreItemBoxWidgetBase::NativeConstruct()
 {
@@ -134,4 +137,104 @@ void UStoreItemBoxWidgetBase::SetVisiblityItemSlot(UScrollBox* NewScrollBox)
 FItemDataTableStruct UStoreItemBoxWidgetBase::GetItemData(int Index) const
 {
 	return *ItemDataTable->FindRow<FItemDataTableStruct>(*FString::FromInt(Index), TEXT("ItemIndex"));
+}
+
+void UStoreItemBoxWidgetBase::SetUpgradeGunUpdate(FString CurrentGunName, int DataIndex)
+{
+	for (int i = 0; i < UpgradeBox->GetChildrenCount(); ++i)
+	{
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(UpgradeBox->GetChildAt(i));
+		if (ItemSlot)
+		{
+			//ItemSlot->SetItemText(ItemArray[i]->ItemDescription);
+			
+			if (ItemSlot->MyItemName == FString("GunUpgrade"))
+			{
+				ABattleCharacter* PlayerPawn = GetOwningPlayerPawn<ABattleCharacter>();
+				if (PlayerPawn)
+				{
+					//FString CurrentPlayerGunName = PlayerPawn->CurrentGunName;
+					if (CurrentGunName != FString(""))
+					{
+						ABattlePS* PS = PlayerPawn->GetPlayerState<ABattlePS>();
+						if (PS)
+						{
+							TArray<FGunUpgradeData> TempGunData = PS->GunDataArray;
+							for (int GunIndex = 0; GunIndex < TempGunData.Num(); ++GunIndex)
+							{
+								if (TempGunData[GunIndex].GunName == CurrentGunName)
+								{
+									switch (TempGunData[GunIndex].UpgradeCount)
+									{
+									case 0:
+										ItemSlot->SetItemMoney(GetItemData(DataIndex).UpgradePriceOne);
+										ItemSlot->MyItemMoney = GetItemData(DataIndex).UpgradePriceOne;
+										break;
+									case 1:
+										ItemSlot->SetItemMoney(GetItemData(DataIndex).UpgradePriceTwo);
+										ItemSlot->MyItemMoney = GetItemData(DataIndex).UpgradePriceTwo;
+										break;
+									case 2:
+										ItemSlot->SetItemMoney(GetItemData(DataIndex).UpgradePriceThree);
+										ItemSlot->MyItemMoney = GetItemData(DataIndex).UpgradePriceThree;
+										break;
+									default:
+										break;
+									}
+									return;
+								}
+							}
+						}
+					}
+				}
+				if (!ItemSlot->bIsSleep)
+				{
+					ItemSlot->InitSlotByMoney();
+				}
+			}
+		}
+	}
+}
+
+void UStoreItemBoxWidgetBase::CheckSleepSlot()
+{
+	for (int i = 0; i < UpgradeBox->GetChildrenCount(); ++i)
+	{
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(UpgradeBox->GetChildAt(i));
+		if (ItemSlot)
+		{
+			if (ItemSlot->MyItemName == FString("GunUpgrade"))
+			{
+				ItemSlot->bIsSleep = true;
+				ItemSlot->ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 0.3f));
+				FSlateBrush MyHorvered;
+				MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0);
+				ItemSlot->ItemButton->WidgetStyle.SetHovered(MyHorvered);
+				break;
+			}
+		}
+	}
+}
+
+void UStoreItemBoxWidgetBase::WakeUpSlot()
+{
+	for (int i = 0; i < UpgradeBox->GetChildrenCount(); ++i)
+	{
+		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(UpgradeBox->GetChildAt(i));
+		if (ItemSlot)
+		{
+			if (ItemSlot->MyItemName == FString("GunUpgrade"))
+			{
+				if (ItemSlot->bIsSleep)
+				{
+					ItemSlot->bIsSleep = false;
+					ItemSlot->ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
+					FSlateBrush MyHorvered;
+					MyHorvered.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.5f);
+					ItemSlot->ItemButton->WidgetStyle.SetHovered(MyHorvered);
+					break;
+				}
+			}
+		}
+	}
 }

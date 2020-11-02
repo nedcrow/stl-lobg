@@ -933,6 +933,8 @@ void ABattleCharacter::NetMulticast_ChangeGunMesh_Implementation(USkeletalMesh* 
 
 void ABattleCharacter::ChangeGunMesh(const FString& GunItemName)
 {
+	CurrentGunName = GunItemName;
+
 	ABattlePC* PC = Cast<ABattlePC>(GetController());
 	if (PC)
 	{
@@ -943,6 +945,45 @@ void ABattleCharacter::ChangeGunMesh(const FString& GunItemName)
 				FStreamableManager loader;
 				Weapon->SetSkeletalMesh(loader.LoadSynchronous<USkeletalMesh>(PC->StoreWidgetObject->ItemBox->GetItemData(i).GunMesh));
 				Server_ChangeGunMesh(loader.LoadSynchronous<USkeletalMesh>(PC->StoreWidgetObject->ItemBox->GetItemData(i).GunMesh));
+
+				ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+				if (PS)
+				{
+					if (PS->GunDataArray.Num() == 0)
+					{
+						FGunUpgradeData MyGunData;
+						MyGunData.GunName = GunItemName;
+						MyGunData.UpgradeCount = 1;
+						MyGunData.DataTableIndex = i;
+						PS->GunDataArray.Add(MyGunData);
+						SwitchAttackpoint(PS->GunDataArray.Num() - 1);
+					}
+					else
+					{
+						for (int arrayindex = 0; arrayindex < PS->GunDataArray.Num(); ++arrayindex)
+						{
+							if (PS->GunDataArray[arrayindex].GunName == GunItemName)
+							{
+								PS->GunDataArray[arrayindex].UpgradeCount = 1;
+								SwitchAttackpoint(arrayindex);
+							}
+							else if (arrayindex == PS->GunDataArray.Num() - 1)
+							{
+								FGunUpgradeData MyGunData;
+								MyGunData.GunName = GunItemName;
+								MyGunData.UpgradeCount = 1;
+								MyGunData.DataTableIndex = i;
+								PS->GunDataArray.Add(MyGunData);
+								SwitchAttackpoint(PS->GunDataArray.Num() - 1);
+							}
+						}
+					}
+				}
+
+				//Server_PSGunDataUpdate(GunItemName, i);
+
+				PC->StoreWidgetObject->ItemBox->WakeUpSlot();
+				PC->StoreWidgetObject->ItemBox->SetUpgradeGunUpdate(CurrentGunName, i);
 				break;
 			}
 		}
@@ -970,5 +1011,194 @@ void ABattleCharacter::Server_BulletSpeedUp_Implementation()
 		PS->BulletSpeed += 10000.f;
 	}
 	//BulletSpeed += 200.f;
+}
+
+void ABattleCharacter::Server_PSGunDataUpdate_Implementation(const FString& GunItemName, int dataIndex)
+{
+	CurrentGunName = GunItemName;
+
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		FGunUpgradeData MyGunData;
+		MyGunData.GunName = GunItemName;
+		MyGunData.UpgradeCount = 0;
+		MyGunData.DataTableIndex = dataIndex;
+		PS->GunDataArray.Add(MyGunData);
+	}
+}
+
+void ABattleCharacter::Server_GunUpgrade_Implementation()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		for (int i = 0; i < PS->GunDataArray.Num(); ++i)
+		{
+			if (PS->GunDataArray[i].GunName == CurrentGunName)
+			{
+				PS->GunDataArray[i].UpgradeCount++;
+				ABattlePC* PC = Cast<ABattlePC>(GetController());
+				if (PC)
+				{
+					if (PS->GunDataArray[i].UpgradeCount == 3)
+					{
+						PC->StoreWidgetObject->ItemBox->CheckSleepSlot();
+					}
+					else
+					{
+						PC->StoreWidgetObject->ItemBox->SetUpgradeGunUpdate(CurrentGunName, PS->GunDataArray[i].DataTableIndex);
+					}
+
+					for (int ItemDataIndex = 0; ItemDataIndex < 9; ++ItemDataIndex)
+					{
+						if (PC->StoreWidgetObject->ItemBox->GetItemData(ItemDataIndex).ItemName == CurrentGunName)
+						{
+							switch (PS->GunDataArray[ItemDataIndex].UpgradeCount)
+							{
+							case 1:
+								PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(ItemDataIndex).GunAPU1;
+								UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+								break;
+							case 2:
+								PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(ItemDataIndex).GunAPU2;
+								UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+								break;
+							case 3:
+								PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(ItemDataIndex).GunAPU3;
+								UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+								break;
+							default:
+								break;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void ABattleCharacter::Server_GunUpgradeCount_Implementation(const FString& GunItemName)
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		for (int i = 0; i < PS->GunDataArray.Num(); ++i)
+		{
+			if (PS->GunDataArray[i].GunName == GunItemName)
+			{
+				PS->GunDataArray[i].UpgradeCount++;
+			}
+		}
+	}
+}
+
+void ABattleCharacter::GunUpgrade()
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		for (int i = 0; i < PS->GunDataArray.Num(); ++i)
+		{
+			if (PS->GunDataArray[i].GunName == CurrentGunName)
+			{
+				PS->GunDataArray[i].UpgradeCount++;
+				//if (!HasAuthority())
+				//{
+				//	Server_GunUpgradeCount(CurrentGunName);
+				//}
+
+				ABattlePC* PC = Cast<ABattlePC>(GetController());
+				if (PC)
+				{
+					if (PS->GunDataArray[i].UpgradeCount == 3)
+					{
+						PC->StoreWidgetObject->ItemBox->CheckSleepSlot();
+					}
+					else
+					{
+						PC->StoreWidgetObject->ItemBox->SetUpgradeGunUpdate(CurrentGunName, PS->GunDataArray[i].DataTableIndex);
+					}
+
+					//Server_AttackUpdate(i, PS->GunDataArray[i].DataTableIndex);
+
+					SwitchAttackpoint(i);
+				}
+			}
+		}
+	}
+}
+
+void ABattleCharacter::Server_AttackUpdate_Implementation(float Count, float AttackDamage)
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(GetController());
+		if (PC)
+		{
+			switch (PS->GunDataArray[Count].UpgradeCount)
+			{
+			case 0:
+				UE_LOG(LogClass, Warning, TEXT("case is 0"));
+				break;
+			case 1:
+				PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(AttackDamage).GunAPU1;
+				UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+				break;
+			case 2:
+				PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(AttackDamage).GunAPU2;
+				UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+				break;
+			case 3:
+				PS->AttackPoint = PC->StoreWidgetObject->ItemBox->GetItemData(AttackDamage).GunAPU3;
+				UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void ABattleCharacter::Server_AttackUpdateTest_Implementation(float AttackDamage)
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		PS->AttackPoint = AttackDamage;
+		UE_LOG(LogClass, Warning, TEXT("AttackPoint is %f"), PS->AttackPoint);
+	}
+}
+
+void ABattleCharacter::SwitchAttackpoint(int index)
+{
+	ABattlePS* PS = Cast<ABattlePS>(GetPlayerState());
+	if (PS)
+	{
+		ABattlePC* PC = Cast<ABattlePC>(GetController());
+		if (PC)
+		{
+			switch (PS->GunDataArray[index].UpgradeCount)
+			{
+			case 0:
+				UE_LOG(LogClass, Warning, TEXT("case is 0"));
+				break;
+			case 1:
+				Server_AttackUpdateTest(PC->StoreWidgetObject->ItemBox->GetItemData(PS->GunDataArray[index].DataTableIndex).GunAPU1);
+				break;
+			case 2:
+				Server_AttackUpdateTest(PC->StoreWidgetObject->ItemBox->GetItemData(PS->GunDataArray[index].DataTableIndex).GunAPU2);
+				break;
+			case 3:
+				Server_AttackUpdateTest(PC->StoreWidgetObject->ItemBox->GetItemData(PS->GunDataArray[index].DataTableIndex).GunAPU3);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 

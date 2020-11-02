@@ -1,12 +1,13 @@
-,ItemIndex,ItemName,ItemPrice,ItemDescription,ItemImage,ItemType,GunMesh,GunAPU1,GunAPU2,GunAPU3
-0,0,PlayerSpeedUp,200,플레이어의 속도를 100 올려줍니다,MaterialInstanceConstant'/Game/UI/Consume/SpeedUp/SpeedUpRenderTarget_Mat_Inst.SpeedUpRenderTarget_Mat_Inst',Upgrade,,,,
-1,1,Potion,200,체력을 가득 회복하는 포션,MaterialInstanceConstant'/Game/UI/Consume/Potion/PotionRenderTarget_Tex_Mat_Inst.PotionRenderTarget_Tex_Mat_Inst',Consume,,,,
-2,2,Ironsight,400,더 멀리 볼 수 있는 조준경,MaterialInstanceConstant'/Game/UI/Guns/Ironsight/IronsightRenderTarget_Mat_Inst.IronsightRenderTarget_Mat_Inst',Upgrade,,,,
-3,3,Grip,300,총알의 확산이 없어집니다,MaterialInstanceConstant'/Game/UI/Guns/Grip/GripRenderTarget_Tex_Mat1_Inst.GripRenderTarget_Tex_Mat1_Inst',Upgrade,,,,
-4,4,AR4,10,공격력 : 10 / 20 / 350,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_AR4_Tex_Mat_Inst.RT_AR4_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4',10,20,350
-5,5,KA47,10,공격력 : 20 / 50 / 250,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA47_Tex_Mat_Inst.RT_KA47_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ka47/SK_KA47.SK_KA47',20,50,250
-6,6,KA74,10,공격력 : 30 / 80 / 200,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA74_Tex_Mat_Inst.RT_KA74_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA74U/SK_KA74U_Y.SK_KA74U_Y',30,80,200
-7,7,KAVal,10,공격력 : 50 / 100 / 150,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA_Val_Tex_Mat_Inst.RT_KA_Val_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA_Val/SK_KA_Val_Y.SK_KA_Val_Y',50,100,150
-8,8,SMG,10,공력력 : 80 / 100 / 150,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_SMG_Tex_Mat_Inst.RT_SMG_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/SMG11/SK_SMG11_Y.SK_SMG11_Y',80,100,150
-9,9,BulletSpeedUp,200,총알의 속도가 빨라집니다,MaterialInstanceConstant'/Game/UI/Consume/SpeedUp/SpeedUpRenderTarget_Tex1_Mat_Inst.SpeedUpRenderTarget_Tex1_Mat_Inst',Upgrade,,,,
-10,10,HPUp,200,플레이어의 체력이 올라갑니다,MaterialInstanceConstant'/Game/UI/Consume/HPUp/RT_HPUp_Tex_Mat_Inst.RT_HPUp_Tex_Mat_Inst',Upgrade,,,,
+,ItemIndex,ItemName,ItemPrice,ItemDescription,ItemImage,ItemType,GunMesh,GunAPU1,GunAPU2,GunAPU3,UpgradePriceOne,UpgradePriceTwo,UpgradePriceThree
+0,0,PlayerSpeedUp,200,플레이어의 속도를 100 올려줍니다,MaterialInstanceConstant'/Game/UI/Consume/SpeedUp/SpeedUpRenderTarget_Mat_Inst.SpeedUpRenderTarget_Mat_Inst',Upgrade,,,,,,,
+1,1,Potion,200,체력을 가득 회복하는 포션,MaterialInstanceConstant'/Game/UI/Consume/Potion/PotionRenderTarget_Tex_Mat_Inst.PotionRenderTarget_Tex_Mat_Inst',Consume,,,,,,,
+2,2,Ironsight,400,더 멀리 볼 수 있는 조준경,MaterialInstanceConstant'/Game/UI/Guns/Ironsight/IronsightRenderTarget_Mat_Inst.IronsightRenderTarget_Mat_Inst',Upgrade,,,,,,,
+3,3,Grip,300,총알의 확산이 없어집니다,MaterialInstanceConstant'/Game/UI/Guns/Grip/GripRenderTarget_Tex_Mat1_Inst.GripRenderTarget_Tex_Mat1_Inst',Upgrade,,,,,,,
+4,4,AR4,10,공격력 : 10 / 20 / 350,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_AR4_Tex_Mat_Inst.RT_AR4_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4',10,20,350,10,20,30
+5,5,KA47,10,공격력 : 20 / 50 / 250,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA47_Tex_Mat_Inst.RT_KA47_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ka47/SK_KA47.SK_KA47',20,50,250,10,20,30
+6,6,KA74,10,공격력 : 30 / 80 / 200,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA74_Tex_Mat_Inst.RT_KA74_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA74U/SK_KA74U_Y.SK_KA74U_Y',30,80,200,10,20,30
+7,7,KAVal,10,공격력 : 50 / 100 / 150,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_KA_Val_Tex_Mat_Inst.RT_KA_Val_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA_Val/SK_KA_Val_Y.SK_KA_Val_Y',50,100,150,10,20,30
+8,8,SMG,10,공력력 : 80 / 100 / 150,MaterialInstanceConstant'/Game/UI/Guns/Guns/RT_SMG_Tex_Mat_Inst.RT_SMG_Tex_Mat_Inst',Gun,SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/SMG11/SK_SMG11_Y.SK_SMG11_Y',80,100,150,10,20,30
+9,9,BulletSpeedUp,200,총알의 속도가 빨라집니다,MaterialInstanceConstant'/Game/UI/Consume/SpeedUp/SpeedUpRenderTarget_Tex1_Mat_Inst.SpeedUpRenderTarget_Tex1_Mat_Inst',Upgrade,,,,,,,
+10,10,HPUp,200,플레이어의 체력이 올라갑니다,MaterialInstanceConstant'/Game/UI/Consume/HPUp/RT_HPUp_Tex_Mat_Inst.RT_HPUp_Tex_Mat_Inst',Upgrade,,,,,,,
+11,11,GunUpgrade,,총을 강화시킵니다 3번까지 가능합니다,MaterialInstanceConstant'/Game/UI/Guns/Upgrade/RT_GunUpgrade_Tex_Mat_Inst.RT_GunUpgrade_Tex_Mat_Inst',Upgrade,,,,,,,
