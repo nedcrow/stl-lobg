@@ -42,37 +42,37 @@ void UStoreItemWidgetBase::ClickedItemButton()
 		switch (MyItemIndex)
 		{
 		case 0:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->ItemSpeed();
 			break;
 		case 1:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_FullHP();
 			PlayerPawn->SetPotionSlot();
 			break;
 		case 2:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_SetPSFOV();
 			//PlayerPawn->SetPSFOV();
 			break;
 		case 3:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_AngleDown();
 			break;
 		case 4: case 5: case 6: case 7: case 8:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->ChangeGunMesh(MyItemName);
 			break;
 		case 9:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_BulletSpeedUp();
 			break;
 		case 10:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->Server_MaxHPUp();
 			break;
 		case 11:
-			PlayerPawn->Server_SetBooty(-MyItemMoney, 0);
+			PlayerPawn->SetBooty(-MyItemMoney, 0);
 			PlayerPawn->GunUpgrade();
 			break;
 		default:
@@ -114,7 +114,7 @@ bool UStoreItemWidgetBase::InitSlotByMoney()
 	ABattlePS* PS = Cast<ABattlePS>(GetOwningPlayerState());
 	if (PS)
 	{
-		if (PS->PlayerMoney < MyItemMoney)
+		if (PS->PlayerMoney < MyItemMoney || bIsSleep)
 		{
 			ItemBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, 0.3f));
 			FSlateBrush MyHorvered;

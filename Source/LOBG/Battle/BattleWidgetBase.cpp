@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BattleWidgetBase.h"
@@ -19,6 +19,8 @@ void UBattleWidgetBase::NativeConstruct()
 	ExpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ExpBar")));
 	PotionSlot = Cast<UBorder>(GetWidgetFromName(TEXT("PotionSlot")));
 	ChattingWidget = Cast<UChattingWidgetBase>(GetWidgetFromName(TEXT("ChattingWidget")));
+	CurrentGunText = Cast<UTextBlock>(GetWidgetFromName(TEXT("CurrentGunText")));
+	CurrentGunUpgradeText = Cast<UTextBlock>(GetWidgetFromName(TEXT("CurrentGunUpgradeText")));
 }
 
 void UBattleWidgetBase::SetHPBar(float Percent)
@@ -61,5 +63,22 @@ void UBattleWidgetBase::EmptyPotionSlot()
 	{
 		PotionSlot->SetBrushColor(FLinearColor(0.f, 0.f, 0.f, 0.3f));
 		PotionSlot->SetBrushFromMaterial(nullptr);
+	}
+}
+
+void UBattleWidgetBase::SetCurrentGunText(FString GunName)
+{
+	if (CurrentGunText)
+	{
+		CurrentGunText->SetText(FText::FromString(GunName));
+	}
+}
+
+void UBattleWidgetBase::SetCurrentGunUpgradeText(int GunUpgrade)
+{
+	if (CurrentGunUpgradeText)
+	{
+		FString NewText = FString::Printf(TEXT("%d 강"), GunUpgrade);
+		CurrentGunUpgradeText->SetText(FText::FromString(NewText));
 	}
 }

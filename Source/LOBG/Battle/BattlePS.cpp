@@ -57,7 +57,7 @@ void ABattlePS::OnRep_Money()
 	if (PC && PC->IsLocalController())
 	{
 		PC->BattleWidgetObject->SetMoney(PlayerMoney);
-		PC->StoreWidgetObject->ItemBox->CheckAllSlotActive();
+		//PC->StoreWidgetObject->ItemBox->CheckAllSlotActive();
 	}
 }
 

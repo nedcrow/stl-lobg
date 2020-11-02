@@ -36,6 +36,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UChattingWidgetBase* ChattingWidget;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
+		class UTextBlock* CurrentGunText;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget")
+		class UTextBlock* CurrentGunUpgradeText;
+
 
 	virtual void NativeConstruct()override;
 
@@ -52,4 +58,8 @@ public:
 	void SetPotionSlot(UMaterialInstance* NewMaterial);
 
 	void EmptyPotionSlot();
+
+	void SetCurrentGunText(FString GunName);
+
+	void SetCurrentGunUpgradeText(int GunUpgrade);
 };

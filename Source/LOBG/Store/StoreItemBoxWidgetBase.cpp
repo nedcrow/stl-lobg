@@ -181,16 +181,16 @@ void UStoreItemBoxWidgetBase::SetUpgradeGunUpdate(FString CurrentGunName, int Da
 									default:
 										break;
 									}
-									return;
+									break;
 								}
 							}
 						}
 					}
 				}
-				if (!ItemSlot->bIsSleep)
-				{
+				//if (!ItemSlot->bIsSleep)
+				//{
 					ItemSlot->InitSlotByMoney();
-				}
+				//}
 			}
 		}
 	}
@@ -200,7 +200,7 @@ void UStoreItemBoxWidgetBase::CheckSleepSlot()
 {
 	for (int i = 0; i < UpgradeBox->GetChildrenCount(); ++i)
 	{
-		UStoreItemWidgetBase* ItemSlot = Cast< UStoreItemWidgetBase>(UpgradeBox->GetChildAt(i));
+		UStoreItemWidgetBase* ItemSlot = Cast<UStoreItemWidgetBase>(UpgradeBox->GetChildAt(i));
 		if (ItemSlot)
 		{
 			if (ItemSlot->MyItemName == FString("GunUpgrade"))

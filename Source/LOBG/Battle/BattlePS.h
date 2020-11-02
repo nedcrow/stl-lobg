@@ -129,4 +129,6 @@ public:
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "State")
 	TArray<FGunUpgradeData> GunDataArray;
+
+	FString CurrentGun = FString("");
 };

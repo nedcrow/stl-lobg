@@ -342,27 +342,11 @@ public:
 
 	FString CurrentGunName;
 
-	UFUNCTION(Server, Reliable)
-		void Server_PSGunDataUpdate(const FString& GunItemName, int dataIndex);
-	void Server_PSGunDataUpdate_Implementation(const FString& GunItemName, int dataIndex);
-
-	UFUNCTION(Server, Reliable)
-		void Server_GunUpgrade();
-	void Server_GunUpgrade_Implementation();
-
-	UFUNCTION(Server, Reliable)
-		void Server_GunUpgradeCount(const FString& GunItemName);
-	void Server_GunUpgradeCount_Implementation(const FString& GunItemName);
-
 	void GunUpgrade();
 
 	UFUNCTION(Server, Reliable)
-		void Server_AttackUpdate(float Count, float AttackDamage);
-	void Server_AttackUpdate_Implementation(float Count, float AttackDamage);
-
-	UFUNCTION(Server, Reliable)
-		void Server_AttackUpdateTest(float AttackDamage);
-	void Server_AttackUpdateTest_Implementation(float AttackDamage);
+		void Server_AttackUpdate(float AttackDamage);
+	void Server_AttackUpdate_Implementation(float AttackDamage);
 
 	void SwitchAttackpoint(int index);
 };

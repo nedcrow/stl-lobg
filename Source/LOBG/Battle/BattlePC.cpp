@@ -88,6 +88,7 @@ void ABattlePC::InitPlayerWithTeam()
 				}
 				PlayerPawn->NetMulticast_InitHPBar(PS->TeamColor);
 				PlayerPawn->NetMulticast_SetMeshSettings(PS->PlayerMeshType);
+				Client_InitCurrentGunName();
 			}
 		}
 	}
@@ -397,5 +398,34 @@ void ABattlePC::Client_SendMessageInBattle_Implementation(const FText& Message)
 {
 	if (BattleWidgetObject) {
 		BattleWidgetObject->ChattingWidget->AddMessage(Message);
+	}
+}
+
+void ABattlePC::Client_InitCurrentGunName_Implementation()
+{
+	ABattleCharacter* PlayerPawn = Cast<ABattleCharacter>(GetPawn());
+	if (PlayerPawn)
+	{
+		ABattlePS* PS = GetPlayerState<ABattlePS>();
+		if (PS)
+		{
+			PlayerPawn->CurrentGunName = PS->CurrentGun;
+
+			if (PlayerPawn->CurrentGunName == FString(""))
+			{
+				StoreWidgetObject->ItemBox->CheckSleepSlot();
+			}
+			else
+			{
+				StoreWidgetObject->ItemBox->WakeUpSlot();
+				for (int i = 0; i < PS->GunDataArray.Num(); ++i)
+				{
+					if (PS->GunDataArray[i].GunName == PlayerPawn->CurrentGunName)
+					{
+						StoreWidgetObject->ItemBox->SetUpgradeGunUpdate(PlayerPawn->CurrentGunName, PS->GunDataArray[i].DataTableIndex);
+					}
+				}
+			}
+		}
 	}
 }

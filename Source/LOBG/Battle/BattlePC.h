@@ -119,4 +119,7 @@ public:
 	void Client_SendMessageInBattle(const FText& Message);
 	void Client_SendMessageInBattle_Implementation(const FText& Message);
 
+	UFUNCTION(Client, Reliable)
+		void Client_InitCurrentGunName();
+		void Client_InitCurrentGunName_Implementation();
 };
