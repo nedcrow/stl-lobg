@@ -52,6 +52,7 @@ Plugins/*/Binaries/*
 # Builds
 Build/*
 Game/*
+Bin/*
 bin/*
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
