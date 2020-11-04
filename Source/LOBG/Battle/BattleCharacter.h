@@ -349,4 +349,6 @@ public:
 	void Server_AttackUpdate_Implementation(float AttackDamage);
 
 	void SwitchAttackpoint(int index);
+
+	void PressCheatKey();
 };

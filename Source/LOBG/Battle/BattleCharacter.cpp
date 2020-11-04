@@ -171,6 +171,8 @@ void ABattleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("GoHome"), IE_Pressed, this, &ABattleCharacter::GoHome);
 
 	PlayerInputComponent->BindAction(TEXT("EatPotion"), IE_Pressed, this, &ABattleCharacter::EatPotion);
+
+	PlayerInputComponent->BindAction(TEXT("CheatKey"), IE_Pressed, this, &ABattleCharacter::PressCheatKey);
 }
 
 void ABattleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1136,5 +1138,10 @@ void ABattleCharacter::SwitchAttackpoint(int index)
 			}
 		}
 	}
+}
+
+void ABattleCharacter::PressCheatKey()
+{
+	SetBooty(1000.f, 0);
 }
 

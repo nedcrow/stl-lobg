@@ -33,7 +33,7 @@ void ALobbyGM::StartGame()
 		GI->TeamRedUsers = TeamRedNameArray;
 		GI->TeamBlueUsers = TeamBlueNameArray;
 	}
-	GetWorld()->ServerTravel(TEXT("Step03_Battle_TestNoTwo"));
+	GetWorld()->ServerTravel(TEXT("Step03_Battle_TestNoTwo1"));
 }
 
 void ALobbyGM::CountConnect()
