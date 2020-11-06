@@ -121,6 +121,9 @@ public:
 		void NetMulticast_ProcessFire(FVector SpawnLocation, FRotator SpawnRotation);
 	void NetMulticast_ProcessFire_Implementation(FVector SpawnLocation, FRotator SpawnRotation);
 
+	//UPROPERTY()
+	//	USoundAttenuation* AttenuationSettings;
+
 	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 

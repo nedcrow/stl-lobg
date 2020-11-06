@@ -21,6 +21,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/PawnSensingComponent.h"
+//#include "Sound/SoundAttenuation.h"
 
 // Sets default values
 AAIMinionChar::AAIMinionChar()
@@ -87,6 +88,9 @@ AAIMinionChar::AAIMinionChar()
 	// 초기화
 	CurrentHP = MaxHP;
 	CurrentState = EMinioonState::Normal;
+
+	//AttenuationSettings = CreateDefaultSubobject<USoundAttenuation>("AttenuationSettings");
+	//AttenuationSettings->Attenuation.bAttenuate = true;
 }
 
 // Called when the game starts or when spawned
@@ -107,6 +111,7 @@ void AAIMinionChar::BeginPlay()
 			PawnSensing->OnSeePawn.AddDynamic(this, &AAIMinionChar::ProcessSeenPawn);
 		}
 	}
+
 }
 
 // PawnSensing
@@ -380,7 +385,9 @@ void AAIMinionChar::NetMulticast_ProcessFire_Implementation(FVector SpawnLocatio
 
 
 	// 소리 스폰
-	if (FireSound) {
+	if (FireSound) 
+	{
+
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
 			FireSound,
 			GetActorLocation()

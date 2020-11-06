@@ -352,7 +352,7 @@ void AAIManager::RepeatSpawnMinions()
 	if (NewMinion)
 	{
 		// 스폰한 액터 저장
-		ActiveMinions.Add(NewMinion);
+		//ActiveMinions.Add(NewMinion);
 		
 		// 팀 배정
 		NewMinion->SetTeamName(TeamName);		
