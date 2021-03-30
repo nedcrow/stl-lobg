@@ -16,6 +16,9 @@ class LOBG_API UChattingWidgetBase : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Option")
+		bool bCanExit = false;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class UEditableTextBox* ChatInput;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

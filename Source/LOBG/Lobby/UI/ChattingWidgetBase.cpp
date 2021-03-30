@@ -20,10 +20,7 @@ void UChattingWidgetBase::NativeConstruct()
 
 	if (ChatInput) {
 		ChatInput->OnTextCommitted.AddDynamic(this, &UChattingWidgetBase::ProcessTextCommited);
-		TArray<FString> TempArr;
-		FString LevelName = GetWorld()->GetName();
-		LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
-		if (TempArr[0] == "Step03") {
+		if (bCanExit) {
 			ChatBG->SetBrushColor(FLinearColor(0, 0, 0, 0));
 			ChatInput->SetVisibility(ESlateVisibility::Collapsed);
 		}
@@ -38,11 +35,7 @@ void UChattingWidgetBase::ProcessTextCommited(const FText& Text, ETextCommit::Ty
 	{
 	case ETextCommit::OnEnter:
 	{
-
-		TArray<FString> TempArr;
-		FString LevelName = GetWorld()->GetName();
-		LevelName.ParseIntoArray(TempArr, TEXT("_"), true);
-		if (TempArr[0] == "Step02") {
+		if (!bCanExit) {
 			ALobbyPC* PC = GetOwningPlayer<ALobbyPC>();
 			if (PC) {
 				ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -53,7 +46,7 @@ void UChattingWidgetBase::ProcessTextCommited(const FText& Text, ETextCommit::Ty
 				}
 			}
 		}
-		else if (TempArr[0] == "Step03") {
+		else {
 			ABattlePC* PC = GetOwningPlayer<ABattlePC>();
 			if (PC) {
 				ULOBGGameInstance* GI = Cast<ULOBGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));

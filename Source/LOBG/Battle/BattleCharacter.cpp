@@ -202,7 +202,7 @@ void ABattleCharacter::MoveForward(float Value)
 	//AddMovementInput(GetActorForwardVector(), Value);
 	//AddMovementInput(FVector::ForwardVector, Value);
 	FVector ControlForwardVector2D = GetControlRotation().Vector().GetSafeNormal2D();
-	AddMovementInput(ControlForwardVector2D, Value);
+	AddMovementInput(ControlForwardVector2D, Value*RunSpeed);
 }
 
 void ABattleCharacter::MoveRight(float Value)
